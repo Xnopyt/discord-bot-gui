@@ -1,0 +1,107 @@
+@viewport {
+    width: device-width;
+    zoom: 1.0 ;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0 auto;
+    background-image: url('/loginbg.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100%;
+    display: grid;
+    font-family: 'Red Hat Text', sans-serif;
+}
+
+.loginContainer {
+    border-radius: 4px;
+    display: block;
+    height: 350px;
+    width: 400px;
+    background-color: rgb(54, 57, 63);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 1.5px 5px 0 rgba(0, 0, 0, 0.15);
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+}
+
+.loginHead {
+    color: rgb(255,255,255);
+    font-size: 20px;
+}
+
+.loginSubhead {
+    color: rgb(114, 118, 125);
+    font-size: 14px;
+}
+
+.loginLabel {
+    text-align: left;
+    color: rgb(149, 150, 151);
+    font-size: 11px;
+    padding-left: 10%;
+    padding-bottom: 0;
+    margin: 0, 0;
+    font-weight: bolder;
+    padding-top: 20px;
+}
+
+.loginButton {
+    width: 80%;
+    height: 32px;
+    border-radius: 4px;
+    background-color: rgb(112, 130, 196);
+    text-align: center;
+    margin: 40px;
+    padding: 0;
+    border: none;
+}
+
+.loginButton:hover {
+    background-color: rgb(100, 121, 197);
+}
+
+.tokenInput {
+    margin: 0, 0;
+    width: 80%;
+    height: 32px;
+    border-radius: 4px;
+    background-color: rgb(49, 51, 57);
+    border: 1px solid rgb(37, 37, 37);
+    padding-left: 2px;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.tokenInput:hover {
+    border: 1px solid rgb(0,0,0);
+}
+
+.tokenInput:focus {
+    border: 1px solid rgb(112, 130, 196);
+    outline: none;
+}
+
+
+
+@media screen and (max-width: 500px) {
+    .loginContainer {
+        height: 270px;
+        width: 300px;
+    }
+    .loginButton {
+        margin: 20px;
+    }
+}

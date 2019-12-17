@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Red+Hat+Text&display=swap" rel="stylesheet">
+    <title>Discord Bot GUI - Login</title>
+</head>
+<body>
+    <div class="loginContainer">
+        <p class="loginHead">Discord Bot GUI</p>
+        <p class="loginSubhead">By Xnopyt</p>
+        <p class="loginLabel">TOKEN</p>
+        <input id="token" class="tokenInput" type="password">
+        <button id="loginButton" class="loginButton">Login</button>
+    </div>
+</body>
+<script>
+    window.onload = function() {
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        window.external.invoke("loginSetup");
+    }
+</script>
+</html>
