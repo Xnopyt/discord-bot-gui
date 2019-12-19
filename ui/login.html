@@ -11,15 +11,23 @@
     <div class="loginContainer">
         <p class="loginHead">Discord Bot GUI</p>
         <p class="loginSubhead">By Xnopyt</p>
+        <!--[if lt IE 9]>
+		<p class="loginHead">Discord Bot GUI requires Internet Explorer 9 or higher.</p>
+        <p class="loginSubhead">Please upgrade Internet Explorer to use this software.</p>
+        <![endif]-->
+        <!--[if gte IE 9 | !IE ]> <!-->
         <p id="tlabel" class="loginLabel">TOKEN</p>
         <input id="token" class="tokenInput" type="password">
         <button id="loginButton" class="loginButton">Login</button>
+        <!--<![endif]-->
     </div>
 </body>
+<!--[if gte IE 9 | !IE ]> <!-->
 <script>
     window.onload = function() {
         document.addEventListener('contextmenu', event => event.preventDefault());
         window.external.invoke("loginSetup");
     }
 </script>
+<!--<![endif]-->
 </html>
