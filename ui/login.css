@@ -35,6 +35,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -52%);
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .loginHead {
@@ -71,6 +73,14 @@ body {
 
 .loginButton:hover {
     background-color: rgb(100, 121, 197);
+}
+
+.loginHead:hover, .loginSubhead:hover, .loginButton:hover, .loginLabel:hover {
+    cursor: default;
+}
+
+.loginHead::selection, .loginSubhead::selection, .loginButton::selection, .loginLabel::selection {
+    background: none;
 }
 
 .tokenInput {

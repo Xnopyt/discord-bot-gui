@@ -1,6 +1,6 @@
 @viewport {
     width: device-width;
-    zoom: 1.0 ;
+    zoom: 1.0;
 }
 
 html {
@@ -29,7 +29,7 @@ body {
     float: left;
 }
 
-.sidenav div {
+.sidenav .server {
     height: 48px;
     width: 48px;
     text-align: center;
@@ -39,17 +39,35 @@ body {
     vertical-align: middle;
 }
 
-.sidenav div:hover {
+.sidenav .server:hover {
+    background-color: rgb(114, 137, 218);
+    border-radius: 35%;
+    cursor: pointer;
+}
+
+.sidenav .server:hover > .selector {
+    border-right: 4px solid rgb(255,255,255);
+    height: 18px;
+    width: 1px;
+    position: fixed;
+    left: 0;
+    border-radius: 20%;
+    margin-top: 15px;
+}
+
+.sidenav .server.selected {
     background-color: rgb(114, 137, 218);
     border-radius: 35%;
 }
 
-.sidenav a:focus {
-    outline: none;
-}
-
-.sidenav a {
-    text-decoration: none;
+.sidenav .server.selected > .selector {
+    border-right: 4px solid rgb(255,255,255);
+    height: 40px;
+    width: 1px;
+    position: fixed;
+    left: 0;
+    border-radius: 20%;
+    margin-top: 6px;
 }
 
 .sidenav p {
@@ -57,6 +75,10 @@ body {
     padding-top: 33%;
     font-size: 12px;
     font-weight: bolder;
+}
+
+.sidenav p::selection {
+    background: none;
 }
 
 .sidenav i {
@@ -104,6 +126,7 @@ body {
     padding-right: 4px;
     padding-top: 10px;
     display: inline-block;
+    pointer-events: none;
 }
 
 .user img {
