@@ -21,12 +21,11 @@ var routes = []route{
 	route{"Login", "GET", "/", loginPage}, route{"Lbg", "GET", "/loginbg.jpg", lbg},
 }
 
-var wvCallbacks map[string]func(webview.WebView)
+var wvCallbacks map[string]func()
 
 func init() {
-	wvCallbacks = make(map[string]func(webview.WebView))
+	wvCallbacks = make(map[string]func())
 
-	wvCallbacks["login"] = login
 	wvCallbacks["loginSetup"] = loginSetup
 }
 
@@ -66,13 +65,13 @@ func serveHTTP(ln net.Listener) {
 func webviewCallback(w webview.WebView, s string) {
 	callback, ok := wvCallbacks[s]
 	if ok {
-		callback(w)
+		callback()
 	} else {
 		fmt.Println("Attempted to call unknown function " + s)
 	}
 }
 
-func loginSetup(wv webview.WebView) {
+func loginSetup() {
 	wv.Dispatch(func() {
 		_, err := wv.Bind("token", &tokenBind{})
 		if err != nil {

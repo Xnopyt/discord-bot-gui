@@ -1,0 +1,167 @@
+@viewport {
+    width: device-width;
+    zoom: 1.0 ;
+}
+
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    font-family: 'Red Hat Text', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.sidenav {
+    height: 100%;
+    width: 72px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgb(32, 34, 37);
+    overflow-x: hidden;
+    text-align: center;
+    padding-top: 10px;
+    float: left;
+}
+
+.sidenav div {
+    height: 48px;
+    width: 48px;
+    text-align: center;
+    margin: auto;
+    background-color: rgb(54, 57, 63);
+    border-radius: 100%;
+    vertical-align: middle;
+}
+
+.sidenav div:hover {
+    background-color: rgb(114, 137, 218);
+    border-radius: 35%;
+}
+
+.sidenav a:focus {
+    outline: none;
+}
+
+.sidenav a {
+    text-decoration: none;
+}
+
+.sidenav p {
+    color: rgb(255, 255, 255);
+    padding-top: 33%;
+    font-size: 12px;
+    font-weight: bolder;
+}
+
+.sidenav i {
+    color: rgb(255, 255, 255);
+    font-size: 25px;
+    padding-top: 20%;
+}
+
+.sidenav hr {
+    width: 50%;
+    color: rgb(65, 65, 68)
+}
+
+.actionbar {
+    height: 100%;
+    width: 240px;
+    background-color: rgb(47, 49, 54);
+    position: fixed;
+    left: 0;
+    top: 0;
+    margin-left: 72px;
+}
+
+.main {
+    height: 100%;
+    width: 100%;
+    margin-left: 311px;
+    position: fixed;
+    float: left;
+    top: 0;
+    background-color: rgb(54, 57, 63);
+    z-index: -1;
+}
+
+.user {
+    width: 240px;
+    height: 53px;
+    position: fixed;
+    bottom: 0;
+    background-color: rgb(41, 43, 47);
+}
+
+.user .avatar {
+    padding-left: 8px;
+    padding-right: 4px;
+    padding-top: 10px;
+    display: inline-block;
+}
+
+.user img {
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+}
+
+.user p {
+    margin: 0;
+    color: rgb(255, 255, 255);
+}
+
+.user .username {
+    display: inline-block;
+    transform: translateY(-3px);
+}
+
+.user .name {
+    font-size: 12px;
+    font-weight: bolder;
+}
+
+.user .discriminator {
+    font-size: 9px;
+    font-weight: lighter;
+}
+
+.infobar {
+    width: 100%;
+    height: 48px;
+    position: fixed;
+    top: 0;
+    background-color: rgb(54, 57, 63);
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+
+.actioninfo {
+    width: 240px;
+    height: 48px;
+    position: fixed;
+    top: 0;
+    background-color: rgb(47, 49, 54);
+    box-shadow: -1px 1px 1px rgba(0,0,0,0.4);
+}
+
+.mainbox {
+    width: 100%;
+    height: 100%;
+    margin-top: 49px;
+    display: inline-block;
+}
+
+.memberbar {
+    width: 240px;
+    height: 100%;
+    background-color: rgb(47, 49, 54);
+    display: inline-block;
+    position: fixed;
+    right: 0;
+}

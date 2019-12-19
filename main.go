@@ -7,6 +7,8 @@ import (
 	"github.com/zserge/webview"
 )
 
+var wv webview.WebView
+
 func main() {
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -14,7 +16,7 @@ func main() {
 	}
 	defer ln.Close()
 	go serveHTTP(ln)
-	wv := webview.New(webview.Settings{
+	wv = webview.New(webview.Settings{
 		Title:                  "Discord Bot GUI - Login",
 		URL:                    "http://" + ln.Addr().String(),
 		Width:                  800,
