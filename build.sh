@@ -1,5 +1,5 @@
 #!/bin/bash
 
 go-bindata ./ui/...
-go build
+GO111MODULE=on go build -mod=vendor
 ./discord-bot-gui
