@@ -19,8 +19,8 @@ func main() {
 	wv = webview.New(webview.Settings{
 		Title:                  "Discord Bot GUI - Login",
 		URL:                    "http://" + ln.Addr().String(),
-		Width:                  800,
-		Height:                 600,
+		Width:                  1280,
+		Height:                 720,
 		Resizable:              true,
 		Debug:                  true,
 		ExternalInvokeCallback: webviewCallback,

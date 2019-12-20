@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/pkg/browser"
 	"github.com/zserge/webview"
 )
 
@@ -18,7 +19,7 @@ type route struct {
 }
 
 var routes = []route{
-	route{"Login", "GET", "/", loginPage}, route{"Lbg", "GET", "/loginbg.jpg", lbg},
+	route{"Login", "GET", "/", loginPage}, route{"Lbg", "GET", "/loginbg.jpg", lbg}, route{"Main", "GET", "/main", mainPage}, route{"DefAva", "GET", "/default.png", defaultavatar},
 }
 
 var wvCallbacks map[string]func()
@@ -27,6 +28,8 @@ func init() {
 	wvCallbacks = make(map[string]func())
 
 	wvCallbacks["loginSetup"] = loginSetup
+	wvCallbacks["mainSetup"] = mainSetup
+	wvCallbacks["ieUpdate"] = ieUpdate
 }
 
 func newRouter() *mux.Router {
@@ -48,8 +51,22 @@ func loginPage(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func mainPage(rw http.ResponseWriter, r *http.Request) {
+	_, err := rw.Write(MustAsset("ui/main.html"))
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func lbg(rw http.ResponseWriter, r *http.Request) {
 	_, err := rw.Write(MustAsset("ui/assets/loginbg.jpg"))
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func defaultavatar(rw http.ResponseWriter, r *http.Request) {
+	_, err := rw.Write(MustAsset("ui/assets/default-avatar.png"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,7 +90,7 @@ func webviewCallback(w webview.WebView, s string) {
 
 func loginSetup() {
 	wv.Dispatch(func() {
-		_, err := wv.Bind("token", &tokenBind{})
+		_, err := wv.Bind("binder", &binder{})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -83,4 +100,15 @@ func loginSetup() {
 		}
 		wv.InjectCSS(string(MustAsset("ui/login.css")))
 	})
+}
+
+func mainSetup() {
+	wv.Dispatch(func() {
+		wv.InjectCSS(string(MustAsset("ui/main.css")))
+		wv.SetTitle("Discord Bot GUI")
+	})
+}
+
+func ieUpdate() {
+	browser.OpenURL("https://www.microsoft.com/en-us/download/internet-explorer.aspx")
 }

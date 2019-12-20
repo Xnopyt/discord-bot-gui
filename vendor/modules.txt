@@ -4,6 +4,8 @@ github.com/bwmarrin/discordgo
 github.com/gorilla/mux
 # github.com/gorilla/websocket v1.4.1
 github.com/gorilla/websocket
+# github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
+github.com/pkg/browser
 # github.com/zserge/webview v0.0.0-20191103184548-1a9ebffc2601
 github.com/zserge/webview
 # golang.org/x/crypto v0.0.0-20191219195013-becbf705a915

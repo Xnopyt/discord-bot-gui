@@ -6,13 +6,13 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type tokenBind struct{}
+type binder struct{}
 
 var token string
 
 var ses *discordgo.Session
 
-func (t *tokenBind) Connect(s string) {
+func (t *binder) Connect(s string) {
 	token = s
 	ses, err := discordgo.New("Bot " + token)
 	if err != nil {

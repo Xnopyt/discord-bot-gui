@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Red+Hat+Text&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/b3eba993dd.js" crossorigin="anonymous"></script>
-    <link href="./main.css" rel="stylesheet">
     <title>Discord Bot GUI</title>
 </head>
 <body>
@@ -18,16 +17,23 @@
         <hr>
         <div class="server selected">
             <div class="selector"></div>
-            <p unselectable="on">YEET</p>
+            <p>YEET</p>
+        </div>
+        <div class="server">
+            <div class="selector"></div>
+            <img src="./default.png">
         </div>
     </div>
     <div class="actionbar">
         <div class="actioninfo">
-            
+            <p>Y E E T</p>
+        </div>
+        <div class="chancontainer">
+            <p class="chanhead">TEXT CHANNELS</p>
         </div>
         <div class="user">
             <div class="avatar">
-                <img src="assets/default-avatar.png">
+                <img src="./default.png">
             </div>
             <div class="username">
                 <p class="name">TEMPLATE USER</p>
@@ -49,4 +55,9 @@
         </div>
     </div>
 </body>
+<script>
+    window.onload = function() {
+        window.webkit.messageHandlers.external.postMessage('mainSetup');
+    }
+</script>
 </html>

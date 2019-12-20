@@ -1,6 +1,6 @@
 # Discord Bot GUI
-
-A WebView based graphical interface for send and reciving messages with a discord bot.
+[![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/Build/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
+A WebView based graphical interface for sending and reciving messages with a discord bot.
 
 
 ## Copyright
