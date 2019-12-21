@@ -167,7 +167,7 @@ body {
     font-weight: lighter;
 }
 
-.user p::selection, .user img::selection, .user::selection, .user div::selection{
+.user img::selection, .user::selection, .user div::selection{
     background: none;
 }
 
@@ -178,6 +178,24 @@ body {
     top: 0;
     background-color: rgb(54, 57, 63);
     box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+
+.infobar .fa-hashtag {
+    height: 23px;
+    width: 23px;
+    font-size: 23px;
+    color: rgb(114, 118, 125);
+    display: inline-block;
+    margin-left: 20px;
+    margin-top: 12.5px;
+    margin-right: 4px;
+}
+
+.infobar .chantitle {
+    display: inline-block;
+    font-weight: 500;
+    font-size: 15px;
+    transform: translateY(-2px);
 }
 
 .actioninfo {
@@ -231,13 +249,63 @@ body {
     overflow-x: hidden;
 }
 
+.actionbar .chan {
+    background-color: rgb(47, 49, 54);
+    width: 200px;
+    height: 20px;
+    margin-top: 4px;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.actionbar .chan:hover {
+    background-color: rgb(57, 60, 66);
+}
+
+.chan .fa-hashtag {
+    width: 15px;
+    height: 15px;
+    color: rgb(114, 118, 125);
+    display: inline-block;
+    transform: translateY(-12px);
+}
+
+.chan .channame {
+    color: rgb(114, 118, 125);
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transform: translateY(-13px);
+    padding-left: 4px;
+    pointer-events: none;
+}
+
+.chancontainer .chan.selected {
+    background-color: rgb(57, 60, 66);
+    cursor: default;
+}
+
+.actionbar .chan:hover > .channame {
+    color: rgb(218, 218, 218);
+}
+
+.chancontainer .chan.selected > .channame {
+    color: rgb(255, 255, 255);
+}
+
+.chan .channame::selection, .chan .fa-hashtag::selection, .actionbar .chancontainer::selection, .actionbar .chan::selection, .infobar::selection, .infobar .chantitle::selection {
+    background: none;
+}
+
 .actionbar .chanhead {
     font-weight: 500;
     color: rgb(142, 146, 151);
     font-size: 11px;
     pointer-events: none;
+    margin-bottom: 0;
 }
 
-.actionbar p::selection, .actionbar .chancontainer::selection {
+.actionbar .chanhead::selection, .actionbar .chantitle:hover, .actionbar .chancontainer::selection {
     background: none;
 }
