@@ -27,6 +27,7 @@ body {
     text-align: center;
     padding-top: 10px;
     float: left;
+    z-index: 1;
 }
 
 .sidenav .server {
@@ -112,6 +113,7 @@ body {
     left: 0;
     top: 0;
     margin-left: 72px;
+    z-index: 1;
 }
 
 .main {
@@ -122,7 +124,6 @@ body {
     float: left;
     top: 0;
     background-color: rgb(54, 57, 63);
-    z-index: -1;
 }
 
 .user {
@@ -234,6 +235,7 @@ body {
     display: inline-block;
     position: fixed;
     right: 0;
+    overflow-y: scroll;
 }
 
 .actionbar .chancontainer {
@@ -307,5 +309,58 @@ body {
 }
 
 .actionbar .chanhead::selection, .actionbar .chantitle:hover, .actionbar .chancontainer::selection {
+    background: none;
+}
+
+.memberbar .memberdesc {
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-left: 12px;
+    margin-bottom: 0;
+    color: rgb(126, 129, 134);
+}
+
+.memberbar .member {
+    width: 220px;
+    height: 40px;
+    margin-left: 8px;
+    margin-top: 10px;
+    overflow: hidden;
+    background-color: rgb(47, 49, 54);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.memberbar .member:hover {
+    background-color: rgb(51, 54, 60);
+}
+
+.memberbar .member:hover > .membername {
+    color: rgb(255, 255, 255);
+}
+
+.memberbar .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    display: inline-block;
+    margin-top: 4px;
+    margin-right: 7px;
+    margin-left: 4px;
+    pointer-events: none;
+}
+
+.memberbar .membername {
+    display: inline-block;
+    font-size: 15px;
+    margin: 0;
+    transform: translateY(-10px);
+    color: rgb(126, 129, 134);
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.memberbar .memberdesc::selection, .memberbar .membername::selection, .memberbar .avatar::selection, .memberbar .member::selection, .memberbar::selection {
     background: none;
 }
