@@ -470,3 +470,7 @@ body {
 .message .msgavatar::selection, .message::selection, .messagebox::selection {
     background: none;
 }
+
+.messages .spacer {
+    height: 20px;
+}
