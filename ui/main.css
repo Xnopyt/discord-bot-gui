@@ -489,3 +489,7 @@ body {
 .messages .spacer {
     height: 20px;
 }
+
+.nowrap {
+    white-space: nowrap;
+}
