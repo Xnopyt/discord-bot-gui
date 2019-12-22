@@ -168,6 +168,21 @@ body {
     font-weight: lighter;
 }
 
+.user .fa-sign-out-alt {
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+    cursor: pointer;
+    color: rgb(185, 187, 190);
+    position: fixed;
+    margin-left: 60px;
+    bottom: 16.5px;
+}
+
+.user .fa-sign-out-alt:hover {
+    color: rgb(125, 127, 131);
+}
+
 .user img::selection, .user::selection, .user div::selection{
     background: none;
 }
