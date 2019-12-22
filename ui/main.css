@@ -388,6 +388,16 @@ body {
     padding-left: 10px;
     padding-right: 10px;
     color: rgb(255, 255, 255);
+    background-color: rgb(64, 68, 75);
+}
+
+.messagebox .inputborder {
+    width: calc(100% - 30px);
+    position: absolute;
+    bottom: 75px;
+    height: 0;
+    border-bottom: 1px solid rgb(66, 69, 74);
+    margin-left: 15px;
 }
 
 .messagebox .messageinput::placeholder {
@@ -400,8 +410,63 @@ body {
 
 .messagebox .messages {
     height: calc(100% - 75px);
-    width: calc(100% - 30px);
+    width: calc(100% - 15px);
     margin-left: 15px;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: scroll;
+}
+
+.messages .message {
+    border-top: 1px solid rgb(66, 69, 74);
+    width: calc(100% - 15px);
     margin-right: 15px;
-    border-bottom: 1px solid rgb(66, 69, 74);
+}
+
+.message .msgavatar {
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    margin-top: 30px;
+    display: inline-block;
+    pointer-events: none;
+}
+
+.message .msguser {
+    display: inline-block;
+    font-weight: 500;
+    font-size: 14px;
+    white-space: nowrap;
+    padding: 0;
+    transform: translateY(-22px);
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.message .msguser:hover {
+    text-decoration: underline;
+}
+
+.message .msgtime {
+    display: inline-block;
+    font-weight: 400;
+    font-size: 11px;
+    white-space: nowrap;
+    padding: 0;
+    transform: translateY(-22px);
+    margin-left: 2px;
+    color: rgb(94, 97, 104);
+}
+
+.message .msgbody {
+    display: inline-block;
+    width: calc(100% - 58px);
+    margin-left: 58px;
+    transform: translateY(-32px);
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.message .msgavatar::selection, .message::selection, .messagebox::selection {
+    background: none;
 }

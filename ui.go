@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/browser"
@@ -75,7 +76,9 @@ func defaultavatar(rw http.ResponseWriter, r *http.Request) {
 func serveHTTP(ln net.Listener) {
 	router := newRouter()
 	if err := http.Serve(ln, router); err != nil {
-		fmt.Println(err)
+		if !strings.Contains(err.Error(), "use of closed network connection") {
+			panic(err)
+		}
 	}
 }
 
