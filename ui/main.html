@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Red+Hat+Text&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/b3eba993dd.js" crossorigin="anonymous"></script>
     <title>Discord Bot GUI</title>
 </head>
 <body>
@@ -32,7 +31,7 @@
                 <p class="name" id="cname">Template User</p>
                 <p class="discriminator" id="cdiscriminator">#0000</p>
             </div>
-            <i class="fas fa-sign-out-alt"></i>
+            <i class="fas fa-sign-out-alt" onclick="bind.logout()"></i>
         </div>
     </div>
     <div class="main">
@@ -116,9 +115,4 @@
         </div>
     </div>
 </body>
-<script>
-    window.onload = function() {
-        window.webkit.messageHandlers.external.postMessage('mainSetup');
-    }
-</script>
 </html>

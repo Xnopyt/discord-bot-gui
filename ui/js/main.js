@@ -1,3 +1,10 @@
+//Load fontawesome
+var script = document.createElement('script');
+script.src = "https://kit.fontawesome.com/b3eba993dd.js";
+script.crossOrigin = "anonymous";
+document.head.appendChild(script);
+
+
 function loadservers(name, id, img, src) {
     var newserver = document.createElement("div");
 	newserver.className = "server";

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"html/template"
+	"os"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -33,6 +36,15 @@ func (t *binder) Connect(s string) {
 	}
 	<-ready
 	wv.Dispatch(func() {
-		wv.Eval("location.assign('./main')")
+		wv.Eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
+		wv.Eval("window.external.invoke('mainSetup')")
 	})
+}
+
+func (m *mainBind) Logout() {
+	ses.Close()
+	wv.Dispatch(func() {
+		wv.Terminate()
+	})
+	os.Exit(0)
 }

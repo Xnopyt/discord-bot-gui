@@ -21,7 +21,7 @@ type route struct {
 }
 
 var routes = []route{
-	route{"Login", "GET", "/", loginPage}, route{"Lbg", "GET", "/loginbg.jpg", lbg}, route{"Main", "GET", "/main", mainPage}, route{"DefAva", "GET", "/default.png", defaultavatar},
+	route{"Login", "GET", "/", loginPage}, route{"Lbg", "GET", "/loginbg.jpg", lbg}, route{"DefAva", "GET", "/default.png", defaultavatar},
 }
 
 var wvCallbacks map[string]func()
@@ -48,13 +48,6 @@ func newRouter() *mux.Router {
 
 func loginPage(rw http.ResponseWriter, r *http.Request) {
 	_, err := rw.Write(MustAsset("ui/login.html"))
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func mainPage(rw http.ResponseWriter, r *http.Request) {
-	_, err := rw.Write(MustAsset("ui/main.html"))
 	if err != nil {
 		log.Fatal(err)
 	}
