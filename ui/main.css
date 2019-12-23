@@ -307,6 +307,55 @@ body {
     background-color: rgb(57, 60, 66);
 }
 
+.actionbar .dmuser {
+    width: 220px;
+    height: 40px;
+    margin-top: 10px;
+    overflow: hidden;
+    background-color: rgb(47, 49, 54);
+    border-radius: 4px;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actionbar .dmuser:hover {
+    background-color: rgb(51, 54, 60);
+}
+
+.actionbar .dmuser:hover > .dmusername {
+    color: rgb(255, 255, 255);
+}
+
+.actionbar .dmavatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    display: inline-block;
+    margin-top: 4px;
+    margin-right: 7px;
+    margin-left: 4px;
+    pointer-events: none;
+}
+
+.actionbar .dmusername {
+    display: inline-block;
+    font-size: 15px;
+    margin: 0;
+    width: 150px;
+    transform: translateY(-10px);
+    color: rgb(126, 129, 134);
+    font-weight: 500;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.actionbar .dmusername::selection, .actionbar .dmavatar::selection, .actionbar .dmuser::selection {
+    background: none;
+}
+
 .chan .fa-hashtag {
     width: 15px;
     height: 15px;

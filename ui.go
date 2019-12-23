@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"log"
 	"net"
 	"net/http"
@@ -107,10 +108,12 @@ func loginSetup() {
 
 func mainSetup() {
 	wv.Dispatch(func() {
+		_, err := wv.Bind("bind", &mainBind{})
 		wv.InjectCSS(string(MustAsset("ui/main.css")))
 		wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
+		wv.Eval(string(MustAsset("ui/js/main.js")))
 		wv.Eval(`
-			document.getElementById("cname").innerHTML = '` + ses.State.User.Username + `';
+			document.getElementById("cname").innerHTML = '` + html.EscapeString(ses.State.User.Username) + `';
 			document.getElementById("cdiscriminator").innerHTML = '#` + ses.State.User.Discriminator + `';
 			document.getElementById("cavatar").src = '` + ses.State.User.AvatarURL("128") + `';
 		`)
@@ -129,39 +132,17 @@ func mainSetup() {
 					}
 					shortname += string(word[0])
 				}
-				wv.Eval(`
-					var newserver = document.createElement("div");
-					newserver.className = "server";
-					newserver.id = "` + guild.ID + `";
-					var newsel = document.createElement("div");
-					newsel.className = "selector";
-					newserver.appendChild(newsel);
-					var newicon = document.createElement("p");
-					newicon.innerHTML = "` + shortname + `";
-					newserver.appendChild(newicon)
-					var newtooltip = document.createElement("div");
-					newtooltip.className = "tooltip";
-					newtooltip.innerHTML = "` + guild.Name + `";
-					newserver.appendChild(newtooltip);
-					document.getElementById("sidenav").appendChild(newserver);
-				`)
+				wv.Eval(`loadservers("` + html.EscapeString(guild.Name) + `", "` + guild.ID + `", false, "` + html.EscapeString(shortname) + `")`)
 			} else {
-				wv.Eval(`
-					var newserver = document.createElement("div");
-					newserver.className = "server";
-					newserver.id = "` + guild.ID + `";
-					var newsel = document.createElement("div");
-					newsel.className = "selector";
-					newserver.appendChild(newsel);
-					var newicon = document.createElement("img");
-					newicon.src = "` + guild.IconURL() + `";
-					newserver.appendChild(newicon)
-					var newtooltip = document.createElement("div");
-					newtooltip.className = "tooltip";
-					newtooltip.innerHTML = "` + guild.Name + `";
-					newserver.appendChild(newtooltip);
-					document.getElementById("sidenav").appendChild(newserver);
-				`)
+				wv.Eval(`loadservers("` + html.EscapeString(guild.Name) + `", "` + guild.ID + `", true, "` + guild.IconURL() + `")`)
+			}
+			m, err := ses.GuildMembers(v.ID, "", 1000)
+			if err == nil {
+				for _, x := range m {
+					if !x.User.Bot {
+						wv.Eval(`loaddmusers("` + html.EscapeString(x.User.Username) + `","` + x.User.ID + `","` + x.User.AvatarURL("128") + `")`)
+					}
+				}
 			}
 		}
 	})

@@ -10,26 +10,19 @@
 </head>
 <body>
     <div id="sidenav" class="sidenav">
-        <div class="server">
+        <div class="server selected">
             <div class="selector"></div>
             <i class="fas fa-home"></i>
+            <div class="tooltip">Home</div>
         </div>
         <hr>
     </div>
     <div class="actionbar">
         <div class="actioninfo">
-            <p>Y E E T</p>
+            <p>Home</p>
         </div>
-        <div class="chancontainer">
-            <p class="chanhead">TEXT CHANNELS</p>
-            <div class="chan selected">
-                <i class="fas fa-hashtag"></i>
-                <p class="channame">General</p>
-            </div>
-            <div class="chan">
-                <i class="fas fa-hashtag"></i>
-                <p class="channame">Spam</p>
-            </div>
+        <div id="chancontainer" class="chancontainer">
+            <p class="chanhead">DIRECT MESSAGES</p>
         </div>
         <div class="user">
             <div class="avatar">
@@ -44,10 +37,10 @@
     </div>
     <div class="main">
         <div class="infobar">
-            <i class="fas fa-hashtag"></i>
-            <p class="chantitle">General</p>
+            <i class="fas fa-home" style="visibility: hidden;"></i>
+            <p class="chantitle" style="visibility: hidden;">Home</p>
         </div>
-        <div class="mainbox">
+        <div class="mainbox" style="visibility: hidden;">
             <div class="messagebox">
                 <div class="messages">
                     <div>

@@ -6,6 +6,8 @@ import (
 
 type binder struct{}
 
+type mainBind struct{}
+
 var token string
 
 var ses *discordgo.Session
