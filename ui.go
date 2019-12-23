@@ -108,7 +108,62 @@ func loginSetup() {
 func mainSetup() {
 	wv.Dispatch(func() {
 		wv.InjectCSS(string(MustAsset("ui/main.css")))
-		wv.SetTitle("Discord Bot GUI")
+		wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
+		wv.Eval(`
+			document.getElementById("cname").innerHTML = '` + ses.State.User.Username + `';
+			document.getElementById("cdiscriminator").innerHTML = '#` + ses.State.User.Discriminator + `';
+			document.getElementById("cavatar").src = '` + ses.State.User.AvatarURL("128") + `';
+		`)
+		guilds, err := ses.UserGuilds(100, "", "")
+		if err != nil {
+			panic(err)
+		}
+		for _, v := range guilds {
+			guild, _ := ses.Guild(v.ID)
+			if guild.IconURL() == "" {
+				var shortname string
+				words := strings.Split(guild.Name, " ")
+				for _, word := range words {
+					if len(shortname) > 4 {
+						break
+					}
+					shortname += string(word[0])
+				}
+				wv.Eval(`
+					var newserver = document.createElement("div");
+					newserver.className = "server";
+					newserver.id = "` + guild.ID + `";
+					var newsel = document.createElement("div");
+					newsel.className = "selector";
+					newserver.appendChild(newsel);
+					var newicon = document.createElement("p");
+					newicon.innerHTML = "` + shortname + `";
+					newserver.appendChild(newicon)
+					var newtooltip = document.createElement("div");
+					newtooltip.className = "tooltip";
+					newtooltip.innerHTML = "` + guild.Name + `";
+					newserver.appendChild(newtooltip);
+					document.getElementById("sidenav").appendChild(newserver);
+				`)
+			} else {
+				wv.Eval(`
+					var newserver = document.createElement("div");
+					newserver.className = "server";
+					newserver.id = "` + guild.ID + `";
+					var newsel = document.createElement("div");
+					newsel.className = "selector";
+					newserver.appendChild(newsel);
+					var newicon = document.createElement("img");
+					newicon.src = "` + guild.IconURL() + `";
+					newserver.appendChild(newicon)
+					var newtooltip = document.createElement("div");
+					newtooltip.className = "tooltip";
+					newtooltip.innerHTML = "` + guild.Name + `";
+					newserver.appendChild(newtooltip);
+					document.getElementById("sidenav").appendChild(newserver);
+				`)
+			}
+		}
 	})
 }
 

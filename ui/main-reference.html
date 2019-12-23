@@ -9,12 +9,20 @@
     <title>Discord Bot GUI</title>
 </head>
 <body>
-    <div id="sidenav" class="sidenav">
+    <div class="sidenav">
         <div class="server">
             <div class="selector"></div>
             <i class="fas fa-home"></i>
         </div>
         <hr>
+        <div class="server selected">
+            <div class="selector"></div>
+            <p>YEET</p>
+        </div>
+        <div class="server">
+            <div class="selector"></div>
+            <img src="./default.png">
+        </div>
     </div>
     <div class="actionbar">
         <div class="actioninfo">
@@ -33,11 +41,11 @@
         </div>
         <div class="user">
             <div class="avatar">
-                <img id="cavatar" src="./default.png">
+                <img src="./default.png">
             </div>
             <div class="username">
-                <p class="name" id="cname">Template User</p>
-                <p class="discriminator" id="cdiscriminator">#0000</p>
+                <p class="name">Template User</p>
+                <p class="discriminator">#0000</p>
             </div>
             <i class="fas fa-sign-out-alt"></i>
         </div>

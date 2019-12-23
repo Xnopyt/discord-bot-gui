@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,13 +12,16 @@ var ses *discordgo.Session
 
 func (t *binder) Connect(s string) {
 	token = s
-	ses, err := discordgo.New("Bot " + token)
+	var err error
+	ses, err = discordgo.New("Bot " + token)
 	if err != nil {
 		wv.Dispatch(func() {
 			wv.Eval("fail()")
 		})
 		return
 	}
+	ready := make(chan bool)
+	ses.AddHandler(func(s *discordgo.Session, e *discordgo.Ready) { ready <- true })
 	err = ses.Open()
 	if err != nil {
 		wv.Dispatch(func() {
@@ -28,5 +29,8 @@ func (t *binder) Connect(s string) {
 		})
 		return
 	}
-	fmt.Println(ses.State.User.String())
+	<-ready
+	wv.Dispatch(func() {
+		wv.Eval("location.assign('./main')")
+	})
 }
