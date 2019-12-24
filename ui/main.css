@@ -63,6 +63,10 @@ body {
     border-radius: 35%;
 }
 
+.sidenav .server.selected > img {
+    border-radius: 35%;
+}
+
 .sidenav .server.selected > .selector {
     border-right: 4px solid rgb(255,255,255);
     height: 40px;
@@ -257,6 +261,10 @@ body {
     margin-right: 13px;
     margin-top: 18px;
     pointer-events: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 200px;
 }
 
 .actioninfo p::selection, .actioninfo::selection, .actionbar::selection {
@@ -368,10 +376,14 @@ body {
     color: rgb(114, 118, 125);
     font-size: 14px;
     font-weight: 500;
+    width: 180px;
     display: inline-block;
     transform: translateY(-13px);
     padding-left: 4px;
     pointer-events: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .chancontainer .chan.selected {

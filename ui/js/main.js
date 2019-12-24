@@ -23,7 +23,8 @@ function loadservers(name, id, img, src) {
 	var newtooltip = document.createElement("div");
 	newtooltip.className = "tooltip";
 	newtooltip.innerHTML = name;
-	newserver.appendChild(newtooltip);
+    newserver.appendChild(newtooltip);
+    newserver.setAttribute("onclick", "bind.selectTargetServer('"+id+"')")
     document.getElementById("sidenav").appendChild(newserver);
 }
 
