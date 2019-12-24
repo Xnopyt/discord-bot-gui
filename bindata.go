@@ -179,7 +179,7 @@ func uiLoginCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/login.css", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1576787286, 0)}
+	info := bindataFileInfo{name: "ui/login.css", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1577147014, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -199,7 +199,7 @@ func uiLoginHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/login.html", size: 1225, mode: os.FileMode(420), modTime: time.Unix(1577116660, 0)}
+	info := bindataFileInfo{name: "ui/login.html", size: 1225, mode: os.FileMode(420), modTime: time.Unix(1577147014, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -219,7 +219,7 @@ func uiMainCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/main.css", size: 10797, mode: os.FileMode(420), modTime: time.Unix(1577129529, 0)}
+	info := bindataFileInfo{name: "ui/main.css", size: 10797, mode: os.FileMode(420), modTime: time.Unix(1577147014, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -239,7 +239,7 @@ func uiMainHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/main.html", size: 6542, mode: os.FileMode(420), modTime: time.Unix(1577145322, 0)}
+	info := bindataFileInfo{name: "ui/main.html", size: 6542, mode: os.FileMode(420), modTime: time.Unix(1577147014, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

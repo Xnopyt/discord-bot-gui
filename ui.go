@@ -102,6 +102,9 @@ func loginSetup() {
 func mainSetup() {
 	wv.Dispatch(func() {
 		_, err := wv.Bind("bind", &mainBind{})
+		if err != nil {
+			log.Fatal(err)
+		}
 		wv.InjectCSS(string(MustAsset("ui/main.css")))
 		wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
 		wv.Eval(string(MustAsset("ui/js/main.js")))
@@ -110,34 +113,8 @@ func mainSetup() {
 			document.getElementById("cdiscriminator").innerHTML = '#` + ses.State.User.Discriminator + `';
 			document.getElementById("cavatar").src = '` + ses.State.User.AvatarURL("128") + `';
 		`)
-		guilds, err := ses.UserGuilds(100, "", "")
-		if err != nil {
-			panic(err)
-		}
-		for _, v := range guilds {
-			guild, _ := ses.Guild(v.ID)
-			if guild.IconURL() == "" {
-				var shortname string
-				words := strings.Split(guild.Name, " ")
-				for _, word := range words {
-					if len(shortname) > 4 {
-						break
-					}
-					shortname += string(word[0])
-				}
-				wv.Eval(`loadservers("` + html.EscapeString(guild.Name) + `", "` + guild.ID + `", false, "` + html.EscapeString(shortname) + `")`)
-			} else {
-				wv.Eval(`loadservers("` + html.EscapeString(guild.Name) + `", "` + guild.ID + `", true, "` + guild.IconURL() + `")`)
-			}
-			m, err := ses.GuildMembers(v.ID, "", 1000)
-			if err == nil {
-				for _, x := range m {
-					if !x.User.Bot {
-						wv.Eval(`loaddmusers("` + html.EscapeString(x.User.Username) + `","` + x.User.ID + `","` + x.User.AvatarURL("128") + `")`)
-					}
-				}
-			}
-		}
+		loadServers()
+		loadDMMembers()
 	})
 }
 
