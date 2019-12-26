@@ -208,6 +208,9 @@ func (m *mainBind) SetActiveChannel(id string) {
 		}
 		wg := &sync.WaitGroup{}
 		for _, v := range msgs {
+			if v.Type == 7 {
+				continue
+			}
 			wv.Eval(`
 			var messages = document.getElementById("messages");
 			var msg = document.createElement("div");
