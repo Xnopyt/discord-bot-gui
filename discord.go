@@ -238,10 +238,54 @@ func processChannelMessage(m *discordgo.Message, wg *sync.WaitGroup) {
 	} else {
 		uname = m.Author.Username
 	}
+	for _, z := range m.Attachments {
+		if m.Content == "" {
+			m.Content = z.URL
+		} else {
+			m.Content += "\n" + z.URL
+		}
+	}
+	for _, z := range m.Embeds {
+		if m.Content != "" {
+			m.Content += "\n" + "Embed:"
+		}
+		if z.Title != "" {
+			m.Content += "\n" + z.Title
+		}
+		if z.Description != "" {
+			m.Content += "\n" + z.Description
+		}
+		if z.URL != "" {
+			m.Content += "\n" + z.URL
+		}
+		if z.Description != "" {
+			m.Content += "\n" + z.Description
+		}
+		if z.Image != nil {
+			m.Content += "\n" + z.Image.URL
+		}
+		if z.Thumbnail != nil {
+			m.Content += "\n" + z.Thumbnail.URL
+		}
+		if z.Video != nil {
+			m.Content += "\n" + z.Video.URL
+		}
+		for _, f := range z.Fields {
+			m.Content += "\n" + f.Name + ": " + f.Value
+		}
+		if z.Provider != nil {
+			m.Content += "\n" + "Provider: " + z.Provider.Name + " (" + z.Provider.URL + ")"
+		}
+		if z.Footer != nil {
+			m.Content += "\n" + z.Footer.Text + " " + z.Footer.IconURL
+		}
+	}
 	body, err := m.ContentWithMoreMentionsReplaced(ses)
 	if err != nil {
 		body = m.ContentWithMentionsReplaced()
 	}
+	body = html.EscapeString(body)
+	body = strings.ReplaceAll(body, "\n", "<br />")
 	wv.Dispatch(func() {
 		wv.Eval(`
 		var msg = document.getElementById("` + m.ID + `");
@@ -264,7 +308,7 @@ func processChannelMessage(m *discordgo.Message, wg *sync.WaitGroup) {
 		msg.appendChild(head);
 		var body = document.createElement("div");
 		body.className = "msgbody";
-		body.innerHTML = "` + html.EscapeString(body) + `";
+		body.innerHTML = "` + body + `";
 		msg.appendChild(body);
 		`)
 	})
