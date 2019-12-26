@@ -265,3 +265,13 @@ func processChannelMessage(m *discordgo.MessageCreate, wg *sync.WaitGroup) {
 		wv.Eval(`fillmessage("` + m.ID + `", "` + html.EscapeString(uname) + `", "` + m.Author.AvatarURL("128") + `", "` + parseTime(m) + `", "` + body + `");`)
 	})
 }
+
+func (m *mainBind) SendMessage(msg string) {
+	if currentChannel == "" {
+		return
+	}
+	_, err := ses.ChannelMessageSend(currentChannel, msg)
+	if err != nil {
+		log.Println(err)
+	}
+}

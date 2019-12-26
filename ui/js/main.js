@@ -124,3 +124,12 @@ function fillmessage(id, uname, avatar, timetext, bodytext) {
 	body.innerHTML = bodytext;
 	msg.appendChild(body);
 }
+
+document.getElementById("messageinput").addEventListener("keyup", function(event) {
+	if (event.keyCode === 13) {
+		event.preventDefault();
+		var msgInput = document.getElementById("messageinput");
+        bind.sendMessage(msgInput.value);
+        msgInput.value = "";
+	}
+});
