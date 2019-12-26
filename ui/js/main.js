@@ -108,7 +108,6 @@ function fillmessage(id, uname, avatar, timetext, bodytext) {
 	var ava = document.createElement("img");
 	ava.src = avatar;
 	ava.className = "msgavatar";
-	debugger;
 	head.appendChild(ava);
 	var unameelem = document.createElement("p");
 	unameelem.className = "msguser";
