@@ -107,12 +107,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`
-		var messages = document.getElementById("messages");
-		var msg = document.createElement("div");
-		msg.id = "` + m.ID + `";
-		messages.appendChild(msg);
-		`)
+		wv.Eval(`createmessage("` + m.ID + `")`)
 	})
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
@@ -126,17 +121,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`
-		document.getElementsByClassName("server selected")[0].classList.remove("selected");
-		document.getElementById("` + id + `").classList.add("selected");
-		document.getElementById("servername").innerHTML = "` + html.EscapeString(guild.Name) + `";
-		var chancon = document.getElementById("chancontainer");
-		chancon.innerHTML = "";
-		var head = document.createElement("p");
-		head.className = "chanhead";
-		head.innerHTML = "TEXT CHANNELS";
-		chancon.appendChild(head);
-		`)
+		wv.Eval(`selectserver("` + id + `", "` + html.EscapeString(guild.Name) + `");`)
 		chans, _ := ses.GuildChannels(id)
 		var nchan *discordgo.Channel
 		i := false
@@ -146,21 +131,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 					nchan = v
 					i = true
 				}
-				wv.Eval(`
-				var chancon = document.getElementById("chancontainer");
-				var div = document.createElement("div");
-				div.className = "chan";
-				var icon = document.createElement("i");
-				icon.className = "fas fa-hashtag";
-				div.appendChild(icon);
-				var para = document.createElement("p");
-				para.className = "channame";
-				para.innerHTML = "` + html.EscapeString(v.Name) + `";
-				div.appendChild(para);
-				div.id = "` + v.ID + `";
-				div.setAttribute("onclick", "bind.setActiveChannel('` + v.ID + `')")
-				chancon.appendChild(div);
-				`)
+				wv.Eval(`addchannel("` + v.ID + `", "` + html.EscapeString(v.Name) + `");`)
 			}
 		}
 		currentServer = id
@@ -202,22 +173,7 @@ func (m *mainBind) SetActiveChannel(id string) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`
-		document.getElementById("infoicon").style.visibility = "visible";
-		var title = document.getElementById("channeltitle");
-		title.innerHTML = "` + html.EscapeString(channel.Name) + `";
-		title.style.visibility = "visible";
-		document.getElementById("messageinput").placeholder = "Message #` + html.EscapeString(channel.Name) + `";
-		if (document.getElementsByClassName("chan selected")[0]) {
-			document.getElementsByClassName("chan selected")[0].classList.remove("selected");
-		}
-		document.getElementById("` + id + `").classList.add("selected");
-		var messages = document.getElementById("messages");
-		messages.innerHTML = "";
-		var spacer = document.createElement("div");
-		spacer.className = "spacer";
-		messages.appendChild(spacer);
-		`)
+		wv.Eval(`selectchannel("` + id + `", "` + html.EscapeString(channel.Name) + `");`)
 		msgs, err := ses.ChannelMessages(id, 30, "", "", "")
 		if err != nil {
 			log.Println(err)
@@ -232,12 +188,7 @@ func (m *mainBind) SetActiveChannel(id string) {
 			if v.Type == 7 {
 				continue
 			}
-			wv.Eval(`
-			var messages = document.getElementById("messages");
-			var msg = document.createElement("div");
-			msg.id = "` + v.ID + `";
-			messages.appendChild(msg);
-			`)
+			wv.Eval(`createmessage("` + v.ID + `")`)
 			wg.Add(1)
 			go processChannelMessage(&discordgo.MessageCreate{Message: v}, wg)
 		}
@@ -311,29 +262,6 @@ func processChannelMessage(m *discordgo.MessageCreate, wg *sync.WaitGroup) {
 	body = html.EscapeString(body)
 	body = strings.ReplaceAll(body, "\n", "<br />")
 	wv.Dispatch(func() {
-		wv.Eval(`
-		var msg = document.getElementById("` + m.ID + `");
-		msg.className = "message";
-		var head = document.createElement("div");
-		head.className = "nowrap";
-		var ava = document.createElement("img");
-		ava.src = "` + m.Author.AvatarURL("128") + `";
-		ava.className = "msgavatar";
-		debugger;
-		head.appendChild(ava);
-		var uname = document.createElement("p");
-		uname.className = "msguser";
-		uname.innerHTML = "` + html.EscapeString(uname) + `";
-		head.appendChild(uname);
-		var time = document.createElement("p");
-		time.className = "msgtime";
-		time.innerHTML = "` + parseTime(m) + `";
-		head.appendChild(time);
-		msg.appendChild(head);
-		var body = document.createElement("div");
-		body.className = "msgbody";
-		body.innerHTML = "` + body + `";
-		msg.appendChild(body);
-		`)
+		wv.Eval(`fillmessage("` + m.ID + `", "` + html.EscapeString(uname) + `", "` + m.Author.AvatarURL("128") + `", "` + parseTime(m) + `", "` + body + `");`)
 	})
 }
