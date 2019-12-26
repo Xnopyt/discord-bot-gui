@@ -243,6 +243,10 @@ body {
     font-weight: 500;
     font-size: 15px;
     transform: translateY(-2px);
+    width: calc(100% - 400px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .actioninfo {

@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="sidenav" class="sidenav">
-        <div class="server selected">
+        <div id="home" class="server selected" onclick="bind.home()">
             <div class="selector"></div>
             <i class="fas fa-home"></i>
             <div class="tooltip">Home</div>
@@ -36,13 +36,13 @@
     </div>
     <div class="main">
         <div class="infobar">
-            <i class="fas fa-home" style="visibility: hidden;"></i>
-            <p class="chantitle" style="visibility: hidden;">Home</p>
+            <i id="infoicon" class="fas fa-hashtag" style="visibility: hidden;"></i>
+            <p id="channeltitle" class="chantitle" style="visibility: hidden;">Home</p>
         </div>
-        <div class="mainbox" style="visibility: hidden;">
+        <div id="mainbox" class="mainbox" style="visibility: hidden;">
             <div class="messagebox">
                 <div class="messages">
-                    <div>
+                    <div id="messages">
                         <div class="spacer"></div>
                         <div class="message">
                             <div class="nowrap">
@@ -103,7 +103,7 @@
                     </div>
                 </div>
                 <div class="inputborder"></div>
-                <input type="text" class="messageinput" placeholder="Message #General">
+                <input id="messageinput" type="text" class="messageinput" placeholder="Message #General">
             </div>
             <div class="memberbar">
                 <p class="memberdesc">MEMBERS - 1</p>

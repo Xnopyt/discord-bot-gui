@@ -121,3 +121,25 @@ func mainSetup() {
 func ieUpdate() {
 	browser.OpenURL("https://www.microsoft.com/en-us/download/internet-explorer.aspx")
 }
+
+func (m mainBind) Home() {
+	currentServer = "HOME"
+	currentChannel = ""
+	wv.Dispatch(func() {
+		wv.Eval(`
+		document.getElementsByClassName("server selected")[0].classList.remove("selected");
+		document.getElementById("home").classList.add("selected");
+		document.getElementById("servername").innerHTML = "Home";
+		var chancon = document.getElementById("chancontainer");
+		chancon.innerHTML = "";
+		var head = document.createElement("p");
+		head.className = "chanhead";
+		head.innerHTML = "DIRECT MESSAGES";
+		chancon.appendChild(head);
+		document.getElementById("infoicon").style.visibility = "hidden";
+		document.getElementById("channeltitle").style.visibility = "hidden";
+		document.getElementById("mainbox").style.visibility = "hidden";
+		`)
+		loadDMMembers()
+	})
+}

@@ -5,7 +5,10 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -19,6 +22,7 @@ var token string
 var ses *discordgo.Session
 
 var currentServer = "HOME"
+var currentChannel = ""
 
 func (t *binder) Connect(s string) {
 	token = s
@@ -113,8 +117,14 @@ func (m *mainBind) SelectTargetServer(id string) {
 		chancon.appendChild(head);
 		`)
 		chans, _ := ses.GuildChannels(id)
+		var nchan *discordgo.Channel
+		i := false
 		for _, v := range chans {
 			if v.Type == 0 {
+				if !i {
+					nchan = v
+					i = true
+				}
 				wv.Eval(`
 				var chancon = document.getElementById("chancontainer");
 				var div = document.createElement("div");
@@ -127,9 +137,135 @@ func (m *mainBind) SelectTargetServer(id string) {
 				para.innerHTML = "` + html.EscapeString(v.Name) + `";
 				div.appendChild(para);
 				div.id = "` + v.ID + `";
+				div.setAttribute("onclick", "bind.setActiveChannel('` + v.ID + `')")
 				chancon.appendChild(div);
 				`)
 			}
 		}
+		currentServer = id
+		m.SetActiveChannel(nchan.ID)
+	})
+}
+
+func parseTime(m *discordgo.Message) string {
+	var ctime string
+	times, err := m.Timestamp.Parse()
+	if err != nil {
+		ctime = "00:00"
+	} else {
+		times = times.Local()
+		hr, mi, _ := times.Clock()
+		var min string
+		if mi < 10 {
+			min = strconv.Itoa(mi)
+			min = "0" + min
+		} else {
+			min = strconv.Itoa(mi)
+		}
+		ctime = strconv.Itoa(hr) + ":" + min
+		y, m, d := times.Date()
+		cy, cm, cd := time.Now().Date()
+		im := int(m)
+		icm := int(cm)
+		if y != cy || im != icm || d != cd {
+			ctime = strconv.Itoa(d) + "/" + strconv.Itoa(im) + "/" + strconv.Itoa(y)[2:]
+		}
+	}
+	return ctime
+}
+
+func (m *mainBind) SetActiveChannel(id string) {
+	channel, err := ses.Channel(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	wv.Dispatch(func() {
+		wv.Eval(`
+		document.getElementById("infoicon").style.visibility = "visible";
+		var title = document.getElementById("channeltitle");
+		title.innerHTML = "` + html.EscapeString(channel.Name) + `";
+		title.style.visibility = "visible";
+		document.getElementById("messageinput").placeholder = "Message #` + html.EscapeString(channel.Name) + `";
+		if (document.getElementsByClassName("chan selected")[0]) {
+			document.getElementsByClassName("chan selected")[0].classList.remove("selected");
+		}
+		document.getElementById("` + id + `").classList.add("selected");
+		var messages = document.getElementById("messages");
+		messages.innerHTML = "";
+		var spacer = document.createElement("div");
+		spacer.className = "spacer";
+		messages.appendChild(spacer);
+		`)
+		msgs, err := ses.ChannelMessages(id, 30, "", "", "")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		for i := len(msgs)/2 - 1; i >= 0; i-- {
+			opp := len(msgs) - 1 - i
+			msgs[i], msgs[opp] = msgs[opp], msgs[i]
+		}
+		wg := &sync.WaitGroup{}
+		for _, v := range msgs {
+			wv.Eval(`
+			var messages = document.getElementById("messages");
+			var msg = document.createElement("div");
+			msg.id = "` + v.ID + `";
+			messages.appendChild(msg);
+			`)
+			wg.Add(1)
+			go processChannelMessage(v, wg)
+		}
+		wg.Wait()
+		wv.Eval(`
+		document.getElementById("mainbox").style.visibility = "visible";
+		`)
+		currentChannel = id
+	})
+}
+
+func processChannelMessage(m *discordgo.Message, wg *sync.WaitGroup) {
+	defer wg.Done()
+	var uname string
+	member, err := ses.GuildMember(m.GuildID, m.Author.ID)
+	if err == nil {
+		if member.Nick != "" {
+			uname = member.Nick
+		} else {
+			uname = m.Author.Username
+		}
+	} else {
+		uname = m.Author.Username
+	}
+	body, err := m.ContentWithMoreMentionsReplaced(ses)
+	if err != nil {
+		body = m.ContentWithMentionsReplaced()
+	}
+	wv.Dispatch(func() {
+		wv.Eval(`
+		var msg = document.getElementById("` + m.ID + `");
+		msg.className = "message";
+		var head = document.createElement("div");
+		head.className = "nowrap";
+		var ava = document.createElement("img");
+		ava.src = "` + m.Author.AvatarURL("128") + `";
+		ava.className = "msgavatar";
+		debugger;
+		head.appendChild(ava);
+		var uname = document.createElement("p");
+		uname.className = "msguser";
+		uname.innerHTML = "` + html.EscapeString(uname) + `";
+		head.appendChild(uname);
+		var time = document.createElement("p");
+		time.className = "msgtime";
+		time.innerHTML = "` + parseTime(m) + `";
+		head.appendChild(time);
+		msg.appendChild(head);
+		var body = document.createElement("div");
+		body.className = "msgbody";
+		body.innerHTML = "` + html.EscapeString(body) + `";
+		msg.appendChild(body);
+		`)
 	})
 }
