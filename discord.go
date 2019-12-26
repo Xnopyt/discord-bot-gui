@@ -203,7 +203,7 @@ func (m *mainBind) SetActiveChannel(id string) {
 func processChannelMessage(m *discordgo.MessageCreate, wg *sync.WaitGroup) {
 	defer wg.Done()
 	var uname string
-	member, err := ses.GuildMember(m.GuildID, m.Author.ID)
+	member, err := ses.GuildMember(currentServer, m.Author.ID)
 	if err == nil {
 		if member.Nick != "" {
 			uname = member.Nick
