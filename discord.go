@@ -36,6 +36,7 @@ func (t *binder) Connect(s string) {
 	}
 	ready := make(chan bool)
 	ses.AddHandler(func(s *discordgo.Session, e *discordgo.Ready) { ready <- true })
+	ses.AddHandler(recvMsg)
 	err = ses.Open()
 	if err != nil {
 		wv.Dispatch(func() {
@@ -98,6 +99,26 @@ func loadDMMembers() {
 	}
 }
 
+func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.ChannelID != currentChannel {
+		return
+	}
+	if m.Type == 7 {
+		return
+	}
+	wv.Dispatch(func() {
+		wv.Eval(`
+		var messages = document.getElementById("messages");
+		var msg = document.createElement("div");
+		msg.id = "` + m.ID + `";
+		messages.appendChild(msg);
+		`)
+	})
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	processChannelMessage(m, wg)
+}
+
 func (m *mainBind) SelectTargetServer(id string) {
 	guild, err := ses.Guild(id)
 	if err != nil {
@@ -147,7 +168,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 	})
 }
 
-func parseTime(m *discordgo.Message) string {
+func parseTime(m *discordgo.MessageCreate) string {
 	var ctime string
 	times, err := m.Timestamp.Parse()
 	if err != nil {
@@ -218,7 +239,7 @@ func (m *mainBind) SetActiveChannel(id string) {
 			messages.appendChild(msg);
 			`)
 			wg.Add(1)
-			go processChannelMessage(v, wg)
+			go processChannelMessage(&discordgo.MessageCreate{Message: v}, wg)
 		}
 		wg.Wait()
 		wv.Eval(`
@@ -228,7 +249,7 @@ func (m *mainBind) SetActiveChannel(id string) {
 	})
 }
 
-func processChannelMessage(m *discordgo.Message, wg *sync.WaitGroup) {
+func processChannelMessage(m *discordgo.MessageCreate, wg *sync.WaitGroup) {
 	defer wg.Done()
 	var uname string
 	member, err := ses.GuildMember(m.GuildID, m.Author.ID)
