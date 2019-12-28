@@ -227,7 +227,7 @@ body {
     box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
 }
 
-.infobar .fa-hashtag {
+.infobar .fa-hashtag, .infobar .fa-at {
     height: 23px;
     width: 23px;
     font-size: 23px;
@@ -336,6 +336,14 @@ body {
 }
 
 .actionbar .dmuser:hover > .dmusername {
+    color: rgb(255, 255, 255);
+}
+
+.actionbar .dmuser.selected {
+    background-color: rgb(51, 54, 60);
+}
+
+.actionbar .dmuser.selected > .dmusername {
     color: rgb(255, 255, 255);
 }
 

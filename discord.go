@@ -213,10 +213,10 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 			}
 		}
 	}
-	if member != nil {
+	if member != nil && currentServer != "HOME" {
 		member, err = ses.GuildMember(currentServer, m.Author.ID)
 	}
-	if err == nil && member != nil {
+	if err == nil && member != nil && currentServer != "HOME" {
 		if member.Nick != "" {
 			uname = member.Nick
 		} else {
@@ -286,4 +286,42 @@ func (m *mainBind) SendMessage(msg string) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func (m *mainBind) LoadDMChannel(id string) {
+	channel, err := ses.UserChannelCreate(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	user, err := ses.User(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	wv.Dispatch(func() {
+		wv.Eval(`selectdmchannel("` + id + `", "` + html.EscapeString(user.Username) + `");
+		document.getElementById("mainbox").style.visibility = "hidden";`)
+		msgs, err := ses.ChannelMessages(channel.ID, 18, "", "", "")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		for i := len(msgs)/2 - 1; i >= 0; i-- {
+			opp := len(msgs) - 1 - i
+			msgs[i], msgs[opp] = msgs[opp], msgs[i]
+		}
+		wg := &sync.WaitGroup{}
+		for _, v := range msgs {
+			if v.Type == 7 {
+				continue
+			}
+			wv.Eval(`createmessage("` + v.ID + `")`)
+			wg.Add(1)
+			go processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
+		}
+		wg.Wait()
+		wv.Eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+		currentChannel = channel.ID
+	})
 }

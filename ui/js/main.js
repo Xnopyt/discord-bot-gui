@@ -47,7 +47,8 @@ function loaddmusers(name, id, img) {
     var newusername = document.createElement("p");
     newusername.className = "dmusername";
     newusername.innerHTML = name;
-    newuser.appendChild(newusername);
+	newuser.appendChild(newusername);
+	newuser.setAttribute("onclick", "bind.loadDMChannel('"+id+"')")
     document.getElementById("chancontainer").appendChild(newuser);
 }
 
@@ -87,13 +88,36 @@ function addchannel(id, name) {
 }
 
 function selectchannel(id, name) {
-    document.getElementById("infoicon").style.visibility = "visible";
+	var infoicon = document.getElementById("infoicon");
+	infoicon.style.visibility = "visible";
+	infoicon.classList.remove("fa-at");
+	infoicon.classList.add("fa-hashtag");
 	var title = document.getElementById("channeltitle");
 	title.innerHTML = name;
 	title.style.visibility = "visible";
 	document.getElementById("messageinput").placeholder = "Message #" + name;
 	if (document.getElementsByClassName("chan selected")[0]) {
 		document.getElementsByClassName("chan selected")[0].classList.remove("selected");
+	}
+	document.getElementById(id).classList.add("selected");
+	var messages = document.getElementById("messages");
+	messages.innerHTML = "";
+	var spacer = document.createElement("div");
+	spacer.className = "spacer";
+	messages.appendChild(spacer);
+}
+
+function selectdmchannel(id, name) {
+    var infoicon = document.getElementById("infoicon");
+	infoicon.style.visibility = "visible";
+	infoicon.classList.remove("fa-hashtag");
+	infoicon.classList.add("fa-at");
+	var title = document.getElementById("channeltitle");
+	title.innerHTML = name;
+	title.style.visibility = "visible";
+	document.getElementById("messageinput").placeholder = "Message @" + name;
+	if (document.getElementsByClassName("dmuser selected")[0]) {
+		document.getElementsByClassName("dmuser selected")[0].classList.remove("selected");
 	}
 	document.getElementById(id).classList.add("selected");
 	var messages = document.getElementById("messages");
