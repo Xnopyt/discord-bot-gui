@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html"
 	"html/template"
 	"log"
@@ -75,9 +76,9 @@ func loadServers() {
 				}
 				shortname += string(word[0])
 			}
-			wv.Eval(`loadservers("` + html.EscapeString(guild.Name) + `", "` + guild.ID + `", false, "` + html.EscapeString(shortname) + `")`)
+			wv.Eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, false, html.EscapeString(shortname)))
 		} else {
-			wv.Eval(`loadservers("` + html.EscapeString(guild.Name) + `", "` + guild.ID + `", true, "` + guild.IconURL() + `")`)
+			wv.Eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, true, guild.IconURL()))
 		}
 	}
 }
@@ -92,7 +93,7 @@ func loadDMMembers() {
 		if err == nil {
 			for _, x := range m {
 				if !x.User.Bot {
-					wv.Eval(`loaddmusers("` + html.EscapeString(x.User.Username) + `","` + x.User.ID + `","` + x.User.AvatarURL("128") + `")`)
+					wv.Eval(fmt.Sprintf(`loaddmusers(%q,%q,%q)`, html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128")))
 				}
 			}
 		}
@@ -107,7 +108,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`createmessage("` + m.ID + `")`)
+		wv.Eval(fmt.Sprintf(`createmessage(%q)`, m.ID))
 	})
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
@@ -121,7 +122,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`selectserver("` + id + `", "` + html.EscapeString(guild.Name) + `");`)
+		wv.Eval(fmt.Sprintf(`selectserver(%q, %q);`, id, html.EscapeString(guild.Name)))
 		chans, _ := ses.GuildChannels(id)
 		var nchan *discordgo.Channel
 		i := false
@@ -131,7 +132,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 					nchan = v
 					i = true
 				}
-				wv.Eval(`addchannel("` + v.ID + `", "` + html.EscapeString(v.Name) + `");`)
+				wv.Eval(fmt.Sprintf(`addchannel(%q, %q);`, v.ID, html.EscapeString(v.Name)))
 			}
 		}
 		currentServer = id
@@ -173,8 +174,8 @@ func (m *mainBind) SetActiveChannel(id string) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`selectchannel("` + id + `", "` + html.EscapeString(channel.Name) + `");
-		document.getElementById("mainbox").style.visibility = "hidden";`)
+		wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);`, id, html.EscapeString(channel.Name)))
+		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
 		msgs, err := ses.ChannelMessages(id, 18, "", "", "")
 		if err != nil {
 			log.Println(err)
@@ -190,7 +191,7 @@ func (m *mainBind) SetActiveChannel(id string) {
 			if v.Type == 7 {
 				continue
 			}
-			wv.Eval(`createmessage("` + v.ID + `")`)
+			wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
 			wg.Add(1)
 			go processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
 		}
@@ -274,7 +275,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	body = html.EscapeString(body)
 	body = strings.ReplaceAll(body, "\n", "<br />")
 	wv.Dispatch(func() {
-		wv.Eval(`fillmessage("` + m.ID + `", "` + html.EscapeString(uname) + `", "` + m.Author.AvatarURL("128") + `", "` + parseTime(m) + `", "` + body + `");`)
+		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body))
 	})
 }
 
@@ -300,8 +301,8 @@ func (m *mainBind) LoadDMChannel(id string) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`selectdmchannel("` + id + `", "` + html.EscapeString(user.Username) + `");
-		document.getElementById("mainbox").style.visibility = "hidden";`)
+		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
+		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
 		msgs, err := ses.ChannelMessages(channel.ID, 18, "", "", "")
 		if err != nil {
 			log.Println(err)
@@ -316,7 +317,7 @@ func (m *mainBind) LoadDMChannel(id string) {
 			if v.Type == 7 {
 				continue
 			}
-			wv.Eval(`createmessage("` + v.ID + `")`)
+			wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
 			wg.Add(1)
 			go processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
 		}

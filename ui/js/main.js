@@ -151,6 +151,21 @@ function fillmessage(id, uname, avatar, timetext, bodytext) {
 	msg.appendChild(body);
 }
 
+function loadhome() {
+	document.getElementsByClassName("server selected")[0].classList.remove("selected");
+	document.getElementById("home").classList.add("selected");
+	document.getElementById("servername").innerHTML = "Home";
+	var chancon = document.getElementById("chancontainer");
+	chancon.innerHTML = "";
+	var head = document.createElement("p");
+	head.className = "chanhead";
+	head.innerHTML = "DIRECT MESSAGES";
+	chancon.appendChild(head);
+	document.getElementById("infoicon").style.visibility = "hidden";
+	document.getElementById("channeltitle").style.visibility = "hidden";
+	document.getElementById("mainbox").style.visibility = "hidden";
+}
+
 document.getElementById("messageinput").addEventListener("keyup", function(event) {
 	if (event.keyCode === 13) {
 		event.preventDefault();
