@@ -111,7 +111,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	})
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	processChannelMessage(m, wg)
+	processChannelMessage(m, nil, wg)
 }
 
 func (m *mainBind) SelectTargetServer(id string) {
@@ -173,8 +173,9 @@ func (m *mainBind) SetActiveChannel(id string) {
 		return
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`selectchannel("` + id + `", "` + html.EscapeString(channel.Name) + `");`)
-		msgs, err := ses.ChannelMessages(id, 30, "", "", "")
+		wv.Eval(`selectchannel("` + id + `", "` + html.EscapeString(channel.Name) + `");
+		document.getElementById("mainbox").style.visibility = "hidden";`)
+		msgs, err := ses.ChannelMessages(id, 18, "", "", "")
 		if err != nil {
 			log.Println(err)
 			return
@@ -184,27 +185,38 @@ func (m *mainBind) SetActiveChannel(id string) {
 			msgs[i], msgs[opp] = msgs[opp], msgs[i]
 		}
 		wg := &sync.WaitGroup{}
+		memberCache, err := ses.GuildMembers(currentServer, "", 1000)
 		for _, v := range msgs {
 			if v.Type == 7 {
 				continue
 			}
 			wv.Eval(`createmessage("` + v.ID + `")`)
 			wg.Add(1)
-			go processChannelMessage(&discordgo.MessageCreate{Message: v}, wg)
+			go processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
 		}
 		wg.Wait()
-		wv.Eval(`
-		document.getElementById("mainbox").style.visibility = "visible";
-		`)
+		wv.Eval(`document.getElementById("mainbox").style.visibility = "visible";`)
 		currentChannel = id
 	})
 }
 
-func processChannelMessage(m *discordgo.MessageCreate, wg *sync.WaitGroup) {
+func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member, wg *sync.WaitGroup) {
 	defer wg.Done()
 	var uname string
-	member, err := ses.GuildMember(currentServer, m.Author.ID)
-	if err == nil {
+	var member *discordgo.Member
+	var err error
+	if cache != nil {
+		for _, v := range cache {
+			if v.User.ID == m.Author.ID {
+				member = v
+				break
+			}
+		}
+	}
+	if member != nil {
+		member, err = ses.GuildMember(currentServer, m.Author.ID)
+	}
+	if err == nil && member != nil {
 		if member.Nick != "" {
 			uname = member.Nick
 		} else {

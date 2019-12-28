@@ -159,7 +159,7 @@ func uiJsMainJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/js/main.js", size: 4547, mode: os.FileMode(420), modTime: time.Unix(1577401496, 0)}
+	info := bindataFileInfo{name: "ui/js/main.js", size: 4547, mode: os.FileMode(420), modTime: time.Unix(1577452344, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
