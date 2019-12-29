@@ -174,8 +174,29 @@ func (m *mainBind) SetActiveChannel(id string) {
 		return
 	}
 	wv.Dispatch(func() {
+		memberCache, err := ses.GuildMembers(currentServer, "", 1000)
 		wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);`, id, html.EscapeString(channel.Name)))
 		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
+		wv.Eval(`document.getElementById("members").innerHTML = "";`)
+		wv.Eval(`resetmembers();`)
+		var i = 0
+		for _, v := range memberCache {
+			perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
+			if err != nil {
+				continue
+			}
+			if perms&0x00000400 != 0 {
+				i++
+				var uname string
+				if v.Nick != "" {
+					uname = v.Nick
+				} else {
+					uname = v.User.Username
+				}
+				wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, uname, v.User.AvatarURL("128")))
+			}
+		}
+		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, i))
 		msgs, err := ses.ChannelMessages(id, 18, "", "", "")
 		if err != nil {
 			log.Println(err)
@@ -186,7 +207,6 @@ func (m *mainBind) SetActiveChannel(id string) {
 			msgs[i], msgs[opp] = msgs[opp], msgs[i]
 		}
 		wg := &sync.WaitGroup{}
-		memberCache, err := ses.GuildMembers(currentServer, "", 1000)
 		for _, v := range msgs {
 			if v.Type == 7 {
 				continue

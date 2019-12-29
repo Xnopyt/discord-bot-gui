@@ -474,6 +474,10 @@ body {
     color: rgb(126, 129, 134);
     font-weight: 500;
     pointer-events: none;
+    width: 170px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .memberbar .memberdesc::selection, .memberbar .membername::selection, .memberbar .avatar::selection, .memberbar .member::selection, .memberbar::selection {

@@ -166,6 +166,35 @@ function loadhome() {
 	document.getElementById("mainbox").style.visibility = "hidden";
 }
 
+function resetmembers() {
+	var memberbar = document.getElementById("members");
+	memberbar.innerHTML = "";
+	var countelem = document.createElement("p");
+	countelem.className = "memberdesc";
+	countelem.id = "membercount";
+	memberbar.appendChild(countelem);
+}
+
+function setmembercount(count) {
+	var countelem = document.getElementById("membercount");
+	countelem.innerHTML = "MEMBERS - " + count;
+}
+
+function addmember(username, src) {
+	var memberbar = document.getElementById("members");
+	var member = document.createElement("div");
+	member.className = "member";
+	var ava = document.createElement("img");
+	ava.className = "avatar";
+	ava.src = src;
+	member.appendChild(ava);
+	var memname = document.createElement("p");
+	memname.className = "membername";
+	memname.innerHTML = username;
+	member.appendChild(memname);
+	memberbar.appendChild(member);
+}
+
 document.getElementById("messageinput").addEventListener("keyup", function(event) {
 	if (event.keyCode === 13) {
 		event.preventDefault();
