@@ -1,4 +1,4 @@
-# github.com/bwmarrin/discordgo v0.20.1
+# github.com/bwmarrin/discordgo v0.20.2
 github.com/bwmarrin/discordgo
 # github.com/gorilla/mux v1.7.3
 github.com/gorilla/mux
@@ -8,10 +8,10 @@ github.com/gorilla/websocket
 github.com/pkg/browser
 # github.com/zserge/webview v0.0.0-20191103184548-1a9ebffc2601
 github.com/zserge/webview
-# golang.org/x/crypto v0.0.0-20191219195013-becbf705a915
+# golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876
 golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
-# golang.org/x/sys v0.0.0-20191220220014-0732a990476f
+# golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8
 golang.org/x/sys/cpu
