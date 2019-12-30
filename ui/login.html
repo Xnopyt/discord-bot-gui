@@ -24,6 +24,7 @@
             var electronMsg = JSON.parse(message);
             if (electronMsg.type === "eval") {
                 eval(electronMsg.content);
+                return true
             }
         });
         astilectron.sendMessage("loginSetup", function(message) {return});

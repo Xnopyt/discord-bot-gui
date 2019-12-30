@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -10,7 +11,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/asticode/go-astilectron"
 	"github.com/gorilla/mux"
 )
 
@@ -83,26 +83,19 @@ func serveHTTP(ln net.Listener) {
 }
 
 func eval(x string) {
-	evalQueue <- x
-}
-
-func evaulator() {
-	var done = make(chan bool)
-	for {
-		jscript := <-evalQueue
-		msg := uiMsg{}
-		msg.Type = "eval"
-		msg.Content = jscript
-		m, _ := json.Marshal(msg)
-		wv.SendMessage(string(m), func(m *astilectron.EventMessage) {
-			done <- true
-		})
-		<-done
-	}
+	msg := uiMsg{}
+	msg.Type = "eval"
+	msg.Content = x
+	m, _ := json.Marshal(msg)
+	wv.SendMessage(string(m))
 }
 
 func loginSetup() {
-	eval(string(MustAsset("ui/js/login.js")))
+	eval(fmt.Sprintf(`
+		var script = document.createElement('script');
+		var head = document.head || document.getElementsByTagName('head')[0];
+		script.src="data:application/javascript;base64,%s"
+		head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/login.js"))))
 	eval(fmt.Sprintf(`(function(css){
 		var style = document.createElement('style');
 		var head = document.head || document.getElementsByTagName('head')[0];
@@ -128,7 +121,11 @@ func mainSetup() {
 		}
 		head.appendChild(style);
 	})("%s")`, template.JSEscapeString(string(MustAsset("ui/main.css")))))
-	eval(string(MustAsset("ui/js/main.js")))
+	eval(fmt.Sprintf(`
+		var script = document.createElement('script');
+		var head = document.head || document.getElementsByTagName('head')[0];
+		script.src="data:application/javascript;base64,%s"
+		head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/main.js"))))
 	eval(fmt.Sprintf(`
 		document.getElementById("cname").innerHTML = %q;
 		document.getElementById("cdiscriminator").innerHTML = '#%s';
@@ -141,8 +138,6 @@ func mainSetup() {
 func (m mainBind) Home() {
 	currentServer = "HOME"
 	currentChannel = ""
-	//wv.Dispatch(func() {
-	//	wv.Eval(`loadhome()`)
-	//		loadDMMembers()
-	//	})
+	eval(`loadhome()`)
+	loadDMMembers()
 }
