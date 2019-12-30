@@ -4,13 +4,19 @@ loginInput.addEventListener("keyup", function(event) {
 	if (event.keyCode === 13) {
 		event.preventDefault();
 		var loginInput = document.getElementById("token");
-		binder.connect(loginInput.value);
+		var returnMessage = {};
+		returnMessage.type = "connect";
+		returnMessage.content = loginInput.value
+		astilectron.sendMessage(JSON.stringify(returnMessage), function(message) {return});
 	}
 });
 button.onclick = function() {
 	event.preventDefault();
 	var loginInput = document.getElementById("token");
-	binder.connect(loginInput.value);
+	var returnMessage = {};
+	returnMessage.type = "connect";
+	returnMessage.content = loginInput.value
+	astilectron.sendMessage(JSON.stringify(returnMessage), function(message) {return});
 }
 
 function fail() {

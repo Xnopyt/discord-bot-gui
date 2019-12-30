@@ -25,14 +25,12 @@ var ses *discordgo.Session
 var currentServer = "HOME"
 var currentChannel = ""
 
-func (t *binder) Connect(s string) {
+func connect(s string) {
 	token = s
 	var err error
 	ses, err = discordgo.New("Bot " + token)
 	if err != nil {
-		wv.Dispatch(func() {
-			wv.Eval("fail()")
-		})
+		eval("fail()")
 		return
 	}
 	ready := make(chan bool)
@@ -40,23 +38,17 @@ func (t *binder) Connect(s string) {
 	ses.AddHandler(recvMsg)
 	err = ses.Open()
 	if err != nil {
-		wv.Dispatch(func() {
-			wv.Eval("fail()")
-		})
+		eval("fail()")
 		return
 	}
 	<-ready
-	wv.Dispatch(func() {
-		wv.Eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
-		wv.Eval("window.external.invoke('mainSetup')")
-	})
+	eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
+	mainSetup()
 }
 
-func (m *mainBind) Logout() {
+func logout() {
 	ses.Close()
-	wv.Dispatch(func() {
-		wv.Terminate()
-	})
+	wv.Close()
 	os.Exit(0)
 }
 
@@ -76,9 +68,9 @@ func loadServers() {
 				}
 				shortname += string(word[0])
 			}
-			wv.Eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, false, html.EscapeString(shortname)))
+			eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, false, html.EscapeString(shortname)))
 		} else {
-			wv.Eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, true, guild.IconURL()))
+			eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, true, guild.IconURL()))
 		}
 	}
 }
@@ -93,7 +85,7 @@ func loadDMMembers() {
 		if err == nil {
 			for _, x := range m {
 				if !x.User.Bot {
-					wv.Eval(fmt.Sprintf(`loaddmusers(%q,%q,%q)`, html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128")))
+					eval(fmt.Sprintf(`loaddmusers(%q,%q,%q)`, html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128")))
 				}
 			}
 		}
@@ -107,9 +99,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Type == 7 {
 		return
 	}
-	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`createmessage(%q)`, m.ID))
-	})
+	eval(fmt.Sprintf(`createmessage(%q)`, m.ID))
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	processChannelMessage(m, nil, wg)
@@ -121,23 +111,21 @@ func (m *mainBind) SelectTargetServer(id string) {
 		log.Println(err)
 		return
 	}
-	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`selectserver(%q, %q);`, id, html.EscapeString(guild.Name)))
-		chans, _ := ses.GuildChannels(id)
-		var nchan *discordgo.Channel
-		i := false
-		for _, v := range chans {
-			if v.Type == 0 {
-				if !i {
-					nchan = v
-					i = true
-				}
-				wv.Eval(fmt.Sprintf(`addchannel(%q, %q);`, v.ID, html.EscapeString(v.Name)))
+	eval(fmt.Sprintf(`selectserver(%q, %q);`, id, html.EscapeString(guild.Name)))
+	chans, _ := ses.GuildChannels(id)
+	var nchan *discordgo.Channel
+	i := false
+	for _, v := range chans {
+		if v.Type == 0 {
+			if !i {
+				nchan = v
+				i = true
 			}
+			eval(fmt.Sprintf(`addchannel(%q, %q);`, v.ID, html.EscapeString(v.Name)))
 		}
-		currentServer = id
-		m.SetActiveChannel(nchan.ID)
-	})
+	}
+	currentServer = id
+	m.SetActiveChannel(nchan.ID)
 }
 
 func parseTime(m *discordgo.MessageCreate) string {
@@ -173,52 +161,50 @@ func (m *mainBind) SetActiveChannel(id string) {
 		log.Println(err)
 		return
 	}
-	wv.Dispatch(func() {
-		memberCache, err := ses.GuildMembers(currentServer, "", 1000)
-		wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);`, id, html.EscapeString(channel.Name)))
-		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
-		wv.Eval(`document.getElementById("members").innerHTML = "";`)
-		wv.Eval(`resetmembers();`)
-		var i = 0
-		for _, v := range memberCache {
-			perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
-			if err != nil {
-				continue
-			}
-			if perms&0x00000400 != 0 {
-				i++
-				var uname string
-				if v.Nick != "" {
-					uname = v.Nick
-				} else {
-					uname = v.User.Username
-				}
-				wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, uname, v.User.AvatarURL("128")))
-			}
-		}
-		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, i))
-		msgs, err := ses.ChannelMessages(id, 18, "", "", "")
+	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
+	eval(fmt.Sprintf(`selectchannel(%q, %q);`, id, html.EscapeString(channel.Name)))
+	eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
+	eval(`document.getElementById("members").innerHTML = "";`)
+	eval(`resetmembers();`)
+	var i = 0
+	for _, v := range memberCache {
+		perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
 		if err != nil {
-			log.Println(err)
-			return
+			continue
 		}
-		for i := len(msgs)/2 - 1; i >= 0; i-- {
-			opp := len(msgs) - 1 - i
-			msgs[i], msgs[opp] = msgs[opp], msgs[i]
-		}
-		wg := &sync.WaitGroup{}
-		for _, v := range msgs {
-			if v.Type == 7 {
-				continue
+		if perms&0x00000400 != 0 {
+			i++
+			var uname string
+			if v.Nick != "" {
+				uname = v.Nick
+			} else {
+				uname = v.User.Username
 			}
-			wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
-			wg.Add(1)
-			go processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
+			eval(fmt.Sprintf(`addmember(%q, %q)`, uname, v.User.AvatarURL("128")))
 		}
-		wg.Wait()
-		wv.Eval(`document.getElementById("mainbox").style.visibility = "visible";`)
-		currentChannel = id
-	})
+	}
+	eval(fmt.Sprintf(`setmembercount("%d");`, i))
+	msgs, err := ses.ChannelMessages(id, 18, "", "", "")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	for i := len(msgs)/2 - 1; i >= 0; i-- {
+		opp := len(msgs) - 1 - i
+		msgs[i], msgs[opp] = msgs[opp], msgs[i]
+	}
+	wg := &sync.WaitGroup{}
+	for _, v := range msgs {
+		if v.Type == 7 {
+			continue
+		}
+		eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
+		wg.Add(1)
+		go processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
+	}
+	wg.Wait()
+	eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+	currentChannel = id
 }
 
 func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member, wg *sync.WaitGroup) {
@@ -294,9 +280,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	}
 	body = html.EscapeString(body)
 	body = strings.ReplaceAll(body, "\n", "<br />")
-	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body))
-	})
+	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body))
 }
 
 func (m *mainBind) SendMessage(msg string) {
@@ -320,35 +304,33 @@ func (m *mainBind) LoadDMChannel(id string) {
 		log.Println(err)
 		return
 	}
-	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
-		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
-		wv.Eval(`resetmembers();`)
-		wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, ses.State.User.Username, ses.State.User.AvatarURL("128")))
-		for _, v := range channel.Recipients {
-			wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, v.Username, v.AvatarURL("128")))
+	eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
+	eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
+	eval(`resetmembers();`)
+	eval(fmt.Sprintf(`addmember(%q, %q)`, ses.State.User.Username, ses.State.User.AvatarURL("128")))
+	for _, v := range channel.Recipients {
+		eval(fmt.Sprintf(`addmember(%q, %q)`, v.Username, v.AvatarURL("128")))
+	}
+	eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
+	msgs, err := ses.ChannelMessages(channel.ID, 18, "", "", "")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	for i := len(msgs)/2 - 1; i >= 0; i-- {
+		opp := len(msgs) - 1 - i
+		msgs[i], msgs[opp] = msgs[opp], msgs[i]
+	}
+	wg := &sync.WaitGroup{}
+	for _, v := range msgs {
+		if v.Type == 7 {
+			continue
 		}
-		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
-		msgs, err := ses.ChannelMessages(channel.ID, 18, "", "", "")
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		for i := len(msgs)/2 - 1; i >= 0; i-- {
-			opp := len(msgs) - 1 - i
-			msgs[i], msgs[opp] = msgs[opp], msgs[i]
-		}
-		wg := &sync.WaitGroup{}
-		for _, v := range msgs {
-			if v.Type == 7 {
-				continue
-			}
-			wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
-			wg.Add(1)
-			go processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
-		}
-		wg.Wait()
-		wv.Eval(`document.getElementById("mainbox").style.visibility = "visible";`)
-		currentChannel = channel.ID
-	})
+		eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
+		wg.Add(1)
+		go processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
+	}
+	wg.Wait()
+	eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+	currentChannel = channel.ID
 }

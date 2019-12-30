@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"html/template"
 	"log"
 	"net"
 	"net/http"
 	"strings"
 
+	"github.com/asticode/go-astilectron"
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +23,7 @@ type route struct {
 
 type uiMsg struct {
 	Type    string `json:"type"`
-	Content string `json:"content`
+	Content string `json:"content"`
 }
 
 var routes = []route{
@@ -30,12 +32,12 @@ var routes = []route{
 
 var wvCallbacks map[string]func()
 
+var evalQueue = make(chan string)
+
 func init() {
 	wvCallbacks = make(map[string]func())
 
 	wvCallbacks["loginSetup"] = loginSetup
-	wvCallbacks["mainSetup"] = mainSetup
-	wvCallbacks["ieUpdate"] = ieUpdate
 }
 
 func newRouter() *mux.Router {
@@ -81,11 +83,22 @@ func serveHTTP(ln net.Listener) {
 }
 
 func eval(x string) {
-	msg := uiMsg{}
-	msg.Type = "eval"
-	msg.Content = x
-	m, _ := json.Marshal(msg)
-	wv.SendMessage(m)
+	evalQueue <- x
+}
+
+func evaulator() {
+	var done = make(chan bool)
+	for {
+		jscript := <-evalQueue
+		msg := uiMsg{}
+		msg.Type = "eval"
+		msg.Content = jscript
+		m, _ := json.Marshal(msg)
+		wv.SendMessage(string(m), func(m *astilectron.EventMessage) {
+			done <- true
+		})
+		<-done
+	}
 }
 
 func loginSetup() {
@@ -103,26 +116,27 @@ func loginSetup() {
 	})("%s")`, template.JSEscapeString(string(MustAsset("ui/login.css")))))
 }
 
-/*
 func mainSetup() {
-	wv.Dispatch(func() {
-		_, err := wv.Bind("bind", &mainBind{})
-		if err != nil {
-			log.Fatal(err)
+	eval(fmt.Sprintf(`(function(css){
+		var style = document.createElement('style');
+		var head = document.head || document.getElementsByTagName('head')[0];
+		style.setAttribute('type', 'text/css');
+		if (style.styleSheet) {
+			style.styleSheet.cssText = css;
+		} else {
+			style.appendChild(document.createTextNode(css));
 		}
-		wv.InjectCSS(string(MustAsset("ui/main.css")))
-		wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
-		wv.Eval(string(MustAsset("ui/js/main.js")))
-		wv.Eval(fmt.Sprintf(`
-			document.getElementById("cname").innerHTML = %q;
-			document.getElementById("cdiscriminator").innerHTML = '#%s';
-			document.getElementById("cavatar").src = %q;
-		`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
-		loadServers()
-		loadDMMembers()
-	})
+		head.appendChild(style);
+	})("%s")`, template.JSEscapeString(string(MustAsset("ui/main.css")))))
+	eval(string(MustAsset("ui/js/main.js")))
+	eval(fmt.Sprintf(`
+		document.getElementById("cname").innerHTML = %q;
+		document.getElementById("cdiscriminator").innerHTML = '#%s';
+		document.getElementById("cavatar").src = %q;
+	`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
+	loadServers()
+	loadDMMembers()
 }
-*/
 
 func (m mainBind) Home() {
 	currentServer = "HOME"

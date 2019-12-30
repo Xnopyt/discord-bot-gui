@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net"
 
@@ -20,6 +20,8 @@ func main() {
 	}
 	defer ln.Close()
 	go serveHTTP(ln)
+
+	go evaulator()
 
 	a, err := astilectron.New(astilectron.Options{AppName: "Discord Bot GUI"})
 	if err != nil {
@@ -52,10 +54,20 @@ func main() {
 		if ok {
 			callback()
 		} else {
-			fmt.Println("Attempted to call unknown function " + s)
+			var msg uiMsg
+			err := json.Unmarshal([]byte(s), &msg)
+			if err != nil {
+				return nil
+			}
+			switch msg.Type {
+			case "connect":
+				connect(msg.Content)
+			}
 		}
 		return nil
 	})
+
+	wv.OpenDevTools()
 
 	a.Wait()
 }
