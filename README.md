@@ -1,11 +1,11 @@
 # Discord Bot GUI
 [![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/Build/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
-A WebView based graphical interface for sending and reciving messages with a discord bot.
+A WebView based graphical interface for sending and reciving messages with a discord bot. (macOS and Linux only)
 
 
 ## Copyright
 ```
- Copyright (C) 2019  Billy Dalton
+ Copyright (C) 2019-2020  Billy Dalton
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
