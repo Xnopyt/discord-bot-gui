@@ -1,6 +1,7 @@
 # Discord Bot GUI
 [![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/Build/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
-A WebView based graphical interface for sending and reciving messages with a discord bot. (macOS and Linux only)
+A WebView based graphical interface for sending and reciving messages with a discord bot. <br />
+This branch is more lightweight than the electron branch, however it only works with macOS and Linux. If you are running windows please use the electron branch.
 
 
 ## Copyright
