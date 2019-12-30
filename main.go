@@ -7,8 +7,6 @@ import (
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
-	"github.com/asticode/go-astilog"
-	"github.com/pkg/errors"
 )
 
 var wv *astilectron.Window
@@ -23,13 +21,13 @@ func main() {
 
 	a, err := astilectron.New(astilectron.Options{AppName: "Discord Bot GUI"})
 	if err != nil {
-		astilog.Fatal(errors.Wrap(err, "main: creating astilectron failed"))
+		log.Fatal(err)
 	}
 
 	defer a.Close()
 
 	if err = a.Start(); err != nil {
-		astilog.Fatal(errors.Wrap(err, "main: starting astilectron failed"))
+		log.Fatal(err)
 	}
 
 	if wv, err = a.NewWindow("http://"+ln.Addr().String(), &astilectron.WindowOptions{
@@ -37,11 +35,11 @@ func main() {
 		Height: astikit.IntPtr(720),
 		Width:  astikit.IntPtr(1280),
 	}); err != nil {
-		astilog.Fatal(errors.Wrap(err, "main: new window failed"))
+		log.Fatal(err)
 	}
 
 	if err = wv.Create(); err != nil {
-		astilog.Fatal(errors.Wrap(err, "main: creating window failed"))
+		log.Fatal(err)
 	}
 
 	wv.OnMessage(func(m *astilectron.EventMessage) interface{} {
@@ -60,6 +58,18 @@ func main() {
 			switch msg.Type {
 			case "connect":
 				connect(msg.Content)
+
+			case "selectTargetServer":
+				selectTargetServer(msg.Content)
+
+			case "setActiveChannel":
+				setActiveChannel(msg.Content)
+
+			case "sendMessage":
+				sendMessage(msg.Content)
+
+			case "loadDMChannel":
+				loadDMChannel(msg.Content)
 			}
 		}
 		return nil

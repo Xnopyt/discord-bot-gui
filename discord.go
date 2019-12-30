@@ -14,10 +14,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type binder struct{}
-
-type mainBind struct{}
-
 var token string
 
 var ses *discordgo.Session
@@ -105,7 +101,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	processChannelMessage(m, nil, wg)
 }
 
-func (m *mainBind) SelectTargetServer(id string) {
+func selectTargetServer(id string) {
 	guild, err := ses.Guild(id)
 	if err != nil {
 		log.Println(err)
@@ -125,7 +121,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 		}
 	}
 	currentServer = id
-	m.SetActiveChannel(nchan.ID)
+	setActiveChannel(nchan.ID)
 }
 
 func parseTime(m *discordgo.MessageCreate) string {
@@ -155,7 +151,7 @@ func parseTime(m *discordgo.MessageCreate) string {
 	return ctime
 }
 
-func (m *mainBind) SetActiveChannel(id string) {
+func setActiveChannel(id string) {
 	channel, err := ses.Channel(id)
 	if err != nil {
 		log.Println(err)
@@ -283,7 +279,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body))
 }
 
-func (m *mainBind) SendMessage(msg string) {
+func sendMessage(msg string) {
 	if currentChannel == "" {
 		return
 	}
@@ -293,7 +289,7 @@ func (m *mainBind) SendMessage(msg string) {
 	}
 }
 
-func (m *mainBind) LoadDMChannel(id string) {
+func loadDMChannel(id string) {
 	channel, err := ses.UserChannelCreate(id)
 	if err != nil {
 		log.Println(err)

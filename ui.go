@@ -38,6 +38,7 @@ func init() {
 	wvCallbacks = make(map[string]func())
 
 	wvCallbacks["loginSetup"] = loginSetup
+	wvCallbacks["home"] = home
 }
 
 func newRouter() *mux.Router {
@@ -135,7 +136,7 @@ func mainSetup() {
 	loadDMMembers()
 }
 
-func (m mainBind) Home() {
+func home() {
 	currentServer = "HOME"
 	currentChannel = ""
 	eval(`loadhome()`)
