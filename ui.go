@@ -1,16 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"html"
+	"html/template"
 	"log"
 	"net"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/pkg/browser"
-	"github.com/zserge/webview"
 )
 
 type route struct {
@@ -18,6 +17,11 @@ type route struct {
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
+}
+
+type uiMsg struct {
+	Type    string `json:"type"`
+	Content string `json:"content`
 }
 
 var routes = []route{
@@ -76,29 +80,30 @@ func serveHTTP(ln net.Listener) {
 	}
 }
 
-func webviewCallback(w webview.WebView, s string) {
-	callback, ok := wvCallbacks[s]
-	if ok {
-		callback()
-	} else {
-		fmt.Println("Attempted to call unknown function " + s)
-	}
+func eval(x string) {
+	msg := uiMsg{}
+	msg.Type = "eval"
+	msg.Content = x
+	m, _ := json.Marshal(msg)
+	wv.SendMessage(m)
 }
 
 func loginSetup() {
-	wv.Dispatch(func() {
-		_, err := wv.Bind("binder", &binder{})
-		if err != nil {
-			log.Fatal(err)
+	eval(string(MustAsset("ui/js/login.js")))
+	eval(fmt.Sprintf(`(function(css){
+		var style = document.createElement('style');
+		var head = document.head || document.getElementsByTagName('head')[0];
+		style.setAttribute('type', 'text/css');
+		if (style.styleSheet) {
+			style.styleSheet.cssText = css;
+		} else {
+			style.appendChild(document.createTextNode(css));
 		}
-		err = wv.Eval(string(MustAsset("ui/js/login.js")))
-		if err != nil {
-			log.Fatal(err)
-		}
-		wv.InjectCSS(string(MustAsset("ui/login.css")))
-	})
+		head.appendChild(style);
+	})("%s")`, template.JSEscapeString(string(MustAsset("ui/login.css")))))
 }
 
+/*
 func mainSetup() {
 	wv.Dispatch(func() {
 		_, err := wv.Bind("bind", &mainBind{})
@@ -117,16 +122,13 @@ func mainSetup() {
 		loadDMMembers()
 	})
 }
-
-func ieUpdate() {
-	browser.OpenURL("https://www.microsoft.com/en-us/download/internet-explorer.aspx")
-}
+*/
 
 func (m mainBind) Home() {
 	currentServer = "HOME"
 	currentChannel = ""
-	wv.Dispatch(func() {
-		wv.Eval(`loadhome()`)
-		loadDMMembers()
-	})
+	//wv.Dispatch(func() {
+	//	wv.Eval(`loadhome()`)
+	//		loadDMMembers()
+	//	})
 }

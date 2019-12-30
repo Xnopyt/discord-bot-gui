@@ -1,33 +1,61 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
-	"runtime"
 
-	"github.com/zserge/webview"
+	"github.com/asticode/go-astikit"
+	"github.com/asticode/go-astilectron"
+	"github.com/asticode/go-astilog"
+	"github.com/pkg/errors"
 )
 
-var wv webview.WebView
+var wv *astilectron.Window
 
 func main() {
-	if runtime.GOOS == "windows" {
-		log.Fatal("Discord Bot GUI only currently supports linux and macOS")
-	}
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer ln.Close()
 	go serveHTTP(ln)
-	wv = webview.New(webview.Settings{
-		Title:                  "Discord Bot GUI - Login",
-		URL:                    "http://" + ln.Addr().String(),
-		Width:                  1280,
-		Height:                 720,
-		Resizable:              true,
-		Debug:                  true,
-		ExternalInvokeCallback: webviewCallback,
+
+	a, err := astilectron.New(astilectron.Options{AppName: "Discord Bot GUI"})
+	if err != nil {
+		astilog.Fatal(errors.Wrap(err, "main: creating astilectron failed"))
+	}
+
+	defer a.Close()
+
+	if err = a.Start(); err != nil {
+		astilog.Fatal(errors.Wrap(err, "main: starting astilectron failed"))
+	}
+
+	if wv, err = a.NewWindow("http://"+ln.Addr().String(), &astilectron.WindowOptions{
+		Center: astikit.BoolPtr(true),
+		Height: astikit.IntPtr(720),
+		Width:  astikit.IntPtr(1280),
+	}); err != nil {
+		astilog.Fatal(errors.Wrap(err, "main: new window failed"))
+	}
+
+	if err = wv.Create(); err != nil {
+		astilog.Fatal(errors.Wrap(err, "main: creating window failed"))
+	}
+
+	wv.OnMessage(func(m *astilectron.EventMessage) interface{} {
+		var s string
+		m.Unmarshal(&s)
+
+		callback, ok := wvCallbacks[s]
+		if ok {
+			callback()
+		} else {
+			fmt.Println("Attempted to call unknown function " + s)
+		}
+		return nil
 	})
-	wv.Run()
+
+	a.Wait()
 }

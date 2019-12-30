@@ -11,22 +11,21 @@
     <div class="loginContainer">
         <p class="loginHead">Discord Bot GUI</p>
         <p class="loginSubhead">By Xnopyt</p>
-        <!--[if lt IE 9]>
-            <p class="loginHead">Discord Bot GUI requires Internet Explorer 9 or higher.</p>
-            <a href="javascript:void(0)" onclick="window.external.invoke('ieUpdate')"><p class="loginSubhead">Please upgrade Internet Explorer to use this software.</p></a>
-        <![endif]-->
-        <!--[if gte IE 9 | !IE ]> <!-->
         <p id="tlabel" class="loginLabel">TOKEN</p>
         <input id="token" class="tokenInput" type="password">
         <button id="loginButton" class="loginButton">Login</button>
-        <!--<![endif]-->
     </div>
 </body>
-<!--[if gte IE 9 | !IE ]> <!-->
+
 <script>
-    window.onload = function() {
-        window.external.invoke("loginSetup");
-    }
+    document.addEventListener('astilectron-ready', function() {
+        astilectron.onMessage(function(message) {
+            var electronMsg = JSON.parse(message);
+            if (electronMsg.type === "eval") {
+                eval(electronMsg.content);
+            }
+        });
+        astilectron.sendMessage("loginSetup", function(message) {return});
+    })
 </script>
-<!--<![endif]-->
 </html>
