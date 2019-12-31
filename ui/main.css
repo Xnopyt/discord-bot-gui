@@ -17,6 +17,21 @@ body {
     color: rgb(255, 255, 255);
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 16px;
+    border-radius: 16px;
+    background: rgb(32, 34, 37); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+::-webkit-scrollbar-corner {
+    background: rgb(54, 57, 63);
+}
+
 .sidenav {
     height: 100%;
     width: 72px;
@@ -587,6 +602,8 @@ body {
     transform: translateY(-32px);
     font-size: 12px;
     font-weight: 300;
+    overflow-x: hidden;
+    white-space: normal;
 }
 
 .message .msgavatar::selection, .message::selection, .messagebox::selection {
