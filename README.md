@@ -3,6 +3,9 @@
 A WebView based graphical interface for sending and reciving messages with a discord bot.<br />
 This is the electron based version of this application, created to allow it to run on windows. However it should build for any platform
 
+## Screenshots
+![Screenshot 1](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/master/screenshots/screenshot1.png "Screenshot 1")
+![Screenshot 2](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/master/screenshots/screenshot2.png "Screenshot 2")
 
 ## Copyright
 ```
