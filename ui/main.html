@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="sidenav" class="sidenav">
-        <div id="home" class="server selected" onclick="bind.home()">
+        <div id="home" class="server selected" onclick="astilectron.sendMessage('home', function(message) {return});">
             <div class="selector"></div>
             <i class="fas fa-home"></i>
             <div class="tooltip">Home</div>
@@ -31,7 +31,7 @@
                 <p class="name" id="cname">Template User</p>
                 <p class="discriminator" id="cdiscriminator">#0000</p>
             </div>
-            <i class="fas fa-sign-out-alt" onclick="astilectron.sendMessage('home', function(message) {return});"></i>
+            <i class="fas fa-sign-out-alt" onclick="astilectron.sendMessage('logout', function(message) {return});"></i>
         </div>
     </div>
     <div class="main">

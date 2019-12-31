@@ -69,6 +69,7 @@ body {
     margin: 40px;
     padding: 0;
     border: none;
+    color: rgb(255, 255, 255);
 }
 
 .loginButton:hover {
@@ -93,6 +94,8 @@ body {
     padding-left: 2px;
     box-sizing: border-box;
     padding: 10px;
+    color: rgb(255, 255, 255);
+    font-size: 20px;
 }
 
 .tokenInput:hover {

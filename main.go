@@ -75,7 +75,7 @@ func main() {
 		return nil
 	})
 
-	wv.OpenDevTools()
+	//wv.OpenDevTools()
 
 	a.Wait()
 }

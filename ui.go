@@ -39,6 +39,7 @@ func init() {
 
 	wvCallbacks["loginSetup"] = loginSetup
 	wvCallbacks["home"] = home
+	wvCallbacks["logout"] = logout
 }
 
 func newRouter() *mux.Router {
