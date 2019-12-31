@@ -26,6 +26,7 @@ body {
     border-radius: 16px;
     background: rgb(32, 34, 37); 
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }
 
 ::-webkit-scrollbar-corner {
