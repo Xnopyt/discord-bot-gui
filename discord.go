@@ -199,7 +199,9 @@ func setActiveChannel(id string) {
 		go processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
 	}
 	wg.Wait()
-	eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+	eval(`var messages = document.getElementById("messages").parentNode;
+	messages.scrollTop = messages.scrollHeight;
+	document.getElementById("mainbox").style.visibility = "visible";`)
 	currentChannel = id
 }
 
@@ -327,6 +329,8 @@ func loadDMChannel(id string) {
 		go processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
 	}
 	wg.Wait()
-	eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+	eval(`var messages = document.getElementById("messages").parentNode;
+	messages.scrollTop = messages.scrollHeight;
+	document.getElementById("mainbox").style.visibility = "visible";`)
 	currentChannel = channel.ID
 }
