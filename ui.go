@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/asticode/go-astilectron"
 	"github.com/gorilla/mux"
 )
 
@@ -85,11 +86,22 @@ func serveHTTP(ln net.Listener) {
 }
 
 func eval(x string) {
-	msg := uiMsg{}
-	msg.Type = "eval"
-	msg.Content = x
-	m, _ := json.Marshal(msg)
-	wv.SendMessage(string(m))
+	evalQueue <- x
+}
+
+func evaulator() {
+	var done = make(chan bool)
+	for {
+		jscript := <-evalQueue
+		msg := uiMsg{}
+		msg.Type = "eval"
+		msg.Content = jscript
+		m, _ := json.Marshal(msg)
+		wv.SendMessage(string(m), func(m *astilectron.EventMessage) {
+			done <- true
+		})
+		<-done
+	}
 }
 
 func loginSetup() {

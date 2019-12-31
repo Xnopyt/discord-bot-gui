@@ -19,6 +19,8 @@ func main() {
 	defer ln.Close()
 	go serveHTTP(ln)
 
+	go evaulator()
+
 	a, err := astilectron.New(astilectron.Options{AppName: "Discord Bot GUI"})
 	if err != nil {
 		log.Fatal(err)
