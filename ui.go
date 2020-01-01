@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"runtime"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -106,7 +107,9 @@ func mainSetup() {
 			log.Fatal(err)
 		}
 		wv.InjectCSS(string(MustAsset("ui/main.css")))
-		wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
+		if runtime.GOOS != "darwin" {
+			wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
+		}
 		wv.Eval(string(MustAsset("ui/js/main.js")))
 		wv.Eval(fmt.Sprintf(`
 			document.getElementById("cname").innerHTML = %q;
