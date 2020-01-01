@@ -580,11 +580,14 @@ body {
 
 .message .msgbody {
     display: inline-block;
-    width: calc(100% - 58px);
+    width: calc(100% - 75px);
     margin-left: 58px;
     transform: translateY(-32px);
     font-size: 12px;
     font-weight: 300;
+    overflow-x: hidden;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
 .message .msgavatar::selection, .message::selection, .messagebox::selection {
