@@ -82,6 +82,7 @@ func loadServers() {
 }
 
 func loadDMMembers() {
+	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
 	guilds, err := ses.UserGuilds(100, "", "")
 	if err != nil {
 		panic(err)
@@ -96,6 +97,7 @@ func loadDMMembers() {
 			}
 		}
 	}
+	wv.Eval(`document.getElementById("blocker").style.display = "none"`)
 }
 
 func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -114,6 +116,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func (t *binder) SelectTargetServer(id string) {
+	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
 	guild, err := ses.Guild(id)
 	if err != nil {
 		log.Println(err)
@@ -135,7 +138,9 @@ func (t *binder) SelectTargetServer(id string) {
 		}
 		currentServer = id
 		t.SetActiveChannel(nchan.ID)
+		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
 	})
+
 }
 
 func parseTime(m *discordgo.MessageCreate) string {
