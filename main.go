@@ -20,8 +20,14 @@ func main() {
 	}
 	defer ln.Close()
 	go serveHTTP(ln)
+	var title string
+	if runtime.GOOS == "darwin" {
+		title = "Discord Bot GUI"
+	} else {
+		title = "Discord Bot GUI - Login"
+	}
 	wv = webview.New(webview.Settings{
-		Title:                  "Discord Bot GUI - Login",
+		Title:                  title,
 		URL:                    "http://" + ln.Addr().String(),
 		Width:                  1280,
 		Height:                 720,
