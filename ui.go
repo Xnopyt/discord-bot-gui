@@ -102,10 +102,6 @@ func loginSetup() {
 
 func mainSetup() {
 	wv.Dispatch(func() {
-		_, err := wv.Bind("bind", &mainBind{})
-		if err != nil {
-			log.Fatal(err)
-		}
 		wv.InjectCSS(string(MustAsset("ui/main.css")))
 		if runtime.GOOS != "darwin" {
 			wv.SetTitle("Discord Bot GUI - " + ses.State.User.String())
@@ -125,7 +121,7 @@ func ieUpdate() {
 	browser.OpenURL("https://www.microsoft.com/en-us/download/internet-explorer.aspx")
 }
 
-func (m mainBind) Home() {
+func (t *binder) Home() {
 	currentServer = "HOME"
 	currentChannel = ""
 	wv.Dispatch(func() {

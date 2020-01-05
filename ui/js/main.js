@@ -27,7 +27,7 @@ function loadservers(name, id, img, src) {
 	newtooltip.className = "tooltip";
 	newtooltip.innerHTML = name;
     newserver.appendChild(newtooltip);
-    newserver.setAttribute("onclick", "bind.selectTargetServer('"+id+"')")
+    newserver.setAttribute("onclick", "binder.selectTargetServer('"+id+"')")
     document.getElementById("sidenav").appendChild(newserver);
 }
 
@@ -48,7 +48,7 @@ function loaddmusers(name, id, img) {
     newusername.className = "dmusername";
     newusername.innerHTML = name;
 	newuser.appendChild(newusername);
-	newuser.setAttribute("onclick", "bind.loadDMChannel('"+id+"')")
+	newuser.setAttribute("onclick", "binder.loadDMChannel('"+id+"')")
     document.getElementById("chancontainer").appendChild(newuser);
 }
 
@@ -83,7 +83,7 @@ function addchannel(id, name) {
 	para.innerHTML = name;
 	div.appendChild(para);
 	div.id = id;
-	div.setAttribute("onclick", "bind.setActiveChannel('" + id + "')");
+	div.setAttribute("onclick", "binder.setActiveChannel('" + id + "')");
 	chancon.appendChild(div);
 }
 
@@ -199,7 +199,7 @@ document.getElementById("messageinput").addEventListener("keyup", function(event
 	if (event.keyCode === 13) {
 		event.preventDefault();
 		var msgInput = document.getElementById("messageinput");
-        bind.sendMessage(msgInput.value);
+        binder.sendMessage(msgInput.value);
         msgInput.value = "";
 	}
 });

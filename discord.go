@@ -16,8 +16,6 @@ import (
 
 type binder struct{}
 
-type mainBind struct{}
-
 var token string
 
 var ses *discordgo.Session
@@ -52,7 +50,7 @@ func (t *binder) Connect(s string) {
 	})
 }
 
-func (m *mainBind) Logout() {
+func (t *binder) Logout() {
 	ses.Close()
 	wv.Dispatch(func() {
 		wv.Terminate()
@@ -115,7 +113,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	processChannelMessage(m, nil, wg)
 }
 
-func (m *mainBind) SelectTargetServer(id string) {
+func (t *binder) SelectTargetServer(id string) {
 	guild, err := ses.Guild(id)
 	if err != nil {
 		log.Println(err)
@@ -136,7 +134,7 @@ func (m *mainBind) SelectTargetServer(id string) {
 			}
 		}
 		currentServer = id
-		m.SetActiveChannel(nchan.ID)
+		t.SetActiveChannel(nchan.ID)
 	})
 }
 
@@ -167,7 +165,7 @@ func parseTime(m *discordgo.MessageCreate) string {
 	return ctime
 }
 
-func (m *mainBind) SetActiveChannel(id string) {
+func (t *binder) SetActiveChannel(id string) {
 	channel, err := ses.Channel(id)
 	if err != nil {
 		log.Println(err)
@@ -299,7 +297,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	})
 }
 
-func (m *mainBind) SendMessage(msg string) {
+func (t *binder) SendMessage(msg string) {
 	if currentChannel == "" {
 		return
 	}
@@ -309,7 +307,7 @@ func (m *mainBind) SendMessage(msg string) {
 	}
 }
 
-func (m *mainBind) LoadDMChannel(id string) {
+func (t *binder) LoadDMChannel(id string) {
 	channel, err := ses.UserChannelCreate(id)
 	if err != nil {
 		log.Println(err)
