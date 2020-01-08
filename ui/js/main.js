@@ -203,3 +203,5 @@ document.getElementById("messageinput").addEventListener("keyup", function(event
         msgInput.value = "";
 	}
 });
+
+document.getElementById("blocker").style.backgroundColor = "rgba(0,0,0,0.4)";

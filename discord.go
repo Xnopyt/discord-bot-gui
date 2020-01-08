@@ -156,9 +156,11 @@ func parseTime(m *discordgo.MessageCreate) string {
 }
 
 func setActiveChannel(id string) {
+	eval(`document.getElementById("blocker").style.display = "block"`)
 	channel, err := ses.Channel(id)
 	if err != nil {
 		log.Println(err)
+		eval(`document.getElementById("blocker").style.display = "none"`)
 		return
 	}
 	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
@@ -205,7 +207,8 @@ func setActiveChannel(id string) {
 	wg.Wait()
 	eval(`var messages = document.getElementById("messages").parentNode;
 	messages.scrollTop = messages.scrollHeight;
-	document.getElementById("mainbox").style.visibility = "visible";`)
+	document.getElementById("mainbox").style.visibility = "visible";
+	document.getElementById("blocker").style.display = "none"`)
 	currentChannel = id
 }
 
@@ -296,9 +299,11 @@ func sendMessage(msg string) {
 }
 
 func loadDMChannel(id string) {
+	eval(`document.getElementById("blocker").style.display = "block"`)
 	channel, err := ses.UserChannelCreate(id)
 	if err != nil {
 		log.Println(err)
+		eval(`document.getElementById("blocker").style.display = "none"`)
 		return
 	}
 	user, err := ses.User(id)
@@ -335,6 +340,7 @@ func loadDMChannel(id string) {
 	wg.Wait()
 	eval(`var messages = document.getElementById("messages").parentNode;
 	messages.scrollTop = messages.scrollHeight;
-	document.getElementById("mainbox").style.visibility = "visible";`)
+	document.getElementById("mainbox").style.visibility = "visible";
+	document.getElementById("blocker").style.display = "none"`)
 	currentChannel = channel.ID
 }
