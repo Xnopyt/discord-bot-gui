@@ -81,23 +81,27 @@ func loadServers() {
 	}
 }
 
-func loadDMMembers() {
-	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
-	guilds, err := ses.UserGuilds(100, "", "")
-	if err != nil {
-		panic(err)
-	}
-	for _, v := range guilds {
-		m, err := ses.GuildMembers(v.ID, "", 1000)
-		if err == nil {
-			for _, x := range m {
-				if !x.User.Bot {
-					wv.Eval(fmt.Sprintf(`loaddmusers(%q,%q,%q)`, html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128")))
+func (t *binder) LoadDMMembers() {
+	wv.Dispatch(func() {
+		wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	})
+	wv.Dispatch(func() {
+		guilds, err := ses.UserGuilds(100, "", "")
+		if err != nil {
+			panic(err)
+		}
+		for _, v := range guilds {
+			m, err := ses.GuildMembers(v.ID, "", 1000)
+			if err == nil {
+				for _, x := range m {
+					if !x.User.Bot {
+						wv.Eval(fmt.Sprintf(`loaddmusers(%q,%q,%q)`, html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128")))
+					}
 				}
 			}
 		}
-	}
-	wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+	})
 }
 
 func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -116,7 +120,9 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func (t *binder) SelectTargetServer(id string) {
-	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	wv.Dispatch(func() {
+		wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	})
 	guild, err := ses.Guild(id)
 	if err != nil {
 		log.Println(err)
@@ -138,7 +144,6 @@ func (t *binder) SelectTargetServer(id string) {
 		}
 		currentServer = id
 		t.SetActiveChannel(nchan.ID)
-		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
 	})
 
 }
@@ -171,9 +176,15 @@ func parseTime(m *discordgo.MessageCreate) string {
 }
 
 func (t *binder) SetActiveChannel(id string) {
+	wv.Dispatch(func() {
+		wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	})
 	channel, err := ses.Channel(id)
 	if err != nil {
 		log.Println(err)
+		wv.Dispatch(func() {
+			wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+		})
 		return
 	}
 	wv.Dispatch(func() {
@@ -220,6 +231,7 @@ func (t *binder) SetActiveChannel(id string) {
 		}
 		wg.Wait()
 		wv.Eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
 		currentChannel = id
 	})
 }
@@ -313,9 +325,15 @@ func (t *binder) SendMessage(msg string) {
 }
 
 func (t *binder) LoadDMChannel(id string) {
+	wv.Dispatch(func() {
+		wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	})
 	channel, err := ses.UserChannelCreate(id)
 	if err != nil {
 		log.Println(err)
+		wv.Dispatch(func() {
+			wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+		})
 		return
 	}
 	user, err := ses.User(id)
@@ -352,6 +370,7 @@ func (t *binder) LoadDMChannel(id string) {
 		}
 		wg.Wait()
 		wv.Eval(`document.getElementById("mainbox").style.visibility = "visible";`)
+		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
 		currentChannel = channel.ID
 	})
 }

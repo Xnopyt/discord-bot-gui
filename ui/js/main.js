@@ -164,6 +164,7 @@ function loadhome() {
 	document.getElementById("infoicon").style.visibility = "hidden";
 	document.getElementById("channeltitle").style.visibility = "hidden";
 	document.getElementById("mainbox").style.visibility = "hidden";
+	binder.loadDMMembers()
 }
 
 function resetmembers() {
@@ -203,3 +204,6 @@ document.getElementById("messageinput").addEventListener("keyup", function(event
         msgInput.value = "";
 	}
 });
+
+binder.loadDMMembers();
+document.getElementById("blocker").style.backgroundColor = "rgba(0,0,0,0.4)";

@@ -113,7 +113,6 @@ func mainSetup() {
 			document.getElementById("cavatar").src = %q;
 		`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
 		loadServers()
-		loadDMMembers()
 	})
 }
 
@@ -126,6 +125,5 @@ func (t *binder) Home() {
 	currentChannel = ""
 	wv.Dispatch(func() {
 		wv.Eval(`loadhome()`)
-		loadDMMembers()
 	})
 }
