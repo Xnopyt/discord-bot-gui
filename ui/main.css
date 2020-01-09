@@ -631,6 +631,7 @@ body {
   background-color: rgba(0,0,0,0.4);
 }
 
+/* ˅˅˅ From https://loading.io/css/ ˅˅˅ */
 .lds-roller {
     display: inline-block;
     position: fixed;
@@ -718,3 +719,4 @@ body {
     }
   }
   
+  /* ^^^ From https://loading.io/css/ ^^^ */
