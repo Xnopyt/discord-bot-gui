@@ -139,7 +139,7 @@ func uiJsLoginJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/js/login.js", size: 693, mode: os.FileMode(420), modTime: time.Unix(1578505095, 0)}
+	info := bindataFileInfo{name: "ui/js/login.js", size: 693, mode: os.FileMode(420), modTime: time.Unix(1578507482, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -159,7 +159,7 @@ func uiJsMainJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/js/main.js", size: 7132, mode: os.FileMode(420), modTime: time.Unix(1578506459, 0)}
+	info := bindataFileInfo{name: "ui/js/main.js", size: 7132, mode: os.FileMode(420), modTime: time.Unix(1578507482, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -179,7 +179,7 @@ func uiLoginCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/login.css", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1578505095, 0)}
+	info := bindataFileInfo{name: "ui/login.css", size: 2249, mode: os.FileMode(420), modTime: time.Unix(1578507482, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -199,7 +199,7 @@ func uiLoginHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/login.html", size: 1225, mode: os.FileMode(420), modTime: time.Unix(1578505095, 0)}
+	info := bindataFileInfo{name: "ui/login.html", size: 1225, mode: os.FileMode(420), modTime: time.Unix(1578507482, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -219,7 +219,7 @@ func uiMainCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/main.css", size: 13689, mode: os.FileMode(420), modTime: time.Unix(1578507106, 0)}
+	info := bindataFileInfo{name: "ui/main.css", size: 13689, mode: os.FileMode(420), modTime: time.Unix(1578507482, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -239,7 +239,7 @@ func uiMainHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ui/main.html", size: 6995, mode: os.FileMode(420), modTime: time.Unix(1578506653, 0)}
+	info := bindataFileInfo{name: "ui/main.html", size: 6995, mode: os.FileMode(420), modTime: time.Unix(1578507482, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
