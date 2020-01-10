@@ -1,4 +1,4 @@
-name: Build
+name: Build-Win
 on: [push]
 jobs:
 
@@ -18,13 +18,13 @@ jobs:
 
     - name: Download dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install libwebkit2gtk-4.0-dev
+        go get -u github.com/Xnopyt/go-bindata
+        go get -u github.com/akavel/rsrc
 
     - name: Build
       run: |
-        export GO111MODULE=on
-        go build -v -mod=vendor
+        export PATH=$PATH:$(go env GOPATH)/bin
+        ./xbuild-win.sh
     
     - name: Run Tests
       run: |
