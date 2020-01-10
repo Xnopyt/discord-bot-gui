@@ -12,6 +12,7 @@ import (
 var wv *astilectron.Window
 
 func main() {
+	electronProvisioner := astilectron.NewDisembedderProvisioner(Asset, "ui/astilectron.zip", "ui/electron.zip")
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		log.Fatal(err)
@@ -27,6 +28,8 @@ func main() {
 	}
 
 	defer a.Close()
+
+	a.SetProvisioner(electronProvisioner)
 
 	if err = a.Start(); err != nil {
 		log.Fatal(err)
