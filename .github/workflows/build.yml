@@ -28,5 +28,6 @@ jobs:
     
     - name: Run Tests
       run: |
+        wget "https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/c2d2d82210e7fe0266ad975ec7672d98a441314a/bindata.go"
         go fmt ./...
         go vet ./...
