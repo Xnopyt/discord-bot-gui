@@ -1,4 +1,4 @@
-name: Build-Win
+name: Electron
 on: [push]
 jobs:
 

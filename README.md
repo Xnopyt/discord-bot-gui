@@ -1,7 +1,6 @@
 # Discord Bot GUI
-[![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/Build-Win/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
-A WebView based graphical interface for sending and reciving messages with a discord bot.<br />
-This is the electron based version of this application, created to allow it to run on windows. However it should build for any platform
+[![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/Electron/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
+A electron based graphical interface for sending and reciving messages with a discord bot.<br />
 
 ## Screenshots
 ![Screenshot 1](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/webview/screenshots/screenshot1.png "Screenshot 1")
