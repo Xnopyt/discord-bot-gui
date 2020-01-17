@@ -13,14 +13,14 @@ func contentWithMentionsFormatted(m *discordgo.MessageCreate) (content string) {
 	for _, user := range m.Mentions {
 		if user.ID == ses.State.User.ID {
 			content = strings.NewReplacer(
-				"&lt;@"+user.ID+"&gt;", "<div class='selfmention'>@"+user.Username+"</div>",
-				"&lt;@!"+user.ID+"&gt;", "<div class='selfmention'>@"+user.Username+"</div>",
+				"&lt;@"+user.ID+"&gt;", "<div class='selfmention'>@"+html.EscapeString(user.Username)+"</div>",
+				"&lt;@!"+user.ID+"&gt;", "<div class='selfmention'>@"+html.EscapeString(user.Username)+"</div>",
 			).Replace(content)
 			continue
 		}
 		content = strings.NewReplacer(
-			"&lt;@"+user.ID+"&gt;", "<div class='mention'>@"+user.Username+"</div>",
-			"&lt;@!"+user.ID+"&gt;", "<div class='mention'>@"+user.Username+"</div>",
+			"&lt;@"+user.ID+"&gt;", "<div class='mention'>@"+html.EscapeString(user.Username)+"</div>",
+			"&lt;@!"+user.ID+"&gt;", "<div class='mention'>@"+html.EscapeString(user.Username)+"</div>",
 		).Replace(content)
 	}
 	return
