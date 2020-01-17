@@ -50,32 +50,40 @@ func contentWithMoreMentionsFormatted(s *discordgo.Session, m *discordgo.Message
 		}
 		if user.ID == ses.State.User.ID {
 			content = strings.NewReplacer(
-				"&lt;@"+user.ID+"&gt;", "<div class='selfmention'>@"+user.Username+"</div>",
-				"&lt;@!"+user.ID+"&gt;", "<div class='selfmention'>@"+nick+"</div>",
+				"&lt;@"+user.ID+"&gt;", "<div class='selfmention'>@"+html.EscapeString(user.Username)+"</div>",
+				"&lt;@!"+user.ID+"&gt;", "<div class='selfmention'>@"+html.EscapeString(nick)+"</div>",
 			).Replace(content)
 			continue
 		}
 		content = strings.NewReplacer(
-			"&lt;@"+user.ID+"&gt;", "<div class='mention'>@"+user.Username+"</div>",
-			"&lt;@!"+user.ID+"&gt;", "<div class='mention'>@"+nick+"</div>",
+			"&lt;@"+user.ID+"&gt;", "<div class='mention'>@"+html.EscapeString(user.Username)+"</div>",
+			"&lt;@!"+user.ID+"&gt;", "<div class='mention'>@"+html.EscapeString(nick)+"</div>",
 		).Replace(content)
 	}
+	member, _ := s.State.Member(currentServer, s.State.User.ID)
 	for _, roleID := range m.MentionRoles {
 		role, err := s.State.Role(channel.GuildID, roleID)
+		
 		if err != nil || !role.Mentionable {
 			continue
 		}
+		for _, v := range member.Roles {
+			if v == roleID {
+				content = strings.Replace(content, "&lt;@&amp;"+role.ID+"&gt;", "<div class='selfmention'>@"+html.EscapeString(role.Name)+"</div>", -1)
+				continue
+			}
+		}
 
-		content = strings.Replace(content, "&lt;@&"+role.ID+"&gt;", "@"+role.Name, -1)
+		content = strings.Replace(content, "&lt;@&amp;"+role.ID+"&gt;", "<div class='mention'>@"+html.EscapeString(role.Name)+"</div>", -1)
 	}
 
 	content = patternChannels.ReplaceAllStringFunc(content, func(mention string) string {
-		channel, err := s.State.Channel(mention[2 : len(mention)-1])
+		channel, err := s.State.Channel(mention[5 : len(mention)-4])
 		if err != nil || channel.Type == discordgo.ChannelTypeGuildVoice {
-			return mention
+			return html.EscapeString(mention)
 		}
 
-		return "#" + channel.Name
+		return "<div class='mention'>#" + html.EscapeString(channel.Name)+"</div>"
 	})
 	return
 }
