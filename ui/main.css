@@ -606,6 +606,37 @@ body {
     overflow-wrap: break-word;
 }
 
+.msgbody .mention {
+    background-color: rgb(61, 65, 79);
+    color: rgb(114, 137, 218);
+    white-space: nowrap;
+    padding: 0;
+    margin: 0;
+    width: auto;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.msgbody .mention:hover {
+    background-color: rgb(96, 113, 172);
+    color: rgb(255, 255, 255);
+}
+
+.msgbody .selfmention {
+    background-color: rgb(75, 68, 59);
+    color: rgb(114, 137, 218);
+    white-space: nowrap;
+    padding: 0;
+    margin: 0;
+    width: auto;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.msgbody .selfmention:hover {
+    text-decoration: underline;
+}
+
 .message .msgavatar::selection, .message::selection, .messagebox::selection {
     background: none;
 }

@@ -26,3 +26,10 @@ function fail() {
 	tok.style.border = "1px solid rgb(189, 53, 43)"
 	lab.innerHTML = "TOKEN - Login failed."
 }
+
+window.addEventListener("keyup", function(event) {
+	if (event.keyCode === 123) {
+		event.preventDefault();
+		astilectron.sendMessage('toggleDevTools', function(message) {return});
+	}
+});

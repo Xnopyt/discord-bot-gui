@@ -279,11 +279,10 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 			m.Content += "\n" + z.Footer.Text + " " + z.Footer.IconURL
 		}
 	}
-	body, err := m.ContentWithMoreMentionsReplaced(ses)
+	body, err := contentWithMoreMentionsFormatted(ses, m)
 	if err != nil {
-		body = m.ContentWithMentionsReplaced()
+		body = contentWithMentionsFormatted(m)
 	}
-	body = html.EscapeString(body)
 	body = strings.ReplaceAll(body, "\n", "<br />")
 	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body))
 }

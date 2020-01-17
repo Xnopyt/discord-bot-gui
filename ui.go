@@ -35,12 +35,15 @@ var wvCallbacks map[string]func()
 
 var evalQueue = make(chan string)
 
+var devToolsActive = false
+
 func init() {
 	wvCallbacks = make(map[string]func())
 
 	wvCallbacks["loginSetup"] = loginSetup
 	wvCallbacks["home"] = home
 	wvCallbacks["logout"] = logout
+	wvCallbacks["toggleDevTools"] = toggleDevTools
 }
 
 func newRouter() *mux.Router {
@@ -154,4 +157,13 @@ func home() {
 	currentChannel = ""
 	eval(`loadhome()`)
 	loadDMMembers()
+}
+
+func toggleDevTools() {
+	if devToolsActive {
+		wv.OpenDevTools()
+	} else {
+		wv.CloseDevTools()
+	}
+	devToolsActive = !devToolsActive
 }
