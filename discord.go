@@ -101,6 +101,9 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	processChannelMessage(m, nil, wg)
+	wg.Wait()
+	eval(`var messages = document.getElementById("messages").parentNode;
+	messages.scrollTop = messages.scrollHeight;`)
 }
 
 func selectTargetServer(id string) {

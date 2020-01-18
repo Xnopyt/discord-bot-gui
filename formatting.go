@@ -23,6 +23,10 @@ func contentWithMentionsFormatted(m *discordgo.MessageCreate) (content string) {
 			"&lt;@!"+user.ID+"&gt;", "<div class='mention'>@"+html.EscapeString(user.Username)+"</div>",
 		).Replace(content)
 	}
+	content = strings.NewReplacer(
+		"@everyone", "<div class='selfmention'>@everyone</div>",
+		"@here", "<div class='selfmention'>@here</div>",
+	).Replace(content)
 	return
 }
 
@@ -85,5 +89,9 @@ func contentWithMoreMentionsFormatted(s *discordgo.Session, m *discordgo.Message
 
 		return "<div class='mention'>#" + html.EscapeString(channel.Name)+"</div>"
 	})
+	content = strings.NewReplacer(
+		"@everyone", "<div class='selfmention'>@everyone</div>",
+		"@here", "<div class='selfmention'>@here</div>",
+	).Replace(content)
 	return
 }
