@@ -519,11 +519,14 @@ body {
     margin-left: 15px;
     margin-right: 15px;
     border: none;
-    padding: 5px;
+    padding: 7px;
     padding-left: 10px;
     padding-right: 10px;
     color: rgb(255, 255, 255);
     background-color: rgb(64, 68, 75);
+    resize: none;
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .messagebox .inputborder {

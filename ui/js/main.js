@@ -199,12 +199,23 @@ function addmember(username, src) {
 	memberbar.appendChild(member);
 }
 
+window.shiftHeld = false
+
 document.getElementById("messageinput").addEventListener("keyup", function(event) {
-	if (event.keyCode === 13) {
+	if (event.keyCode === 13 && !window.shiftHeld) {
 		event.preventDefault();
 		var msgInput = document.getElementById("messageinput");
 		astilectron.sendMessage(JSON.stringify({'type': 'sendMessage', 'content': msgInput.value}), function(message) {return});
         msgInput.value = "";
+	}
+	if (event.keyCode === 16) {
+		window.shiftHeld = false
+	}
+});
+
+document.getElementById("messageinput").addEventListener("keydown", function(event) {
+	if (event.keyCode === 16) {
+		window.shiftHeld = true
 	}
 });
 
