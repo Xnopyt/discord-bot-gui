@@ -604,7 +604,6 @@ body {
     transform: translateY(-32px);
     font-size: 12px;
     font-weight: 300;
-    overflow-x: hidden;
     white-space: normal;
     overflow-wrap: break-word;
 }
@@ -638,6 +637,16 @@ body {
 
 .msgbody .selfmention:hover {
     text-decoration: underline;
+}
+
+.msgbody .quoteblock {
+    display: inline-block;
+    height: 16px;
+    width: 0;
+    border-left: 3px solid;
+    border-color: rgb(81, 84, 93);
+    transform: translateY(5px);
+    margin-right: 4px;
 }
 
 .message .msgavatar::selection, .message::selection, .messagebox::selection {

@@ -120,6 +120,12 @@ func processStyles(c string) (content string) {
 	for _, v := range rep {
 		content = strings.Replace(content, v, "<s>"+v[2:len(v)-2]+"</s>", 1)
 	}
+	rep = strings.Split(content, "\n")
+	for _, v := range rep {
+		if strings.HasPrefix(v, "&gt; ") {
+			content = strings.Replace(content, v, "<div class='quoteblock'></div>" + v[4:], 1)
+		}
+	}
 	return
 }
 
