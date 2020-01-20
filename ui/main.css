@@ -649,6 +649,15 @@ body {
     margin-right: 4px;
 }
 
+.msgbody code {
+    font-family: inherit;
+    border-radius: 5px;
+}
+
+.msgbody pre {
+    font-family: inherit;
+}
+
 .message .msgavatar::selection, .message::selection, .messagebox::selection {
     background: none;
 }

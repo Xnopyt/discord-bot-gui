@@ -146,7 +146,7 @@ func processCodeblocks(c string) (content string) {
 	}
 	rep = cblockinline.FindAllString(content, -1)
 	for _, v := range rep {
-		content = strings.Replace(content, v, "<pre style='display: inline;'><code class='plaintext' style='display: inline; padding: 0;'>" + v[1:len(v)-1] + "</code></pre>", -1)
+		content = strings.Replace(content, v, "<pre style='display: inline;'><code class='plaintext' style='display: inline; padding: 0; border-radius: 0;'>" + v[1:len(v)-1] + "</code></pre>", -1)
 	}
 	return
 }
