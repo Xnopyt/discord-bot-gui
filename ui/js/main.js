@@ -149,6 +149,10 @@ function fillmessage(id, uname, avatar, timetext, bodytext) {
 	body.className = "msgbody";
 	body.innerHTML = bodytext;
 	msg.appendChild(body);
+	var code = msg.getElementsByTagName("code");
+	for (let cblock of code) {
+		hljs.highlightBlock(cblock);
+	}
 }
 
 function loadhome() {

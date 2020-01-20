@@ -16,4 +16,6 @@ require (
 	github.com/zserge/webview v0.0.0-20191103184548-1a9ebffc2601 // indirect
 	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876 // indirect
 	golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8 // indirect
+	golang.org/x/tools v0.0.0-20200117220505-0cba7a3a9ee9 // indirect
+	golang.org/x/tools/gopls v0.1.8-0.20200117220505-0cba7a3a9ee9 // indirect
 )

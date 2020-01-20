@@ -8,8 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func contentWithMentionsFormatted(m *discordgo.MessageCreate) (content string) {
-	content = html.EscapeString(m.Content)
+func formatMentions(c string, m *discordgo.MessageCreate) (content string) {
+	content = c
 	for _, user := range m.Mentions {
 		if user.ID == ses.State.User.ID {
 			content = strings.NewReplacer(
@@ -30,18 +30,18 @@ func contentWithMentionsFormatted(m *discordgo.MessageCreate) (content string) {
 	return
 }
 
-func contentWithMoreMentionsFormatted(s *discordgo.Session, m *discordgo.MessageCreate) (content string, err error) {
+func formatMoreMentions(s *discordgo.Session, c string, m *discordgo.MessageCreate) (content string, err error) {
 	var patternChannels = regexp.MustCompile("&lt;#[^>]*&gt;")
-	content = html.EscapeString(m.Content)
+	content = c
 
 	if !s.StateEnabled {
-		content = contentWithMentionsFormatted(m)
+		content = formatMentions(c, m)
 		return
 	}
 
 	channel, err := s.State.Channel(m.ChannelID)
 	if err != nil {
-		content = contentWithMentionsFormatted(m)
+		content = formatMentions(c, m)
 		return
 	}
 
@@ -67,7 +67,6 @@ func contentWithMoreMentionsFormatted(s *discordgo.Session, m *discordgo.Message
 	member, _ := s.State.Member(currentServer, s.State.User.ID)
 	for _, roleID := range m.MentionRoles {
 		role, err := s.State.Role(channel.GuildID, roleID)
-		
 		if err != nil || !role.Mentionable {
 			continue
 		}
@@ -93,5 +92,74 @@ func contentWithMoreMentionsFormatted(s *discordgo.Session, m *discordgo.Message
 		"@everyone", "<div class='selfmention'>@everyone</div>",
 		"@here", "<div class='selfmention'>@here</div>",
 	).Replace(content)
+	return
+}
+
+var underline = regexp.MustCompile("__.*__")
+var bold = regexp.MustCompile("\\*\\*.*\\*\\*")
+var italics = regexp.MustCompile("_.*_")
+var italicsalt = regexp.MustCompile("\\*.*\\*")
+var strikethrough = regexp.MustCompile("~~.*~~")
+
+func processStyles(c string) (content string) {
+	content = c
+	var rep = underline.FindAllString(content, -1)
+	for _, v := range rep {
+		content = strings.Replace(content, v, "<u>"+v[2:len(v)-2]+"</u>", 1)
+	}
+	rep = bold.FindAllString(content, -1)
+	for _, v := range rep {
+		content = strings.Replace(content, v, "<b>"+v[2:len(v)-2]+"</b>", 1)
+	}
+	rep = italics.FindAllString(content, -1)
+	rep = append(rep, italicsalt.FindAllString(content, -1)...)
+	for _, v := range rep {
+		content = strings.Replace(content, v, "<i>"+v[1:len(v)-1]+"</i>", 1)
+	}
+	rep = strikethrough.FindAllString(content, -1)
+	for _, v := range rep {
+		content = strings.Replace(content, v, "<s>"+v[2:len(v)-2]+"</s>", 1)
+	}
+	return
+}
+
+var cblockwithlang = regexp.MustCompile("\\x60\\x60\\x60\\w+\\n(.|\\n)+\\x60\\x60\\x60")
+var cblock = regexp.MustCompile("\\x60\\x60\\x60(.|\\n)+\\x60\\x60\\x60")
+var cblockinline = regexp.MustCompile("\\x60(.|\\n)+\\x60")
+
+func processCodeblocks(c string) (content string) {
+	content = c
+	var rep = cblockwithlang.FindAllString(content, -1)
+	for _, v := range rep {
+		syntaxLang := strings.Split(content, "\n")[0][3:]
+		content = strings.Replace(content, v, "<pre><code class='"+syntaxLang+"'>"+strings.SplitN(v[:len(v)-3], "\n", 2)[1]+"</code></pre>", 1)
+	}
+	rep = cblock.FindAllString(content, -1)
+	for _, v := range rep {
+		content = strings.Replace(content, v, "<pre><code class='plaintext'>" + strings.TrimSuffix(strings.TrimPrefix(v[3:len(v)-3], "\n"), "\n") + "</code></pre>", 1)
+	}
+	rep = cblockinline.FindAllString(content, -1)
+	for _, v := range rep {
+		content = strings.Replace(content, v, "<pre style='display: inline;'><code class='plaintext' style='display: inline; padding: 0;'>" + v[1:len(v)-1] + "</code></pre>", -1)
+	}
+	return
+}
+
+var processedCblock = regexp.MustCompile("<pre(.|\\n)+pre>")
+
+func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
+	content = processCodeblocks(html.EscapeString(m.Content))
+	markdownstrings := processedCblock.Split(content, -1)
+	for _, v := range markdownstrings {
+		content = strings.Replace(content, v, processStyles(v), 1)
+	}
+	mentionstrings := processedCblock.Split(content, -1)
+	for _, v := range mentionstrings {
+		mention, err := formatMoreMentions(ses, v, m)
+		if err != nil {
+			mention = formatMentions(v, m)
+		}
+		content = strings.Replace(content, v, mention, 1)
+	}
 	return
 }
