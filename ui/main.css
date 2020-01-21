@@ -329,6 +329,9 @@ body {
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .actionbar .chan:hover {
@@ -393,25 +396,22 @@ body {
 }
 
 .chan .fa-hashtag {
-    width: 15px;
-    height: 15px;
     color: rgb(114, 118, 125);
     display: inline-block;
-    transform: translateY(-30px);
+    transform: translateY(-2px);
 }
 
 .chan .channame {
     color: rgb(114, 118, 125);
     font-size: 14px;
     font-weight: 500;
-    width: 180px;
     display: inline-block;
-    transform: translateY(-13px);
     padding-left: 4px;
     pointer-events: none;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    margin: 0;
 }
 
 .chancontainer .chan.selected {
