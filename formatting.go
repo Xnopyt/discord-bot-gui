@@ -137,7 +137,7 @@ func processCodeblocks(c string) (content string) {
 	content = c
 	var rep = cblockwithlang.FindAllString(content, -1)
 	for _, v := range rep {
-		syntaxLang := strings.Split(content, "\n")[0][3:]
+		syntaxLang := strings.Split(v, "\n")[0][3:]
 		content = strings.Replace(content, v, "<pre><code class='"+syntaxLang+"'>"+strings.SplitN(v[:len(v)-3], "\n", 2)[1]+"</code></pre>", 1)
 	}
 	rep = cblock.FindAllString(content, -1)
