@@ -169,6 +169,24 @@ function appendimgattachment(id, url) {
 	msg.appendChild(attachcon)
 }
 
+function appendattachment(id, filename,  url) {
+	var msg = document.getElementById(id);
+	var attachcon = document.createElement("div");
+	attachcon.classList.add("attachment");
+	var fileicon = document.createElement("i");
+	fileicon.className = "fas fa-file-alt";
+	var downloadButton = document.createElement("i");
+	downloadButton.className = "fas fa-download";
+	downloadButton.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}), function(message) {return});");
+	var filenamebutton = document.createElement("p");
+	filenamebutton.innerHTML = filename;
+	filenamebutton.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}), function(message) {return});");
+	attachcon.appendChild(fileicon);
+	attachcon.appendChild(filenamebutton);
+	attachcon.appendChild(downloadButton);
+	msg.appendChild(attachcon);
+}
+
 function loadhome() {
 	document.getElementsByClassName("server selected")[0].classList.remove("selected");
 	document.getElementById("home").classList.add("selected");

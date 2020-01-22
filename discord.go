@@ -294,12 +294,18 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	}
 	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body, selfmention))
 	for _, z := range m.Attachments {
+		var isImg = false
 		for _, v := range imgMime {
 			if strings.HasSuffix(z.URL, v) {
 				eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL))
-				continue
+				isImg = true
+				break
 			}
 		}
+		if isImg {
+			break
+		}
+		eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL))
 	}
 }
 
