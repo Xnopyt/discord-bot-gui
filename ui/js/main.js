@@ -158,6 +158,17 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention) {
 	}
 }
 
+function appendimgattachment(id, url) {
+	var msg = document.getElementById(id);
+	var attachcon = document.createElement("div");
+	attachcon.classList.add("imageattachment");
+	var img = document.createElement("img");
+	img.src = url;
+	img.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}), function(message) {return});");
+	attachcon.appendChild(img);
+	msg.appendChild(attachcon)
+}
+
 function loadhome() {
 	document.getElementsByClassName("server selected")[0].classList.remove("selected");
 	document.getElementById("home").classList.add("selected");

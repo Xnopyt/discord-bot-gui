@@ -664,6 +664,20 @@ body {
     font-family: inherit;
 }
 
+.message .imageattachment {
+    height: 250px;
+    width: calc(100% - 65px);
+    margin-left: 58px;
+    transform: translateY(-32px);
+}
+
+.imageattachment img {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    cursor: pointer;
+}
+
 .message .msgavatar::selection, .message::selection, .messagebox::selection {
     background: none;
 }

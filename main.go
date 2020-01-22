@@ -7,6 +7,7 @@ import (
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
+	"github.com/pkg/browser"
 )
 
 var wv *astilectron.Window
@@ -75,6 +76,9 @@ func main() {
 
 			case "loadDMChannel":
 				loadDMChannel(msg.Content)
+
+			case "openURL":
+				browser.OpenURL(msg.Content)
 			}
 		}
 		return nil

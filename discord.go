@@ -14,6 +14,17 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var imgMime = []string{
+	".bmp",
+	".gif",
+	".jpe",
+	".jpeg",
+	".jpg",
+	".svg",
+	".ico",
+	".png",
+}
+
 var token string
 
 var ses *discordgo.Session
@@ -240,13 +251,6 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	} else {
 		uname = m.Author.Username
 	}
-	for _, z := range m.Attachments {
-		if m.Content == "" {
-			m.Content = z.URL
-		} else {
-			m.Content += "\n" + z.URL
-		}
-	}
 	for _, z := range m.Embeds {
 		if m.Content != "" {
 			m.Content += "\n" + "Embed:"
@@ -289,6 +293,14 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 		selfmention = true
 	}
 	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body, selfmention))
+	for _, z := range m.Attachments {
+		for _, v := range imgMime {
+			if strings.HasSuffix(z.URL, v) {
+				eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL))
+				continue
+			}
+		}
+	}
 }
 
 func sendMessage(msg string) {
