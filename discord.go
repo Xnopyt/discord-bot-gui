@@ -284,7 +284,11 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	}
 	body := parseMarkdownAndMentions(m)
 	body = strings.ReplaceAll(body, "\n", "<br />")
-	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body))
+	var selfmention = false
+	if strings.Contains(body, "<div class='selfmention'") {
+		selfmention = true
+	}
+	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body, selfmention))
 }
 
 func sendMessage(msg string) {

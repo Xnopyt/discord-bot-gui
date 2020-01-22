@@ -625,7 +625,6 @@ body {
 }
 
 .msgbody .selfmention {
-    background-color: rgb(75, 68, 59);
     color: rgb(114, 137, 218);
     white-space: nowrap;
     padding: 0;
@@ -633,6 +632,13 @@ body {
     width: auto;
     display: inline-block;
     cursor: pointer;
+}
+
+.msgbody.selfmention {
+    background-color: rgb(75, 68, 59);
+    border-left: 4px solid rgb(250, 166, 26);
+    border-radius: 3px 0 0 3px;
+    padding-left: 3px;
 }
 
 .msgbody .selfmention:hover {

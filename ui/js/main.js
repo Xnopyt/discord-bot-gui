@@ -127,7 +127,7 @@ function selectdmchannel(id, name) {
 	messages.appendChild(spacer);
 }
 
-function fillmessage(id, uname, avatar, timetext, bodytext) {
+function fillmessage(id, uname, avatar, timetext, bodytext, selfmention) {
     var msg = document.getElementById(id);
 	msg.className = "message";
 	var head = document.createElement("div");
@@ -147,6 +147,9 @@ function fillmessage(id, uname, avatar, timetext, bodytext) {
 	msg.appendChild(head);
 	var body = document.createElement("div");
 	body.className = "msgbody";
+	if (selfmention) {
+		body.classList.add("selfmention")
+	}
 	body.innerHTML = bodytext;
 	msg.appendChild(body);
 	var code = msg.getElementsByTagName("code");
