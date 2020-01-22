@@ -277,40 +277,11 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	} else {
 		uname = m.Author.Username
 	}
+	var embeds string
 	for _, z := range m.Embeds {
-		if m.Content != "" {
-			m.Content += "\n" + "Embed:"
-		}
-		if z.Title != "" {
-			m.Content += "\n" + z.Title
-		}
-		if z.Description != "" {
-			m.Content += "\n" + z.Description
-		}
-		if z.URL != "" {
-			m.Content += "\n" + z.URL
-		}
-		if z.Description != "" {
-			m.Content += "\n" + z.Description
-		}
-		if z.Image != nil {
-			m.Content += "\n" + z.Image.URL
-		}
-		if z.Thumbnail != nil {
-			m.Content += "\n" + z.Thumbnail.URL
-		}
-		if z.Video != nil {
-			m.Content += "\n" + z.Video.URL
-		}
-		for _, f := range z.Fields {
-			m.Content += "\n" + f.Name + ": " + f.Value
-		}
-		if z.Provider != nil {
-			m.Content += "\n" + "Provider: " + z.Provider.Name + " (" + z.Provider.URL + ")"
-		}
-		if z.Footer != nil {
-			m.Content += "\n" + z.Footer.Text + " " + z.Footer.IconURL
-		}
+		embeds += processEmbed(z) + `
+		document.getElementById("`+m.ID+`").appendChild(div);
+		`
 	}
 	body := parseMarkdownAndMentions(m)
 	body = strings.ReplaceAll(body, "\n", "<br />")
@@ -319,6 +290,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 		selfmention = true
 	}
 	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body, selfmention))
+	eval(embeds)
 	for _, z := range m.Attachments {
 		var isImg = false
 		for _, v := range imgMime {

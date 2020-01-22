@@ -4,6 +4,7 @@ import (
 	"html"
 	"regexp"
 	"strings"
+	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -166,6 +167,60 @@ func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
 			mention = formatMentions(v, m)
 		}
 		content = strings.Replace(content, v, mention, 1)
+	}
+	return
+}
+
+func processEmbed(z *discordgo.MessageEmbed) (c string) {
+	c = `var div = document.createElement("div");
+		div.classList.add("embed");
+		div.style.borderLeft = "4px solid #`+fmt.Sprintf("%6x", z.Color)+`";
+		`
+	if z.Provider != nil {
+		c += `var provider = document.createElement("div");
+				provider.className = "provider";
+				provider.innerHTML = "`+html.EscapeString(z.Provider.Name)+`";
+				provider.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '`+html.EscapeString(z.Provider.URL)+`'}), function(message) {return});");
+				div.appendChild(provider);
+				`
+	}
+	if z.Author != nil {
+		c += `var author = document.createElement("div");
+				author.className = "author";
+				author.innerHTML = "`+html.EscapeString(z.Author.Name)+`";
+				author.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '`+html.EscapeString(z.Author.URL)+`'}), function(message) {return});");
+				div.appendChild(author);
+				`
+	}
+	if z.Title != "" {
+		c += `var title = document.createElement("div");
+				title.className = "title";
+				title.innerHTML = "`+html.EscapeString(z.Title)+`";
+				title.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '`+html.EscapeString(z.URL)+`'}), function(message) {return});");
+				div.appendChild(title);
+				`
+	}
+	if z.Image != nil {
+		c += `var imageattach = document.createElement("div");
+				imageattach.className = "imageattachment";
+				var img = document.createElement("img");
+				img.src = "`+html.EscapeString(z.Image.URL)+`";
+				imageattach.appendChild(img);
+				div.appendChild(img);
+				`
+	}
+	if z.Video != nil {
+		c += `var vid = document.createElement("iframe");
+				vid.src = "`+html.EscapeString(z.Video.URL)+`"
+				div.appendChild(vid);
+				`
+	}
+	if z.Footer != nil {
+		c += `var footer = document.createElement("div");
+				footer.className = "footer";
+				footer.innerHTML = "`+html.EscapeString(z.Footer.Text)+`";
+				div.appendChild(footer);
+				`
 	}
 	return
 }
