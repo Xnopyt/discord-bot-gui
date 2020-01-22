@@ -43,6 +43,8 @@ func connect(s string) {
 	ready := make(chan bool)
 	ses.AddHandler(func(s *discordgo.Session, e *discordgo.Ready) { ready <- true })
 	ses.AddHandler(recvMsg)
+	ses.AddHandler(updateMsg)
+	ses.AddHandler(delMsg)
 	err = ses.Open()
 	if err != nil {
 		eval("fail()")
@@ -115,6 +117,30 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	wg.Wait()
 	eval(`var messages = document.getElementById("messages").parentNode;
 	messages.scrollTop = messages.scrollHeight;`)
+}
+
+func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
+	if m.ChannelID != currentChannel {
+		return
+	}
+	if m.Type == 7 {
+		return
+	}
+	eval(`document.getElementById("`+m.ID+`").innerHTML = ""`)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	processChannelMessage(&discordgo.MessageCreate{Message: m.Message}, nil, wg)
+	wg.Wait()
+}
+
+func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
+	if m.ChannelID != currentChannel {
+		return
+	}
+	if m.Type == 7 {
+		return
+	}
+	eval(`document.getElementById("`+m.ID+`").parentNode.removeChild(document.getElementById("`+m.ID+`"));`)
 }
 
 func selectTargetServer(id string) {
