@@ -26,6 +26,7 @@ var imgMime = []string{
 }
 
 var token string
+var proccessingMsg = false
 
 var ses *discordgo.Session
 
@@ -104,6 +105,10 @@ func loadDMMembers() {
 }
 
 func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
+	for proccessingMsg {
+		time.Sleep(time.Second)
+	}
+	proccessingMsg = true
 	if m.ChannelID != currentChannel {
 		return
 	}
@@ -117,9 +122,14 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	wg.Wait()
 	eval(`var messages = document.getElementById("messages").parentNode;
 	messages.scrollTop = messages.scrollHeight;`)
+	proccessingMsg = false
 }
 
 func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
+	for proccessingMsg {
+		time.Sleep(time.Second)
+	}
+	proccessingMsg = true
 	if m.ChannelID != currentChannel {
 		return
 	}
@@ -131,6 +141,7 @@ func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	wg.Add(1)
 	processChannelMessage(&discordgo.MessageCreate{Message: m.Message}, nil, wg)
 	wg.Wait()
+	proccessingMsg = false
 }
 
 func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
@@ -253,6 +264,29 @@ func setActiveChannel(id string) {
 }
 
 func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member, wg *sync.WaitGroup) {
+	defer func(id string) {
+        if r := recover(); r != nil {
+			time.Sleep(time.Second)
+			msg, err := ses.ChannelMessage(currentChannel, id)
+			if err != nil {
+				return
+			}
+			eval(`var msg = document.getElementById("`+id+`");
+			if (typeof msg === 'undefined' || typeof msg === 'null') {
+				console.log("message is not defined");
+			} else {
+				msg.parentNode.removeChild(msg);
+			};
+			`)
+			eval(fmt.Sprintf(`createmessage(%q)`, msg.ID))
+			wg := &sync.WaitGroup{}
+			wg.Add(1)
+			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil, wg)
+			wg.Wait()
+			eval(`var messages = document.getElementById("messages").parentNode;
+			messages.scrollTop = messages.scrollHeight;`)
+        }
+    }(m.ID)
 	defer wg.Done()
 	var uname string
 	var member *discordgo.Member
