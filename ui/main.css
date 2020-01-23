@@ -682,6 +682,7 @@ body {
     width: calc(100% - 65px);
     margin-left: 58px;
     transform: translateY(-32px);
+    overflow: hidden;
 }
 
 .imageattachment img {
@@ -689,6 +690,7 @@ body {
     width: auto;
     max-height: 100%;
     max-width: 100%;
+    min-width: 250px;
     cursor: pointer;
 }
 
