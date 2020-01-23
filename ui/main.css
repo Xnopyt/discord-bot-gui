@@ -666,7 +666,6 @@ body {
 
 .msgbody .link {
     color: rgb(13, 146, 198);
-    white-space: nowrap;
     padding: 0;
     margin: 0;
     width: auto;
@@ -812,6 +811,15 @@ body {
     max-width: 300px; 
     max-height: 200px;
     border: none;
+}
+
+.embed .descrip {
+    font-size: 12px;
+    color: rgb(255, 255, 255);
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
 .message .msgavatar::selection, .message::selection, .messagebox::selection {

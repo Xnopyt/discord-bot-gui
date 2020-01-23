@@ -223,6 +223,44 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 				div.appendChild(vid);
 				`
 	}
+	if z.Video == nil && z.Image == nil && z.Thumbnail != nil {
+		c += `var imageattach = document.createElement("div");
+				imageattach.className = "imageattachment";
+				var img = document.createElement("img");
+				img.style.maxHeight = "80px";
+				img.style.maxWidth = "80px";
+				img.style.display = "inline-block";
+				img.src = "`+html.EscapeString(z.Thumbnail.URL)+`";
+				imageattach.appendChild(img);
+				div.appendChild(img);
+				`
+	}
+	if z.Video == nil && z.Image == nil && z.Description != "" {
+		description := processCodeblocks(html.EscapeString(z.Description))
+		markdownstrings := processedCblock.Split(description, -1)
+		for _, v := range markdownstrings {
+			description = strings.Replace(description, v, processStyles(v), 1)
+		}
+		urlStrings := processedCblock.Split(description, -1)
+		for _, v := range urlStrings {
+			rep := xurls.Strict.FindAllString(v, -1)
+			for _, x := range rep {
+				description = strings.Replace(description, x, `<div class='link' onclick=openURL('`+x+`')>`+x+`</div>`, -1)
+			}
+		}
+		c += `var descrip = document.createElement("div");
+				descrip.className = "descrip";
+				descrip.innerHTML = "`+description+`";
+				`
+		if z.Thumbnail != nil {
+			c+= `descrip.style.width = "calc(100% - 90px)";
+			`
+		}
+			
+		c += `
+				div.appendChild(descrip);
+				`
+	}
 	if z.Footer != nil {
 		c += `var footer = document.createElement("div");
 				footer.className = "footer";
