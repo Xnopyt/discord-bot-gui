@@ -220,6 +220,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 	if z.Video != nil {
 		c += `var vid = document.createElement("iframe");
 				vid.src = "`+html.EscapeString(z.Video.URL)+`"
+				vid.setAttribute("allowfullscreen", "");
 				div.appendChild(vid);
 				`
 	}
