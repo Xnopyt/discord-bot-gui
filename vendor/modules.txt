@@ -16,6 +16,8 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.11
 github.com/mattn/go-isatty
+# github.com/mvdan/xurls v1.1.0
+github.com/mvdan/xurls
 # github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 github.com/pkg/browser
 # github.com/pkg/errors v0.8.1

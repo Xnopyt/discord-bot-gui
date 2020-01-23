@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/mvdan/xurls"
 )
 
 func formatMentions(c string, m *discordgo.MessageCreate) (content string) {
@@ -159,6 +160,13 @@ func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
 	markdownstrings := processedCblock.Split(content, -1)
 	for _, v := range markdownstrings {
 		content = strings.Replace(content, v, processStyles(v), 1)
+	}
+	urlStrings := processedCblock.Split(content, -1)
+	for _, v := range urlStrings {
+		rep := xurls.Strict.FindAllString(v, -1)
+		for _, x := range rep {
+			content = strings.Replace(content, x, `<div class='link' onclick=openURL('`+x+`')>`+x+`</div>`, -1)
+		}
 	}
 	mentionstrings := processedCblock.Split(content, -1)
 	for _, v := range mentionstrings {

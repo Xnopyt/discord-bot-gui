@@ -231,6 +231,10 @@ function addmember(username, src) {
 	memberbar.appendChild(member);
 }
 
+function openURL(url) {
+	astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': url}), function(message) {return});
+}
+
 window.shiftHeld = false
 
 document.getElementById("messageinput").addEventListener("keyup", function(event) {

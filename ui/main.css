@@ -664,6 +664,20 @@ body {
     font-family: inherit;
 }
 
+.msgbody .link {
+    color: rgb(13, 146, 198);
+    white-space: nowrap;
+    padding: 0;
+    margin: 0;
+    width: auto;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.msgbody .link:hover {
+    text-decoration: underline;
+}
+
 .message .imageattachment {
     height: 250px;
     width: calc(100% - 65px);
