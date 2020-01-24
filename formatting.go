@@ -182,7 +182,7 @@ func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
 func processEmbed(z *discordgo.MessageEmbed) (c string) {
 	c = `var div = document.createElement("div");
 		div.classList.add("embed");
-		div.style.borderLeft = "4px solid #`+fmt.Sprintf("%6x", z.Color)+`";
+		div.style.borderLeft = "4px solid #`+fmt.Sprintf("%06x", z.Color)+`";
 		`
 	if z.Provider != nil {
 		c += `var provider = document.createElement("div");
