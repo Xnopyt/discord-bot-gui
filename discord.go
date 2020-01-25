@@ -266,19 +266,11 @@ func setActiveChannel(id string) {
 func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member, wg *sync.WaitGroup) {
 	defer func(id string) {
         if r := recover(); r != nil {
-			time.Sleep(time.Second)
 			msg, err := ses.ChannelMessage(currentChannel, id)
 			if err != nil {
 				return
 			}
-			eval(`var msg = document.getElementById("`+id+`");
-			if (typeof msg === 'undefined' || typeof msg === 'null') {
-				console.log("message is not defined");
-			} else {
-				msg.parentNode.removeChild(msg);
-			};
-			`)
-			eval(fmt.Sprintf(`createmessage(%q)`, msg.ID))
+			eval(`document.getElementById("`+id+`").innerHTML = ""`)
 			wg := &sync.WaitGroup{}
 			wg.Add(1)
 			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil, wg)
