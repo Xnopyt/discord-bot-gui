@@ -645,6 +645,12 @@ body {
     overflow-wrap: break-word;
 }
 
+.msgbody .customemoji {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+}
+
 .msgbody .mention {
     background-color: rgb(61, 65, 79);
     color: rgb(114, 137, 218);

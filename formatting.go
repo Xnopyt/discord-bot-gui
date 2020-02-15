@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"html"
 	"regexp"
 	"strings"
-	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/mvdan/xurls"
@@ -88,7 +88,7 @@ func formatMoreMentions(s *discordgo.Session, c string, m *discordgo.MessageCrea
 			return html.EscapeString(mention)
 		}
 
-		return "<div class='mention'>#" + html.EscapeString(channel.Name)+"</div>"
+		return "<div class='mention'>#" + html.EscapeString(channel.Name) + "</div>"
 	})
 	content = strings.NewReplacer(
 		"@everyone", "<div class='selfmention'>@everyone</div>",
@@ -125,7 +125,7 @@ func processStyles(c string) (content string) {
 	rep = strings.Split(content, "\n")
 	for _, v := range rep {
 		if strings.HasPrefix(v, "&gt; ") {
-			content = strings.Replace(content, v, "<div class='quoteblock'></div>" + v[4:], 1)
+			content = strings.Replace(content, v, "<div class='quoteblock'></div>"+v[4:], 1)
 		}
 	}
 	return
@@ -144,11 +144,23 @@ func processCodeblocks(c string) (content string) {
 	}
 	rep = cblock.FindAllString(content, -1)
 	for _, v := range rep {
-		content = strings.Replace(content, v, "<pre><code class='plaintext'>" + strings.TrimSuffix(strings.TrimPrefix(v[3:len(v)-3], "\n"), "\n") + "</code></pre>", 1)
+		content = strings.Replace(content, v, "<pre><code class='plaintext'>"+strings.TrimSuffix(strings.TrimPrefix(v[3:len(v)-3], "\n"), "\n")+"</code></pre>", 1)
 	}
 	rep = cblockinline.FindAllString(content, -1)
 	for _, v := range rep {
-		content = strings.Replace(content, v, "<pre style='display: inline;'><code class='plaintext' style='display: inline; padding: 0; border-radius: 0;'>" + v[1:len(v)-1] + "</code></pre>", -1)
+		content = strings.Replace(content, v, "<pre style='display: inline;'><code class='plaintext' style='display: inline; padding: 0; border-radius: 0;'>"+v[1:len(v)-1]+"</code></pre>", -1)
+	}
+	return
+}
+
+var customemoji = regexp.MustCompile("&lt;:.*&gt;")
+
+func processNonUnicodeEmoji(c string) (content string) {
+	content = c
+	var rep = customemoji.FindAllString(content, -1)
+	for _, v := range rep {
+		emoji := "https://cdn.discordapp.com/emojis/" + strings.TrimSuffix(strings.Split(v, ":")[2], "&gt;")
+		content = strings.Replace(content, v, "<img src='"+emoji+"' class='customemoji'>", 1)
 	}
 	return
 }
@@ -176,35 +188,39 @@ func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
 		}
 		content = strings.Replace(content, v, mention, 1)
 	}
+	emojistrings := processedCblock.Split(content, -1)
+	for _, v := range emojistrings {
+		content = strings.Replace(content, v, processNonUnicodeEmoji(v), 1)
+	}
 	return
 }
 
 func processEmbed(z *discordgo.MessageEmbed) (c string) {
 	c = `var div = document.createElement("div");
 		div.classList.add("embed");
-		div.style.borderLeft = "4px solid #`+fmt.Sprintf("%06x", z.Color)+`";
+		div.style.borderLeft = "4px solid #` + fmt.Sprintf("%06x", z.Color) + `";
 		`
 	if z.Provider != nil {
 		c += `var provider = document.createElement("div");
 				provider.className = "provider";
-				provider.innerHTML = "`+html.EscapeString(z.Provider.Name)+`";
-				provider.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '`+html.EscapeString(z.Provider.URL)+`'}), function(message) {return});");
+				provider.innerHTML = "` + html.EscapeString(z.Provider.Name) + `";
+				provider.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Provider.URL) + `'}), function(message) {return});");
 				div.appendChild(provider);
 				`
 	}
 	if z.Author != nil {
 		c += `var author = document.createElement("div");
 				author.className = "author";
-				author.innerHTML = "`+html.EscapeString(z.Author.Name)+`";
-				author.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '`+html.EscapeString(z.Author.URL)+`'}), function(message) {return});");
+				author.innerHTML = "` + html.EscapeString(z.Author.Name) + `";
+				author.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Author.URL) + `'}), function(message) {return});");
 				div.appendChild(author);
 				`
 	}
 	if z.Title != "" {
 		c += `var title = document.createElement("div");
 				title.className = "title";
-				title.innerHTML = "`+html.EscapeString(z.Title)+`";
-				title.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '`+html.EscapeString(z.URL)+`'}), function(message) {return});");
+				title.innerHTML = "` + html.EscapeString(z.Title) + `";
+				title.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.URL) + `'}), function(message) {return});");
 				div.appendChild(title);
 				`
 	}
@@ -212,14 +228,14 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 		c += `var imageattach = document.createElement("div");
 				imageattach.className = "imageattachment";
 				var img = document.createElement("img");
-				img.src = "`+html.EscapeString(z.Image.URL)+`";
+				img.src = "` + html.EscapeString(z.Image.URL) + `";
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
 	}
 	if z.Video != nil {
 		c += `var vid = document.createElement("iframe");
-				vid.src = "`+html.EscapeString(z.Video.URL)+`"
+				vid.src = "` + html.EscapeString(z.Video.URL) + `"
 				vid.setAttribute("allowfullscreen", "");
 				div.appendChild(vid);
 				`
@@ -231,7 +247,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 				img.style.maxHeight = "80px";
 				img.style.maxWidth = "80px";
 				img.style.display = "inline-block";
-				img.src = "`+html.EscapeString(z.Thumbnail.URL)+`";
+				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
@@ -251,13 +267,13 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 		}
 		c += `var descrip = document.createElement("div");
 				descrip.className = "descrip";
-				descrip.innerHTML = "`+description+`";
+				descrip.innerHTML = "` + description + `";
 				`
 		if z.Thumbnail != nil {
-			c+= `descrip.style.width = "calc(100% - 90px)";
+			c += `descrip.style.width = "calc(100% - 90px)";
 			`
 		}
-			
+
 		c += `
 				div.appendChild(descrip);
 				`
@@ -265,7 +281,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 	if z.Footer != nil {
 		c += `var footer = document.createElement("div");
 				footer.className = "footer";
-				footer.innerHTML = "`+html.EscapeString(z.Footer.Text)+`";
+				footer.innerHTML = "` + html.EscapeString(z.Footer.Text) + `";
 				div.appendChild(footer);
 				`
 	}
