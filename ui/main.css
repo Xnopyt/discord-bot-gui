@@ -649,6 +649,7 @@ body {
     width: 25px;
     height: 25px;
     display: inline-block;
+    transform: translateY(4px);
 }
 
 .msgbody .mention {
