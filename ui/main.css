@@ -515,6 +515,37 @@ body {
     right: 240px;
 }
 
+.messagebox .fileupload {
+    width: 40px;
+    height: 35px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 20px;
+    background-color: rgb(64, 68, 75);
+    margin-left: 15px;
+    border: none;
+    border-right: 2px solid rgb(54, 57, 63);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    z-index: 1;
+}
+
+.messagebox .fileupload {
+    outline: none;
+}
+
+.fileupload .fa-plus-circle {
+    color: rgb(171, 171, 171);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+}
+
+.messagebox .fileupload:hover > .fa-plus-circle {
+    color: rgb(255, 255, 255)
+}
+
 .messagebox .messageinput {
     width: calc(100% - 30px);
     height: 35px;
@@ -526,7 +557,7 @@ body {
     margin-right: 15px;
     border: none;
     padding: 7px;
-    padding-left: 10px;
+    padding-left: 50px;
     padding-right: 10px;
     color: rgb(255, 255, 255);
     background-color: rgb(64, 68, 75);

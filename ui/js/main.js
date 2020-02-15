@@ -235,6 +235,15 @@ function openURL(url) {
 	astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': url}), function(message) {return});
 }
 
+function triggerUpload() {
+	document.getElementById("fileupload").click();
+}
+
+function completeUpload(files) {
+	astilectron.sendMessage(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'path': files[0].path, 'name': files[0].name, 'mime': files[0].type})}), function(message) {return});
+	document.getElementById("fileupload").files = nil;
+}
+
 window.shiftHeld = false
 
 document.getElementById("messageinput").addEventListener("keyup", function(event) {

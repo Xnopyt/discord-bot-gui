@@ -79,6 +79,9 @@ func main() {
 
 			case "openURL":
 				browser.OpenURL(msg.Content)
+
+			case "sendFile":
+				sendFile(msg.Content)
 			}
 		}
 		return nil

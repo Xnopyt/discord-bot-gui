@@ -106,7 +106,8 @@
                     </div>
                 </div>
                 <div class="inputborder"></div>
-                <textarea id="messageinput" type="text" class="messageinput" placeholder="Message #General"></textarea>
+                <button class="fileupload" onclick="triggerUpload()"><i class="fas fa-plus-circle"></i></button>
+                <textarea id="messageinput" class="messageinput" placeholder="Message #General"></textarea>
             </div>
             <div class="memberbar" id="members">
                 <p class="memberdesc">MEMBERS - 1</p>
@@ -118,5 +119,6 @@
         </div>
     </div>
     <script>hljs.initHighlightingOnLoad();</script>
+    <input type="file" display="hidden" id="fileupload" onchange="completeUpload(this.files)">
 </body>
 </html>

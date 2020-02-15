@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"html/template"
@@ -24,6 +25,14 @@ var imgMime = []string{
 	".ico",
 	".png",
 }
+
+type fileAttachment struct {
+	Path string `json:"path"`
+	Name string `json:"name"`
+	Mime string `json:"mime"`
+}
+
+const maxUpload = 8388119
 
 var token string
 var proccessingMsg = false
@@ -136,7 +145,7 @@ func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	if m.Type == 7 {
 		return
 	}
-	eval(`document.getElementById("`+m.ID+`").innerHTML = ""`)
+	eval(`document.getElementById("` + m.ID + `").innerHTML = ""`)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	processChannelMessage(&discordgo.MessageCreate{Message: m.Message}, nil, wg)
@@ -151,7 +160,7 @@ func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
 	if m.Type == 7 {
 		return
 	}
-	eval(`document.getElementById("`+m.ID+`").parentNode.removeChild(document.getElementById("`+m.ID+`"));`)
+	eval(`document.getElementById("` + m.ID + `").parentNode.removeChild(document.getElementById("` + m.ID + `"));`)
 }
 
 func selectTargetServer(id string) {
@@ -265,20 +274,20 @@ func setActiveChannel(id string) {
 
 func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member, wg *sync.WaitGroup) {
 	defer func(id string) {
-        if r := recover(); r != nil {
+		if r := recover(); r != nil {
 			msg, err := ses.ChannelMessage(currentChannel, id)
 			if err != nil {
 				return
 			}
-			eval(`document.getElementById("`+id+`").innerHTML = ""`)
+			eval(`document.getElementById("` + id + `").innerHTML = ""`)
 			wg := &sync.WaitGroup{}
 			wg.Add(1)
 			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil, wg)
 			wg.Wait()
 			eval(`var messages = document.getElementById("messages").parentNode;
 			messages.scrollTop = messages.scrollHeight;`)
-        }
-    }(m.ID)
+		}
+	}(m.ID)
 	defer wg.Done()
 	var uname string
 	var member *discordgo.Member
@@ -306,7 +315,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	var embeds string
 	for _, z := range m.Embeds {
 		embeds += processEmbed(z) + `
-		document.getElementById("`+m.ID+`").appendChild(div);
+		document.getElementById("` + m.ID + `").appendChild(div);
 		`
 	}
 	body := parseMarkdownAndMentions(m)
@@ -388,4 +397,31 @@ func loadDMChannel(id string) {
 	document.getElementById("mainbox").style.visibility = "visible";
 	document.getElementById("blocker").style.display = "none"`)
 	currentChannel = channel.ID
+}
+
+func sendFile(s string) {
+	var file fileAttachment
+	json.Unmarshal([]byte(s), &file)
+	f, err := os.Open(file.Path)
+	if err != nil {
+		eval(`alert("Unable to open selected file!");`)
+		return
+	}
+	finfo, _ := f.Stat()
+	size := finfo.Size()
+	if size > maxUpload {
+		eval(`alert("Max file size exceeded!");`)
+		return
+	}
+	var msg discordgo.MessageSend
+	msg.Content = ""
+	msg.Files = append(msg.Files, &discordgo.File{
+		Name:        file.Name,
+		ContentType: file.Mime,
+		Reader:      f,
+	})
+	_, err = ses.ChannelMessageSendComplex(currentChannel, &msg)
+	if err != nil {
+		eval(`alert("Failed to send file!");`)
+	}
 }
