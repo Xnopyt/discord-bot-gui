@@ -668,6 +668,8 @@ body {
 
 .msgbody pre {
     font-family: inherit;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .msgbody .link {
