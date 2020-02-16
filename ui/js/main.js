@@ -264,4 +264,14 @@ document.getElementById("messageinput").addEventListener("keydown", function(eve
 	}
 });
 
+const emoji = document.getElementById('emojiselect');
+const picker = new EmojiButton();
+	 
+picker.on('emoji', emoji => {
+	document.getElementById("messageinput").value += emoji;
+});
+emoji.addEventListener('click', () => {
+	picker.pickerVisible ? picker.hidePicker() : picker.showPicker(emoji);
+});
+
 document.getElementById("blocker").style.backgroundColor = "rgba(0,0,0,0.4)";
