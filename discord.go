@@ -205,12 +205,8 @@ func parseTime(m *discordgo.MessageCreate) string {
 		}
 		ctime = strconv.Itoa(hr) + ":" + min
 		y, m, d := times.Date()
-		cy, cm, cd := time.Now().Date()
 		im := int(m)
-		icm := int(cm)
-		if y != cy || im != icm || d != cd {
-			ctime = strconv.Itoa(d) + "/" + strconv.Itoa(im) + "/" + strconv.Itoa(y)[2:]
-		}
+		ctime = strconv.Itoa(d) + "/" + strconv.Itoa(im) + "/" + strconv.Itoa(y)[2:] + " at " + ctime
 	}
 	return ctime
 }
