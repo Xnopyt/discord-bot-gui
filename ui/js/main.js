@@ -128,6 +128,7 @@ function selectdmchannel(id, name) {
 }
 
 function fillmessage(id, uname, avatar, timetext, bodytext, selfmention) {
+	bodytext = decodeURIComponent(bodytext.replace(/\+/g, ' '));;
     var msg = document.getElementById(id);
 	msg.className = "message";
 	var head = document.createElement("div");

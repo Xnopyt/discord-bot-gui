@@ -6,6 +6,7 @@ import (
 	"html"
 	"html/template"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -320,7 +321,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	if strings.Contains(body, "<div class='selfmention'") {
 		selfmention = true
 	}
-	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), body, selfmention))
+	eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention))
 	eval(embeds)
 	for _, z := range m.Attachments {
 		var isImg = false
