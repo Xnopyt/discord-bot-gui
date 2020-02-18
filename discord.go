@@ -35,6 +35,8 @@ type fileAttachment struct {
 
 const maxUpload = 8388119
 
+var typing bool
+
 var token string
 var proccessingMsg = false
 
@@ -421,4 +423,14 @@ func sendFile(s string) {
 	if err != nil {
 		eval(`alert("Failed to send file!");`)
 	}
+}
+
+func updateTyping() {
+	if typing {
+		return
+	}
+	ses.ChannelTyping(currentChannel)
+	typing = true
+	time.Sleep(time.Second * 3)
+	typing = false
 }

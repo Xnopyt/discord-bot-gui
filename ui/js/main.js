@@ -263,6 +263,7 @@ document.getElementById("messageinput").addEventListener("keydown", function(eve
 	if (event.keyCode === 16) {
 		window.shiftHeld = true
 	}
+	astilectron.sendMessage("updateTyping", function(message) {return});
 });
 
 const emoji = document.getElementById('emojiselect');
