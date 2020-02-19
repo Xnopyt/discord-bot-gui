@@ -160,6 +160,7 @@ func mainSetup() {
 		document.getElementById("cdiscriminator").innerHTML = '#%s';
 		document.getElementById("cavatar").src = %q;
 	`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
+	eval(fmt.Sprintf(`document.title = "Discord Bot GUI - %s#%s";`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
 	loadServers()
 	loadDMMembers()
 }
