@@ -61,6 +61,15 @@ body {
     vertical-align: middle;
     margin-bottom: 10px;
     position: relative;
+    transition: linear 0.2s;
+}
+
+.server .selector {
+    height: 18px;
+    width: 0px;
+    position: fixed;
+    margin-top: 15px;
+    left: 0;
 }
 
 .sidenav .server:hover {
@@ -77,15 +86,18 @@ body {
     left: 0;
     border-radius: 20%;
     margin-top: 15px;
+    transition: linear 0.2s;
 }
 
 .sidenav .server.selected {
     background-color: rgb(114, 137, 218);
     border-radius: 35%;
+    transition: linear 0.2s;
 }
 
 .sidenav .server.selected > img {
     border-radius: 35%;
+    transition: linear 0.2s;
 }
 
 .sidenav .server.selected > .selector {
@@ -96,6 +108,7 @@ body {
     left: 0;
     border-radius: 20%;
     margin-top: 6px;
+    transition: linear 0.2s;
 }
 
 .sidenav p {
@@ -110,6 +123,7 @@ body {
     width: 48px;
     border-radius: 100%;
     pointer-events: none;
+    transition: linear 0.2s;
 }
 
 .sidenav .server:hover > img {
