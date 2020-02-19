@@ -6,6 +6,20 @@ A electron based graphical interface for sending and reciving messages with a di
 ![Screenshot 1](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/webview/screenshots/screenshot1.png "Screenshot 1")
 ![Screenshot 2](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/webview/screenshots/screenshot2.png "Screenshot 2")
 
+## Credits
+
+### JavaScript Libraries
+Emoji Picker by joeattardi - https://github.com/joeattardi/emoji-button
+
+### Golang Libraries
+Astilectron  - https://github.com/asticode/go-astilectron<br />
+DiscordGo by bwmarrin - https://github.com/bwmarrin/discordgo<br />
+Mux by Gorilla - https://github.com/gorilla/mux<br />
+XURLs by mvdan - https://github.com/mvdan/xurls
+
+### CSS
+Loading circle from https://loading.io/css
+
 ## Copyright
 ```
  Copyright (C) 2019-2020  Billy Dalton
