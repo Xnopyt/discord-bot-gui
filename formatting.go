@@ -240,13 +240,22 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 				div.appendChild(vid);
 				`
 	}
-	if z.Video == nil && z.Image == nil && z.Thumbnail != nil {
+	if z.Video == nil && z.Image == nil && z.Thumbnail != nil && z.Description != "" {
 		c += `var imageattach = document.createElement("div");
 				imageattach.className = "imageattachment";
 				var img = document.createElement("img");
 				img.style.maxHeight = "80px";
 				img.style.maxWidth = "80px";
 				img.style.display = "inline-block";
+				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
+				imageattach.appendChild(img);
+				div.appendChild(img);
+				`
+	}
+	if z.Video == nil && z.Image == nil && z.Thumbnail != nil && z.Description == "" {
+		c += `var imageattach = document.createElement("div");
+				imageattach.className = "imageattachment";
+				var img = document.createElement("img");
 				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
 				imageattach.appendChild(img);
 				div.appendChild(img);
