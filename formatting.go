@@ -229,6 +229,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 				imageattach.className = "imageattachment";
 				var img = document.createElement("img");
 				img.src = "` + html.EscapeString(z.Image.URL) + `";
+				img.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Image.URL) + `'}), function(message) {return});");
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
@@ -248,6 +249,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 				img.style.maxWidth = "80px";
 				img.style.display = "inline-block";
 				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
+				img.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Thumbnail.URL) + `'}), function(message) {return});");
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
@@ -257,6 +259,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 				imageattach.className = "imageattachment";
 				var img = document.createElement("img");
 				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
+				img.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Thumbnail.URL) + `'}), function(message) {return});");
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
