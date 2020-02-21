@@ -754,6 +754,7 @@ body {
     width: auto;
     display: inline-block;
     cursor: pointer;
+    max-width: 100%;
 }
 
 .msgbody .link:hover {
