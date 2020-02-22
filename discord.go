@@ -183,7 +183,13 @@ func selectTargetServer(id string) {
 				nchan = v
 				i = true
 			}
-			eval(fmt.Sprintf(`addchannel(%q, %q);`, v.ID, html.EscapeString(v.Name)))
+			perms, err := ses.State.UserChannelPermissions(ses.State.User.ID, v.ID)
+			if err != nil {
+				continue
+			}
+			if perms&0x00000400 != 0 {
+				eval(fmt.Sprintf(`addchannel(%q, %q);`, v.ID, html.EscapeString(v.Name)))
+			}
 		}
 	}
 	currentServer = id
