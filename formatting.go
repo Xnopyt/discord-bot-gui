@@ -279,7 +279,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 		}
 		c += `var descrip = document.createElement("div");
 				descrip.className = "descrip";
-				descrip.innerHTML = "` + description + `";
+				descrip.innerHTML = "` + strings.ReplaceAll(description, "\n", "<br />") + `";
 				`
 		if z.Thumbnail != nil {
 			c += `descrip.style.width = "calc(100% - 90px)";
@@ -293,7 +293,7 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 	if z.Footer != nil {
 		c += `var footer = document.createElement("div");
 				footer.className = "footer";
-				footer.innerHTML = "` + html.EscapeString(z.Footer.Text) + `";
+				footer.innerHTML = "` + strings.ReplaceAll(html.EscapeString(z.Footer.Text), "\n", "<br />") + `";
 				div.appendChild(footer);
 				`
 	}
