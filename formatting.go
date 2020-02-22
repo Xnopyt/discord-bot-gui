@@ -303,9 +303,33 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 				`
 	}
 	if z.Footer != nil {
+		footer := processCodeblocks(html.EscapeString(z.Footer.Text))
+		markdownstrings := processedCblock.Split(footer, -1)
+		for _, v := range markdownstrings {
+			footer = strings.Replace(footer, v, processStyles(v), 1)
+		}
+		urlStrings := processedCblock.Split(footer, -1)
+		for _, v := range urlStrings {
+			rep := xurls.Strict.FindAllString(v, -1)
+			for _, x := range rep {
+				footer = strings.Replace(footer, x, `<div class='link' onclick=openURL('`+x+`')>`+x+`</div>`, -1)
+			}
+		}
+		mentionstrings := processedCblock.Split(footer, -1)
+		for _, v := range mentionstrings {
+			mention, err := formatMoreMentions(ses, v, m)
+			if err != nil {
+				mention = formatMentions(v, m)
+			}
+			footer = strings.Replace(footer, v, mention, -1)
+		}
+		emojistrings := processedCblock.Split(footer, -1)
+		for _, v := range emojistrings {
+			footer = strings.Replace(footer, v, processNonUnicodeEmoji(v), 1)
+		}
 		c += `var footer = document.createElement("div");
 				footer.className = "footer";
-				footer.innerHTML = "` + strings.ReplaceAll(html.EscapeString(z.Footer.Text), "\n", "<br />") + `";
+				footer.innerHTML = "` + strings.ReplaceAll(footer, "\n", "<br />") + `";
 				div.appendChild(footer);
 				`
 	}
