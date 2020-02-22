@@ -319,7 +319,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	}
 	var embeds string
 	for _, z := range m.Embeds {
-		embeds += processEmbed(z) + `
+		embeds += processEmbed(z, m) + `
 		document.getElementById("` + m.ID + `").appendChild(div);
 		`
 	}

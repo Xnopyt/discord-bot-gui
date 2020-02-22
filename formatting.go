@@ -33,7 +33,7 @@ func formatMentions(c string, m *discordgo.MessageCreate) (content string) {
 }
 
 func formatMoreMentions(s *discordgo.Session, c string, m *discordgo.MessageCreate) (content string, err error) {
-	var patternChannels = regexp.MustCompile("&lt;#[^>]*&gt;")
+	var patternChannels = regexp.MustCompile("&lt;#\\d*&gt;")
 	content = c
 
 	if !s.StateEnabled {
@@ -85,7 +85,7 @@ func formatMoreMentions(s *discordgo.Session, c string, m *discordgo.MessageCrea
 	content = patternChannels.ReplaceAllStringFunc(content, func(mention string) string {
 		channel, err := s.State.Channel(mention[5 : len(mention)-4])
 		if err != nil || channel.Type == discordgo.ChannelTypeGuildVoice {
-			return html.EscapeString(mention)
+			return mention
 		}
 
 		return "<div class='mention'>#" + html.EscapeString(channel.Name) + "</div>"
@@ -195,7 +195,7 @@ func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
 	return
 }
 
-func processEmbed(z *discordgo.MessageEmbed) (c string) {
+func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c string) {
 	c = `var div = document.createElement("div");
 		div.classList.add("embed");
 		div.style.borderLeft = "4px solid #` + fmt.Sprintf("%06x", z.Color) + `";
@@ -276,6 +276,18 @@ func processEmbed(z *discordgo.MessageEmbed) (c string) {
 			for _, x := range rep {
 				description = strings.Replace(description, x, `<div class='link' onclick=openURL('`+x+`')>`+x+`</div>`, -1)
 			}
+		}
+		mentionstrings := processedCblock.Split(description, -1)
+		for _, v := range mentionstrings {
+			mention, err := formatMoreMentions(ses, v, m)
+			if err != nil {
+				mention = formatMentions(v, m)
+			}
+			description = strings.Replace(description, v, mention, -1)
+		}
+		emojistrings := processedCblock.Split(description, -1)
+		for _, v := range emojistrings {
+			description = strings.Replace(description, v, processNonUnicodeEmoji(v), 1)
 		}
 		c += `var descrip = document.createElement("div");
 				descrip.className = "descrip";
