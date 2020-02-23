@@ -78,7 +78,9 @@ func main() {
 				loadDMChannel(msg.Content)
 
 			case "openURL":
-				browser.OpenURL(msg.Content)
+				if msg.Content != "" {
+					browser.OpenURL(msg.Content)
+				}
 
 			case "sendFile":
 				sendFile(msg.Content)
