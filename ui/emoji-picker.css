@@ -125,7 +125,7 @@
   }
   
   .emoji-picker__emoji:focus, .emoji-picker__emoji:hover {
-    background: #E8F4F9;
+    background: #4F81E5;
   }
   
   .emoji-picker__search-container {
@@ -189,7 +189,7 @@
   }
   
   .emoji-picker__variant-popup {
-    background: #FFFFFF;
+    background: rgb(31, 33, 36);
     margin: 0.5em;
     padding: 0.5em;
     text-align: center;
