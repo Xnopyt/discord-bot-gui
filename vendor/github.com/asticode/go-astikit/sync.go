@@ -3,9 +3,15 @@ package astikit
 import (
 	"bytes"
 	"context"
+	"errors"
+	"fmt"
+	"runtime"
 	"sync"
+	"sync/atomic"
+	"time"
 )
 
+// Chan constants
 const (
 	ChanAddStrategyBlockWhenStarted = "block.when.started"
 	ChanAddStrategyNoBlock          = "no.block"
@@ -24,8 +30,7 @@ type Chan struct {
 	mc       *sync.Mutex // Locks ctx
 	mf       *sync.Mutex // Locks fs
 	o        ChanOptions
-	oStart   *sync.Once
-	oStop    *sync.Once
+	running  uint32
 	statWait *DurationPercentageStat
 }
 
@@ -48,32 +53,31 @@ type ChanOptions struct {
 // NewChan creates a new Chan
 func NewChan(o ChanOptions) *Chan {
 	return &Chan{
-		c:      sync.NewCond(&sync.Mutex{}),
-		mc:     &sync.Mutex{},
-		mf:     &sync.Mutex{},
-		o:      o,
-		oStart: &sync.Once{},
-		oStop:  &sync.Once{},
+		c:  sync.NewCond(&sync.Mutex{}),
+		mc: &sync.Mutex{},
+		mf: &sync.Mutex{},
+		o:  o,
 	}
 }
 
-// Start starts the chan by looping through functions in the buffer and executing them if any, or waiting for a new one
-// otherwise
+// Start starts the chan by looping through functions in the buffer and
+// executing them if any, or waiting for a new one otherwise
 func (c *Chan) Start(ctx context.Context) {
 	// Make sure to start only once
-	c.oStart.Do(func() {
+	if atomic.CompareAndSwapUint32(&c.running, 0, 1) {
+		// Update status
+		defer atomic.StoreUint32(&c.running, 0)
+
 		// Create context
 		c.mc.Lock()
 		c.ctx, c.cancel = context.WithCancel(ctx)
+		d := c.ctx.Done()
 		c.mc.Unlock()
-
-		// Reset once
-		c.oStop = &sync.Once{}
 
 		// Handle context
 		go func() {
 			// Wait for context to be done
-			<-c.ctx.Done()
+			<-d
 
 			// Signal
 			c.c.L.Lock()
@@ -129,21 +133,16 @@ func (c *Chan) Start(ctx context.Context) {
 			c.fs = c.fs[1:]
 			c.mf.Unlock()
 		}
-	})
+	}
 }
 
 // Stop stops the chan
 func (c *Chan) Stop() {
-	// Make sure to stop only once
-	c.oStop.Do(func() {
-		// Cancel context
-		if c.cancel != nil {
-			c.cancel()
-		}
-
-		// Reset once
-		c.oStart = &sync.Once{}
-	})
+	c.mc.Lock()
+	if c.cancel != nil {
+		c.cancel()
+	}
+	c.mc.Unlock()
 }
 
 // Add adds a new item to the chan
@@ -332,4 +331,150 @@ func (l *GoroutineLimiter) Do(fn GoroutineLimiterFunc) (err error) {
 		fn()
 	}()
 	return
+}
+
+// Eventer represents an object that can dispatch simple events (name + payload)
+type Eventer struct {
+	c  *Chan
+	hs map[string][]EventerHandler
+	mh *sync.Mutex
+}
+
+// EventerOptions represents Eventer options
+type EventerOptions struct {
+	Chan ChanOptions
+}
+
+// EventerHandler represents a function that can handle the payload of an event
+type EventerHandler func(payload interface{})
+
+// NewEventer creates a new eventer
+func NewEventer(o EventerOptions) *Eventer {
+	return &Eventer{
+		c:  NewChan(o.Chan),
+		hs: make(map[string][]EventerHandler),
+		mh: &sync.Mutex{},
+	}
+}
+
+// On adds an handler for a specific name
+func (e *Eventer) On(name string, h EventerHandler) {
+	// Lock
+	e.mh.Lock()
+	defer e.mh.Unlock()
+
+	// Add handler
+	e.hs[name] = append(e.hs[name], h)
+}
+
+// Dispatch dispatches a payload for a specific name
+func (e *Eventer) Dispatch(name string, payload interface{}) {
+	// Lock
+	e.mh.Lock()
+	defer e.mh.Unlock()
+
+	// No handlers
+	hs, ok := e.hs[name]
+	if !ok {
+		return
+	}
+
+	// Loop through handlers
+	for _, h := range hs {
+		func(h EventerHandler) {
+			// Add to chan
+			e.c.Add(func() {
+				h(payload)
+			})
+		}(h)
+	}
+}
+
+// Start starts the eventer. It is blocking
+func (e *Eventer) Start(ctx context.Context) {
+	e.c.Start(ctx)
+}
+
+// Stop stops the eventer
+func (e *Eventer) Stop() {
+	e.c.Stop()
+}
+
+// Reset resets the eventer
+func (e *Eventer) Reset() {
+	e.c.Reset()
+}
+
+// RWMutex represents a RWMutex capable of logging its actions to ease deadlock debugging
+type RWMutex struct {
+	c string // Last successful caller
+	l SeverityLogger
+	m *sync.RWMutex
+	n string // Name
+}
+
+// RWMutexOptions represents RWMutex options
+type RWMutexOptions struct {
+	Logger StdLogger
+	Name   string
+}
+
+// NewRWMutex creates a new RWMutex
+func NewRWMutex(o RWMutexOptions) *RWMutex {
+	return &RWMutex{
+		l: AdaptStdLogger(o.Logger),
+		m: &sync.RWMutex{},
+		n: o.Name,
+	}
+}
+
+func (m *RWMutex) caller() (o string) {
+	if _, file, line, ok := runtime.Caller(2); ok {
+		o = fmt.Sprintf("%s:%d", file, line)
+	}
+	return
+}
+
+// Lock write locks the mutex
+func (m *RWMutex) Lock() {
+	c := m.caller()
+	m.l.Debugf("astikit: requesting lock for %s at %s", m.n, c)
+	m.m.Lock()
+	m.l.Debugf("astikit: lock acquired for %s at %s", m.n, c)
+	m.c = c
+}
+
+// Unlock write unlocks the mutex
+func (m *RWMutex) Unlock() {
+	m.m.Unlock()
+	m.l.Debugf("astikit: unlock executed for %s", m.n)
+}
+
+// RLock read locks the mutex
+func (m *RWMutex) RLock() {
+	c := m.caller()
+	m.l.Debugf("astikit: requesting rlock for %s at %s", m.n, c)
+	m.m.RLock()
+	m.l.Debugf("astikit: rlock acquired for %s at %s", m.n, c)
+	m.c = c
+}
+
+// RUnlock read unlocks the mutex
+func (m *RWMutex) RUnlock() {
+	m.m.RUnlock()
+	m.l.Debugf("astikit: unlock executed for %s", m.n)
+}
+
+// IsDeadlocked checks whether the mutex is deadlocked with a given timeout
+// and returns the last caller
+func (m *RWMutex) IsDeadlocked(timeout time.Duration) (bool, string) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	go func() {
+		m.m.Lock()
+		cancel()
+		m.m.Unlock()
+	}()
+	<-ctx.Done()
+	return errors.Is(ctx.Err(), context.DeadlineExceeded), m.c
 }
