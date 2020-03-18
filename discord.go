@@ -33,7 +33,16 @@ type fileAttachment struct {
 	Mime string `json:"mime"`
 }
 
+type emojiAliases struct {
+	Emojis []struct {
+		Aliases []string `json:"aliases"`
+		Unicode string   `json:"unicode"`
+	} `json:"emojis"`
+}
+
 const maxUpload = 8388119
+
+var eAliases emojiAliases
 
 var typing bool
 

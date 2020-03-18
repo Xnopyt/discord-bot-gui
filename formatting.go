@@ -154,6 +154,7 @@ func processCodeblocks(c string) (content string) {
 }
 
 var customemoji = regexp.MustCompile("&lt;:.*&gt;")
+var aliasedemoji = regexp.MustCompile(":(\\w)+:")
 
 func processNonUnicodeEmoji(c string) (content string) {
 	content = c
@@ -161,6 +162,23 @@ func processNonUnicodeEmoji(c string) (content string) {
 	for _, v := range rep {
 		emoji := "https://cdn.discordapp.com/emojis/" + strings.TrimSuffix(strings.Split(v, ":")[2], "&gt;")
 		content = strings.Replace(content, v, "<img src='"+emoji+"' class='customemoji'>", 1)
+	}
+	rep = aliasedemoji.FindAllString(content, -1)
+	for _, v := range rep {
+		alias := v[1 : len(v)-1]
+		z := false
+		for _, x := range eAliases.Emojis {
+			for _, y := range x.Aliases {
+				if y == alias {
+					content = strings.Replace(content, v, x.Unicode, 1)
+					z = true
+					break
+				}
+			}
+			if z {
+				break
+			}
+		}
 	}
 	return
 }

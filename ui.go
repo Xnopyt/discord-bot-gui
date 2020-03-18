@@ -38,6 +38,7 @@ var evalQueue = make(chan string)
 var devToolsActive = false
 
 func init() {
+	json.Unmarshal(MustAsset("ui/assets/emojialiases.json"), &eAliases)
 	wvCallbacks = make(map[string]func())
 
 	wvCallbacks["loginSetup"] = loginSetup
