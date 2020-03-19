@@ -1,36 +1,21 @@
 # github.com/asticode/go-astikit v0.5.0
 github.com/asticode/go-astikit
-# github.com/asticode/go-astilectron v0.10.1
+# github.com/asticode/go-astilectron v0.12.4
 github.com/asticode/go-astilectron
-# github.com/asticode/go-astilog v1.4.0
-github.com/asticode/go-astilog
 # github.com/bwmarrin/discordgo v0.20.2
 github.com/bwmarrin/discordgo
 # github.com/gorilla/mux v1.7.3
 github.com/gorilla/mux
 # github.com/gorilla/websocket v1.4.1
 github.com/gorilla/websocket
-# github.com/konsorten/go-windows-terminal-sequences v1.0.2
-github.com/konsorten/go-windows-terminal-sequences
-# github.com/mattn/go-colorable v0.1.4
-github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.11
-github.com/mattn/go-isatty
 # github.com/mvdan/xurls v1.1.0
 github.com/mvdan/xurls
 # github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 github.com/pkg/browser
-# github.com/pkg/errors v0.8.1
-github.com/pkg/errors
-# github.com/sirupsen/logrus v1.4.2
-github.com/sirupsen/logrus
 # golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876
 golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
-golang.org/x/crypto/ssh/terminal
 # golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8
 golang.org/x/sys/cpu
-golang.org/x/sys/unix
-golang.org/x/sys/windows

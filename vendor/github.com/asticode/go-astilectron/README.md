@@ -52,7 +52,7 @@ To import `go-astilectron` run:
 
 ```go
 // Initialize astilectron
-var a, _ = astilectron.New(astilectron.Options{
+var a, _ = astilectron.New(log.New(os.StdErr, "", 0), astilectron.Options{
     AppName: "<your app name>",
     AppIconDefaultPath: "<your .png icon>", // If path is relative, it must be relative to the data directory
     AppIconDarwinPath:  "<your .icns icon>", // Same here
@@ -112,13 +112,13 @@ w.CloseDevTools()
 ```go
 // Add a listener on Astilectron
 a.On(astilectron.EventNameAppCrash, func(e astilectron.Event) (deleteListener bool) {
-    astilog.Error("App has crashed")
+    log.Println("App has crashed")
     return
 })
 
 // Add a listener on the window
 w.On(astilectron.EventNameWindowEventResize, func(e astilectron.Event) (deleteListener bool) {
-    astilog.Info("Window resized")
+    log.Println("Window resized")
     return
 })
 ```
@@ -164,7 +164,7 @@ w.SendMessage("hello", func(m *astilectron.EventMessage) {
         m.Unmarshal(&s)
 
         // Process message
-        astilog.Debugf("received %s", s)
+        log.Printf("received %s\n", s)
 })
 ```
 
@@ -234,7 +234,7 @@ var m = a.NewMenu([]*astilectron.MenuItemOptions{
             {
                 Label: astikit.StrPtr("Normal 2"),
                 OnClick: func(e astilectron.Event) (deleteListener bool) {
-                    astilog.Info("Normal 2 item has been clicked")
+                    log.Println("Normal 2 item has been clicked")
                     return
                 },
             },
@@ -274,7 +274,7 @@ mi, _ := m.Item(1, 0)
 // Add listener manually
 // An OnClick listener has already been added in the options directly for another menu item
 mi.On(astilectron.EventNameMenuItemEventClicked, func(e astilectron.Event) bool {
-    astilog.Infof("Menu item has been clicked. 'Checked' status is now %t", *e.MenuItemOptions.Checked)
+    log.Printf("Menu item has been clicked. 'Checked' status is now %t\n", *e.MenuItemOptions.Checked)
     return false
 })
 
@@ -380,12 +380,12 @@ var n = a.NewNotification(&astilectron.NotificationOptions{
 
 // Add listeners
 n.On(astilectron.EventNameNotificationEventClicked, func(e astilectron.Event) (deleteListener bool) {
-	astilog.Debug("the notification has been clicked!")
+	log.Println("the notification has been clicked!")
 	return
 })
 // Only for MacOSX
 n.On(astilectron.EventNameNotificationEventReplied, func(e astilectron.Event) (deleteListener bool) {
-	astilog.Debugf("the user has replied to the notification: %s", e.Reply)
+	log.Printf("the user has replied to the notification: %s\n", e.Reply)
 	return
 })
 
@@ -442,49 +442,13 @@ m.Create()
 
 ## Dialogs
 
-### Error box
+Add the following line at the top of your javascript file :
 
 ```javascript
-// This will wait for the astilectron namespace to be ready
-document.addEventListener('astilectron-ready', function() {
-    // This will open the dialog
-    astilectron.showErrorBox("My Title", "My content")
-})
+const { dialog } = require('electron').remote
 ```
 
-### Message box
-
-```javascript
-// This will wait for the astilectron namespace to be ready
-document.addEventListener('astilectron-ready', function() {
-    // This will open the dialog
-    astilectron.showMessageBox({message: "My message", title: "My Title"})
-})
-```
-
-### Open dialog
-
-```javascript
-// This will wait for the astilectron namespace to be ready
-document.addEventListener('astilectron-ready', function() {
-    // This will open the dialog
-    astilectron.showOpenDialog({properties: ['openFile', 'multiSelections'], title: "My Title"}, function(paths) {
-        console.log("chosen paths are ", paths)
-    })
-})
-```
-
-### Save dialog
-
-```javascript
-// This will wait for the astilectron namespace to be ready
-document.addEventListener('astilectron-ready', function() {
-    // This will open the dialog
-    astilectron.showSaveDialog({title: "My title"}, function(filename) {
-        console.log("chosen filename is ", filename)
-    })
-})
-```
+Use the available [methods](https://github.com/electron/electron/blob/v7.1.10/docs/api/dialog.md).
 
 ## Basic auth
 

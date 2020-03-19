@@ -2,13 +2,12 @@ package astilectron
 
 import (
 	"context"
+	"fmt"
 	stdUrl "net/url"
 	"path/filepath"
 	"sync"
 
 	"github.com/asticode/go-astikit"
-	"github.com/asticode/go-astilog"
-	"github.com/pkg/errors"
 )
 
 // Window event names
@@ -69,6 +68,7 @@ var (
 type Window struct {
 	*object
 	callbackIdentifier *identifier
+	l                  astikit.SeverityLogger
 	m                  sync.Mutex // Locks o
 	o                  *WindowOptions
 	onMessageOnce      sync.Once
@@ -177,27 +177,30 @@ type WebPreferences struct {
 	Images                      *bool                  `json:"images,omitempty"`
 	Javascript                  *bool                  `json:"javascript,omitempty"`
 	MinimumFontSize             *int                   `json:"minimumFontSize,omitempty"`
-	NodeIntegration             *bool                  `json:"nodeIntegration,omitempty"`
-	NodeIntegrationInWorker     *bool                  `json:"nodeIntegrationInWorker,omitempty"`
-	Offscreen                   *bool                  `json:"offscreen,omitempty"`
-	Partition                   *string                `json:"partition,omitempty"`
-	Plugins                     *bool                  `json:"plugins,omitempty"`
-	Preload                     *string                `json:"preload,omitempty"`
-	Sandbox                     *bool                  `json:"sandbox,omitempty"`
-	ScrollBounce                *bool                  `json:"scrollBounce,omitempty"`
-	Session                     map[string]interface{} `json:"session,omitempty"`
-	TextAreasAreResizable       *bool                  `json:"textAreasAreResizable,omitempty"`
-	Webaudio                    *bool                  `json:"webaudio,omitempty"`
-	Webgl                       *bool                  `json:"webgl,omitempty"`
-	WebSecurity                 *bool                  `json:"webSecurity,omitempty"`
-	ZoomFactor                  *float64               `json:"zoomFactor,omitempty"`
+	// This attribute needs to be true at all time
+	// NodeIntegration             *bool                  `json:"nodeIntegration,omitempty"`
+	NodeIntegrationInWorker *bool                  `json:"nodeIntegrationInWorker,omitempty"`
+	Offscreen               *bool                  `json:"offscreen,omitempty"`
+	Partition               *string                `json:"partition,omitempty"`
+	Plugins                 *bool                  `json:"plugins,omitempty"`
+	Preload                 *string                `json:"preload,omitempty"`
+	Sandbox                 *bool                  `json:"sandbox,omitempty"`
+	ScrollBounce            *bool                  `json:"scrollBounce,omitempty"`
+	Session                 map[string]interface{} `json:"session,omitempty"`
+	TextAreasAreResizable   *bool                  `json:"textAreasAreResizable,omitempty"`
+	Webaudio                *bool                  `json:"webaudio,omitempty"`
+	Webgl                   *bool                  `json:"webgl,omitempty"`
+	WebSecurity             *bool                  `json:"webSecurity,omitempty"`
+	WebviewTag              *bool                  `json:"webviewTag,omitempty"`
+	ZoomFactor              *float64               `json:"zoomFactor,omitempty"`
 }
 
 // newWindow creates a new window
-func newWindow(ctx context.Context, o Options, p Paths, url string, wo *WindowOptions, d *dispatcher, i *identifier, wrt *writer) (w *Window, err error) {
+func newWindow(ctx context.Context, l astikit.SeverityLogger, o Options, p Paths, url string, wo *WindowOptions, d *dispatcher, i *identifier, wrt *writer) (w *Window, err error) {
 	// Init
 	w = &Window{
 		callbackIdentifier: newIdentifier(),
+		l:                  l,
 		o:                  wo,
 		object:             newObject(ctx, d, i, wrt, i.new()),
 	}
@@ -233,7 +236,7 @@ func newWindow(ctx context.Context, o Options, p Paths, url string, wo *WindowOp
 
 	// Basic parse
 	if w.url, err = stdUrl.Parse(url); err != nil {
-		err = errors.Wrapf(err, "std parsing of url %s failed", url)
+		err = fmt.Errorf("std parsing of url %s failed: %w", url, err)
 		return
 	}
 
@@ -241,7 +244,7 @@ func newWindow(ctx context.Context, o Options, p Paths, url string, wo *WindowOp
 	if w.url.Scheme == "" {
 		// Get absolute path
 		if url, err = filepath.Abs(url); err != nil {
-			err = errors.Wrapf(err, "getting absolute path of %s failed", url)
+			err = fmt.Errorf("getting absolute path of %s failed: %w", url, err)
 			return
 		}
 
@@ -388,7 +391,7 @@ func (w *Window) OnLogin(fn func(i Event) (username, password string, err error)
 		// Get username and password
 		username, password, err := fn(i)
 		if err != nil {
-			astilog.Error(errors.Wrap(err, "getting username and password failed"))
+			w.l.Error(fmt.Errorf("getting username and password failed: %w", err))
 			return
 		}
 
@@ -399,7 +402,7 @@ func (w *Window) OnLogin(fn func(i Event) (username, password string, err error)
 
 		// Send message back
 		if err = w.w.write(Event{CallbackID: i.CallbackID, Name: EventNameWebContentsEventLoginCallback, Password: password, TargetID: w.id, Username: username}); err != nil {
-			astilog.Error(errors.Wrap(err, "writing login callback message failed"))
+			w.l.Error(fmt.Errorf("writing login callback message failed: %w", err))
 			return
 		}
 		return
@@ -421,7 +424,7 @@ func (w *Window) OnMessage(l ListenerMessage) {
 					o.Message = newEventMessage(v)
 				}
 				if err := w.w.write(o); err != nil {
-					astilog.Error(errors.Wrap(err, "writing callback message failed"))
+					w.l.Error(fmt.Errorf("writing callback message failed: %w", err))
 				}
 			}
 			return
