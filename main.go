@@ -13,7 +13,8 @@ import (
 var wv *astilectron.Window
 
 func main() {
-	electronProvisioner := astilectron.NewDisembedderProvisioner(Asset, "ui/astilectron.zip", "ui/electron.zip")
+	var l astikit.StdLogger
+	electronProvisioner := astilectron.NewDisembedderProvisioner(Asset, "ui/astilectron.zip", "ui/electron.zip", l)
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		log.Fatal(err)
@@ -23,7 +24,7 @@ func main() {
 
 	go evaulator()
 
-	a, err := astilectron.New(astilectron.Options{AppName: "Discord Bot GUI"})
+	a, err := astilectron.New(l, astilectron.Options{AppName: "Discord Bot GUI"})
 	if err != nil {
 		log.Fatal(err)
 	}
