@@ -3,5 +3,6 @@ vendor/electron*
 vendor/status.json
 vendor/astilectron*
 ui/astilectron.zip
-ui/electron.zip
+ui/electron*.zip
 bindata.go
+bin

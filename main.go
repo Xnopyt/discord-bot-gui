@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net"
+	"runtime"
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
@@ -14,7 +15,8 @@ var wv *astilectron.Window
 
 func main() {
 	var l astikit.StdLogger
-	electronProvisioner := astilectron.NewDisembedderProvisioner(Asset, "ui/astilectron.zip", "ui/electron.zip", l)
+	electronzip := "ui/electron-" + runtime.GOOS + "_" + runtime.GOARCH + ".zip"
+	electronProvisioner := astilectron.NewDisembedderProvisioner(Asset, "ui/astilectron.zip", electronzip, l)
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		log.Fatal(err)

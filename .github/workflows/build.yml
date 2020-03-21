@@ -18,16 +18,15 @@ jobs:
 
     - name: Download dependencies
       run: |
-        go get -u github.com/Xnopyt/go-bindata
-        go get -u github.com/akavel/rsrc
+        make dep
+        make dep-linux
 
     - name: Build
       run: |
         export PATH=$PATH:$(go env GOPATH)/bin
-        ./xbuild-win.sh
+        make linux
     
     - name: Run Tests
       run: |
-        wget "https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/c2d2d82210e7fe0266ad975ec7672d98a441314a/bindata.go"
-        go fmt ./...
-        go vet ./...
+        export PATH=$PATH:$(go env GOPATH)/bin
+        make dep dep-linux test
