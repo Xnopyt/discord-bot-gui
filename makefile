@@ -14,6 +14,8 @@ BINARY_NAME_WIN64=$(BUILD_DIR)/discord-bot-gui_win64.exe
 BINARY_NAME_DARWIN=$(BUILD_DIR)/discord-bot-gui_darwin
 OUT_NAME_DARWIN=$(BINARY_NAME_DARWIN).zip
 
+.PHONY: all dist linux build test clean run win64 build-win64 win32 build-win32 darwin build-darwin dep dep-go dep-linux dep-win32 dep-win64 dep-darwin
+
 all: linux
 
 dist: linux darwin win32 win64
