@@ -25,10 +25,9 @@ build:
 	GO111MODULE=on GOOS=linux GOARCH=amd64 $(GOBUILD) -v -mod=vendor -o $(BINARY_NAME_LINUX)
 
 test:
-	export GO111MODULE=on
 	$(BINDATACMD) ./ui/...
-	$(GOFMT) ./...
-	$(GOVET) -v ./...
+	GO111MODULE=on $(GOFMT) ./...
+	GO111MODULE=on $(GOVET) -v ./...
 
 clean: 
 	$(GOCLEAN)
@@ -41,9 +40,7 @@ clean:
 	rm -f ui/electron-linux_amd64.zip
 	rm -f discord-bot-gui.syso
 
-run:
-	$(BINDATACMD) ./ui/...
-	GO111MODULE=on GOOS=linux GOARCH=amd64 $(GOBUILD) -v -mod=vendor -o $(BINARY_NAME_LINUX) ./...
+run: dep dep-linux build
 	./$(BINARY_NAME_LINUX)
 
 win64: dep dep-win64 test build-win64
