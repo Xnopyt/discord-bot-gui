@@ -103,6 +103,11 @@ func evaulator() {
 		msg.Content = jscript
 		m, _ := json.Marshal(msg)
 		wv.SendMessage(string(m), func(m *astilectron.EventMessage) {
+			var s string
+			m.Unmarshal(&s)
+			if s != "" {
+				log.Println("JS ERR: " + s)
+			}
 			done <- true
 		})
 		<-done

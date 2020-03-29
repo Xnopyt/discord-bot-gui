@@ -27,7 +27,12 @@
             console.log(electronMsg)
             var electronMsg = JSON.parse(message);
             if (electronMsg.type === "eval") {
-                eval(electronMsg.content);
+                try {
+                    eval(electronMsg.content);
+                }
+                catch(err) {
+                    return err.message;
+                }
                 return true
             }
         });
