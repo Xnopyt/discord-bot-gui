@@ -96,6 +96,7 @@ body {
     padding: 10px;
     color: rgb(255, 255, 255);
     font-size: 20px;
+    font-family: 'Red Hat Text', sans-serif;
 }
 
 .tokenInput:hover {
