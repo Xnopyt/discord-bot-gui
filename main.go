@@ -30,7 +30,7 @@ func main() {
 func webviewCallback(s string) {
 	callback, ok := wvCallbacks[s]
 	if ok {
-		callback()
+		go callback()
 	} else {
 		var msg uiMsg
 		err := json.Unmarshal([]byte(s), &msg)
@@ -39,27 +39,27 @@ func webviewCallback(s string) {
 		}
 		switch msg.Type {
 		case "connect":
-			connect(msg.Content)
+			go connect(msg.Content)
 
 		case "selectTargetServer":
-			selectTargetServer(msg.Content)
+			go selectTargetServer(msg.Content)
 
 		case "setActiveChannel":
-			setActiveChannel(msg.Content)
+			go setActiveChannel(msg.Content)
 
 		case "sendMessage":
-			sendMessage(msg.Content)
+			go sendMessage(msg.Content)
 
 		case "loadDMChannel":
-			loadDMChannel(msg.Content)
+			go loadDMChannel(msg.Content)
 
 		case "openURL":
 			if msg.Content != "" {
-				browser.OpenURL(msg.Content)
+				go browser.OpenURL(msg.Content)
 			}
 
 		case "sendFile":
-			sendFile(msg.Content)
+			go sendFile(msg.Content)
 		}
 	}
 }

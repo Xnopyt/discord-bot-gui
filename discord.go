@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -59,7 +58,9 @@ func connect(s string) {
 	var err error
 	ses, err = discordgo.New("Bot " + token)
 	if err != nil {
-		wv.Eval("fail()")
+		wv.Dispatch(func() {
+			wv.Eval("fail()")
+		})
 		return
 	}
 	ready := make(chan bool)
@@ -69,11 +70,15 @@ func connect(s string) {
 	ses.AddHandler(delMsg)
 	err = ses.Open()
 	if err != nil {
-		wv.Eval("fail()")
+		wv.Dispatch(func() {
+			wv.Eval("fail()")
+		})
 		return
 	}
 	<-ready
-	wv.Eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
+	wv.Dispatch(func() {
+		wv.Eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
+	})
 	mainSetup()
 }
 
@@ -88,6 +93,7 @@ func loadServers() {
 	if err != nil {
 		panic(err)
 	}
+	var evalQueue string
 	for _, v := range guilds {
 		guild, _ := ses.Guild(v.ID)
 		if guild.IconURL() == "" {
@@ -99,30 +105,36 @@ func loadServers() {
 				}
 				shortname += string(word[0])
 			}
-			wv.Eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, false, html.EscapeString(shortname)))
+			evalQueue += fmt.Sprintf("loadservers(%q, %q, %t, %q);\n", html.EscapeString(guild.Name), guild.ID, false, html.EscapeString(shortname))
 		} else {
-			wv.Eval(fmt.Sprintf(`loadservers(%q, %q, %t, %q)`, html.EscapeString(guild.Name), guild.ID, true, guild.IconURL()))
+			evalQueue += fmt.Sprintf("loadservers(%q, %q, %t, %q)\n", html.EscapeString(guild.Name), guild.ID, true, guild.IconURL())
 		}
 	}
+	wv.Dispatch(func() { wv.Eval(evalQueue) })
 }
 
 func loadDMMembers() {
-	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "block"`) })
+	time.Sleep(time.Second)
 	guilds, err := ses.UserGuilds(100, "", "")
 	if err != nil {
 		panic(err)
 	}
+	var evalQueue string
 	for _, v := range guilds {
 		m, err := ses.GuildMembers(v.ID, "", 1000)
 		if err == nil {
 			for _, x := range m {
 				if !x.User.Bot {
-					wv.Eval(fmt.Sprintf(`loaddmusers(%q,%q,%q)`, html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128")))
+					evalQueue += fmt.Sprintf("loaddmusers(%q,%q,%q);\n", html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128"))
 				}
 			}
 		}
 	}
-	wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+	wv.Dispatch(func() {
+		wv.Eval(evalQueue)
+		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+	})
 }
 
 func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -136,12 +148,8 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Type == 7 {
 		return
 	}
+	processChannelMessage(m, nil)
 	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`createmessage(%q)`, m.ID))
-		wg := &sync.WaitGroup{}
-		wg.Add(1)
-		processChannelMessage(m, nil, wg)
-		wg.Wait()
 		wv.Eval(`var messages = document.getElementById("messages").parentNode;
 		messages.scrollTop = messages.scrollHeight;`)
 		proccessingMsg = false
@@ -159,11 +167,7 @@ func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	if m.Type == 7 {
 		return
 	}
-	wv.Eval(`document.getElementById("` + m.ID + `").innerHTML = ""`)
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	processChannelMessage(&discordgo.MessageCreate{Message: m.Message}, nil, wg)
-	wg.Wait()
+	processChannelMessage(&discordgo.MessageCreate{Message: m.Message}, nil)
 	proccessingMsg = false
 }
 
@@ -174,20 +178,24 @@ func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
 	if m.Type == 7 {
 		return
 	}
-	wv.Eval(`document.getElementById("` + m.ID + `").parentNode.removeChild(document.getElementById("` + m.ID + `"));`)
+	wv.Dispatch(func() {
+		wv.Eval(`document.getElementById("` + m.ID + `").parentNode.removeChild(document.getElementById("` + m.ID + `"));`)
+	})
 }
 
 func selectTargetServer(id string) {
-	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "block"`) })
+	time.Sleep(time.Second)
 	guild, err := ses.Guild(id)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	wv.Eval(fmt.Sprintf(`selectserver(%q, %q);`, id, html.EscapeString(guild.Name)))
+	wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`selectserver(%q, %q);`, id, html.EscapeString(guild.Name))) })
 	chans, _ := ses.GuildChannels(id)
 	var nchan *discordgo.Channel
 	i := false
+	var evalQueue string
 	for _, v := range chans {
 		if v.Type == 0 {
 			if !i {
@@ -199,13 +207,16 @@ func selectTargetServer(id string) {
 				continue
 			}
 			if perms&0x00000400 != 0 {
-				wv.Eval(fmt.Sprintf(`addchannel(%q, %q);`, v.ID, html.EscapeString(v.Name)))
+				evalQueue += fmt.Sprintf("addchannel(%q, %q);\n", v.ID, html.EscapeString(v.Name))
 			}
 		}
 	}
+	wv.Dispatch(func() {
+		wv.Eval(evalQueue)
+	})
 	currentServer = id
 	setActiveChannel(nchan.ID)
-	wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })
 }
 
 func parseTime(m *discordgo.MessageCreate) string {
@@ -232,19 +243,23 @@ func parseTime(m *discordgo.MessageCreate) string {
 }
 
 func setActiveChannel(id string) {
-	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "block"`) })
+	time.Sleep(time.Second)
 	channel, err := ses.Channel(id)
 	if err != nil {
 		log.Println(err)
-		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+		wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })
 		return
 	}
 	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
-	wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);`, id, html.EscapeString(channel.Name)))
-	wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
-	wv.Eval(`document.getElementById("members").innerHTML = "";`)
-	wv.Eval(`resetmembers();`)
+	wv.Dispatch(func() {
+		wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);
+		document.getElementById("mainbox").style.visibility = "hidden";
+		document.getElementById("members").innerHTML = "";
+		resetmembers();`, id, html.EscapeString(channel.Name)))
+	})
 	var i = 0
+	var evalQueue string
 	for _, v := range memberCache {
 		perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
 		if err != nil {
@@ -258,10 +273,13 @@ func setActiveChannel(id string) {
 			} else {
 				uname = v.User.Username
 			}
-			wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, uname, v.User.AvatarURL("128")))
+			evalQueue += fmt.Sprintf("addmember(%q, %q);\n", uname, v.User.AvatarURL("128"))
 		}
 	}
-	wv.Eval(fmt.Sprintf(`setmembercount("%d");`, i))
+	evalQueue += fmt.Sprintf("setmembercount('%d');\n", i)
+	wv.Dispatch(func() {
+		wv.Eval(evalQueue)
+	})
 	msgs, err := ses.ChannelMessages(id, 18, "", "", "")
 	if err != nil {
 		log.Println(err)
@@ -271,40 +289,35 @@ func setActiveChannel(id string) {
 		opp := len(msgs) - 1 - i
 		msgs[i], msgs[opp] = msgs[opp], msgs[i]
 	}
-	wg := &sync.WaitGroup{}
 	for _, v := range msgs {
 		if v.Type == 7 {
 			continue
 		}
-		wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
-		wg.Add(1)
-		processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
+		processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache)
 	}
-	wg.Wait()
-	wv.Eval(`var messages = document.getElementById("messages").parentNode;
-	messages.scrollTop = messages.scrollHeight;
-	document.getElementById("mainbox").style.visibility = "visible";
-	document.getElementById("blocker").style.display = "none"`)
+	wv.Dispatch(func() {
+		wv.Eval(`var messages = document.getElementById("messages").parentNode;
+		messages.scrollTop = messages.scrollHeight;
+		document.getElementById("mainbox").style.visibility = "visible";
+		document.getElementById("blocker").style.display = "none"`)
+	})
 	currentChannel = id
 }
 
-func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member, wg *sync.WaitGroup) {
+func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member) {
 	defer func(id string) {
 		if r := recover(); r != nil {
 			msg, err := ses.ChannelMessage(currentChannel, id)
 			if err != nil {
 				return
 			}
-			wv.Eval(`document.getElementById("` + id + `").innerHTML = ""`)
-			wg := &sync.WaitGroup{}
-			wg.Add(1)
-			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil, wg)
-			wg.Wait()
-			wv.Eval(`var messages = document.getElementById("messages").parentNode;
+			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil)
+			wv.Dispatch(func() {
+				wv.Eval(`var messages = document.getElementById("messages").parentNode;
 			messages.scrollTop = messages.scrollHeight;`)
+			})
 		}
 	}(m.ID)
-	defer wg.Done()
 	var uname string
 	var member *discordgo.Member
 	var err error
@@ -340,13 +353,15 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 	if strings.Contains(body, "<div class='selfmention'") {
 		selfmention = true
 	}
-	wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention))
-	wv.Eval(embeds)
+	wv.Dispatch(func() {
+		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention))
+		wv.Eval(embeds)
+	})
 	for _, z := range m.Attachments {
 		var isImg = false
 		for _, v := range imgMime {
 			if strings.HasSuffix(z.URL, v) {
-				wv.Eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL))
+				wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL)) })
 				isImg = true
 				break
 			}
@@ -354,7 +369,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 		if isImg {
 			break
 		}
-		wv.Eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL))
+		wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL)) })
 	}
 }
 
@@ -371,11 +386,11 @@ func sendMessage(msg string) {
 }
 
 func loadDMChannel(id string) {
-	wv.Eval(`document.getElementById("blocker").style.display = "block"`)
+	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "block"`) })
 	channel, err := ses.UserChannelCreate(id)
 	if err != nil {
 		log.Println(err)
-		wv.Eval(`document.getElementById("blocker").style.display = "none"`)
+		wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })
 		return
 	}
 	user, err := ses.User(id)
@@ -383,14 +398,16 @@ func loadDMChannel(id string) {
 		log.Println(err)
 		return
 	}
-	wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
-	wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
-	wv.Eval(`resetmembers();`)
-	wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, ses.State.User.Username, ses.State.User.AvatarURL("128")))
-	for _, v := range channel.Recipients {
-		wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, v.Username, v.AvatarURL("128")))
-	}
-	wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
+	wv.Dispatch(func() {
+		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
+		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
+		wv.Eval(`resetmembers();`)
+		wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, ses.State.User.Username, ses.State.User.AvatarURL("128")))
+		for _, v := range channel.Recipients {
+			wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, v.Username, v.AvatarURL("128")))
+		}
+		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
+	})
 	msgs, err := ses.ChannelMessages(channel.ID, 18, "", "", "")
 	if err != nil {
 		log.Println(err)
@@ -400,20 +417,18 @@ func loadDMChannel(id string) {
 		opp := len(msgs) - 1 - i
 		msgs[i], msgs[opp] = msgs[opp], msgs[i]
 	}
-	wg := &sync.WaitGroup{}
 	for _, v := range msgs {
 		if v.Type == 7 {
 			continue
 		}
-		wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
-		wg.Add(1)
-		processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
+		processChannelMessage(&discordgo.MessageCreate{Message: v}, nil)
 	}
-	wg.Wait()
-	wv.Eval(`var messages = document.getElementById("messages").parentNode;
+	wv.Dispatch(func() {
+		wv.Eval(`var messages = document.getElementById("messages").parentNode;
 	messages.scrollTop = messages.scrollHeight;
 	document.getElementById("mainbox").style.visibility = "visible";
 	document.getElementById("blocker").style.display = "none"`)
+	})
 	currentChannel = channel.ID
 }
 
@@ -422,13 +437,13 @@ func sendFile(s string) {
 	json.Unmarshal([]byte(s), &file)
 	f, err := os.Open(file.Path)
 	if err != nil {
-		wv.Eval(`alert("Unable to open selected file!");`)
+		wv.Dispatch(func() { wv.Eval(`alert("Unable to open selected file!");`) })
 		return
 	}
 	finfo, _ := f.Stat()
 	size := finfo.Size()
 	if size > maxUpload {
-		wv.Eval(`alert("Max file size exceeded!");`)
+		wv.Dispatch(func() { wv.Eval(`alert("Max file size exceeded!");`) })
 		return
 	}
 	var msg discordgo.MessageSend
@@ -440,7 +455,7 @@ func sendFile(s string) {
 	})
 	_, err = ses.ChannelMessageSendComplex(currentChannel, &msg)
 	if err != nil {
-		wv.Eval(`alert("Failed to send file!");`)
+		wv.Dispatch(func() { wv.Eval(`alert("Failed to send file!");`) })
 	}
 }
 
