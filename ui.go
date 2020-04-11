@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -137,6 +138,7 @@ func mainSetup() {
 		document.getElementById("cavatar").src = %q;
 	`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
 	wv.Eval(fmt.Sprintf(`document.title = "Discord Bot GUI - %s#%s";`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
+	time.Sleep(time.Second)
 	loadServers()
 	loadDMMembers()
 }

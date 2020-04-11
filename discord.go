@@ -136,14 +136,16 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Type == 7 {
 		return
 	}
-	wv.Eval(fmt.Sprintf(`createmessage(%q)`, m.ID))
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	processChannelMessage(m, nil, wg)
-	wg.Wait()
-	wv.Eval(`var messages = document.getElementById("messages").parentNode;
-	messages.scrollTop = messages.scrollHeight;`)
-	proccessingMsg = false
+	wv.Dispatch(func() {
+		wv.Eval(fmt.Sprintf(`createmessage(%q)`, m.ID))
+		wg := &sync.WaitGroup{}
+		wg.Add(1)
+		processChannelMessage(m, nil, wg)
+		wg.Wait()
+		wv.Eval(`var messages = document.getElementById("messages").parentNode;
+		messages.scrollTop = messages.scrollHeight;`)
+		proccessingMsg = false
+	})
 }
 
 func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
@@ -276,7 +278,7 @@ func setActiveChannel(id string) {
 		}
 		wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
 		wg.Add(1)
-		go processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
+		processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache, wg)
 	}
 	wg.Wait()
 	wv.Eval(`var messages = document.getElementById("messages").parentNode;
@@ -357,13 +359,15 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 }
 
 func sendMessage(msg string) {
-	if currentChannel == "" {
-		return
-	}
-	_, err := ses.ChannelMessageSend(currentChannel, msg)
-	if err != nil {
-		log.Println(err)
-	}
+	go func() {
+		if currentChannel == "" {
+			return
+		}
+		_, err := ses.ChannelMessageSend(currentChannel, msg)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 }
 
 func loadDMChannel(id string) {
@@ -403,7 +407,7 @@ func loadDMChannel(id string) {
 		}
 		wv.Eval(fmt.Sprintf(`createmessage(%q)`, v.ID))
 		wg.Add(1)
-		go processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
+		processChannelMessage(&discordgo.MessageCreate{Message: v}, nil, wg)
 	}
 	wg.Wait()
 	wv.Eval(`var messages = document.getElementById("messages").parentNode;
@@ -441,11 +445,13 @@ func sendFile(s string) {
 }
 
 func updateTyping() {
-	if typing {
-		return
-	}
-	ses.ChannelTyping(currentChannel)
-	typing = true
-	time.Sleep(time.Second * 3)
-	typing = false
+	go func() {
+		if typing {
+			return
+		}
+		ses.ChannelTyping(currentChannel)
+		typing = true
+		time.Sleep(time.Second * 3)
+		typing = false
+	}()
 }
