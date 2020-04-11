@@ -22,21 +22,6 @@
 </body>
 
 <script>
-    document.addEventListener('astilectron-ready', function() {
-        astilectron.onMessage(function(message) {
-            console.log(electronMsg)
-            var electronMsg = JSON.parse(message);
-            if (electronMsg.type === "eval") {
-                try {
-                    eval(electronMsg.content);
-                }
-                catch(err) {
-                    return err.message;
-                }
-                return true
-            }
-        });
-        astilectron.sendMessage("loginSetup", function(message) {return});
-    })
+        wv("loginSetup");
 </script>
 </html>

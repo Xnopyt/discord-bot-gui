@@ -20,7 +20,7 @@ all: linux
 
 dist: linux darwin win32 win64
 
-linux: dep dep-linux test build
+linux: dep test build
 
 build:
 	@$(BINDATACMD) ./ui/...
@@ -69,7 +69,7 @@ build-darwin:
 	@rm -rf $(BUILD_DIR)/"Discord Bot GUI.app"
 
 
-dep: ui/astilectron.zip dep-go
+dep: dep-go
 
 ui/astilectron.zip:
 	@test -f $@ || wget -O ui/astilectron.zip https://github.com/asticode/astilectron/archive/v0.35.1.zip

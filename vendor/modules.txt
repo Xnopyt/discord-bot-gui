@@ -1,7 +1,3 @@
-# github.com/asticode/go-astikit v0.5.0
-github.com/asticode/go-astikit
-# github.com/asticode/go-astilectron v0.12.4
-github.com/asticode/go-astilectron
 # github.com/bwmarrin/discordgo v0.20.2
 github.com/bwmarrin/discordgo
 # github.com/gorilla/mux v1.7.4
@@ -12,10 +8,12 @@ github.com/gorilla/websocket
 github.com/mvdan/xurls
 # github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 github.com/pkg/browser
-# golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876
+# github.com/zserge/webview v0.0.0-20200410160118-50e4bcc420ab
+github.com/zserge/webview
+# golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
 golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
-# golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8
+# golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa
 golang.org/x/sys/cpu

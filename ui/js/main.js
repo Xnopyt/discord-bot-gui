@@ -27,7 +27,7 @@ function loadservers(name, id, img, src) {
 	newtooltip.className = "tooltip";
 	newtooltip.innerHTML = name;
     newserver.appendChild(newtooltip);
-	newserver.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'selectTargetServer', 'content': '"+id+"'}), function(message) {return});")
+	newserver.setAttribute("onclick", "wv(JSON.stringify({'type': 'selectTargetServer', 'content': '"+id+"'}));")
     document.getElementById("sidenav").appendChild(newserver);
 }
 
@@ -48,7 +48,7 @@ function loaddmusers(name, id, img) {
     newusername.className = "dmusername";
     newusername.innerHTML = name;
 	newuser.appendChild(newusername);
-	newuser.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'loadDMChannel', 'content': '"+id+"'}), function(message) {return});")
+	newuser.setAttribute("onclick", "wv(JSON.stringify({'type': 'loadDMChannel', 'content': '"+id+"'}));")
     document.getElementById("chancontainer").appendChild(newuser);
 }
 
@@ -83,7 +83,7 @@ function addchannel(id, name) {
 	para.innerHTML = name;
 	div.appendChild(para);
 	div.id = id;
-	div.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'setActiveChannel', 'content': '"+id+"'}), function(message) {return});");
+	div.setAttribute("onclick", "wv(JSON.stringify({'type': 'setActiveChannel', 'content': '"+id+"'}));");
 	chancon.appendChild(div);
 }
 
@@ -165,7 +165,7 @@ function appendimgattachment(id, url) {
 	attachcon.classList.add("imageattachment");
 	var img = document.createElement("img");
 	img.src = url;
-	img.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}), function(message) {return});");
+	img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}));");
 	attachcon.appendChild(img);
 	msg.appendChild(attachcon)
 }
@@ -178,10 +178,10 @@ function appendattachment(id, filename,  url) {
 	fileicon.className = "fas fa-file-alt";
 	var downloadButton = document.createElement("i");
 	downloadButton.className = "fas fa-download";
-	downloadButton.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}), function(message) {return});");
+	downloadButton.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}));");
 	var filenamebutton = document.createElement("p");
 	filenamebutton.innerHTML = filename;
-	filenamebutton.setAttribute("onclick", "astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}), function(message) {return});");
+	filenamebutton.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '"+url+"'}));");
 	attachcon.appendChild(fileicon);
 	attachcon.appendChild(filenamebutton);
 	attachcon.appendChild(downloadButton);
@@ -233,7 +233,7 @@ function addmember(username, src) {
 }
 
 function openURL(url) {
-	astilectron.sendMessage(JSON.stringify({'type': 'openURL', 'content': url}), function(message) {return});
+	wv(JSON.stringify({'type': 'openURL', 'content': url}));
 }
 
 function triggerUpload() {
@@ -241,7 +241,7 @@ function triggerUpload() {
 }
 
 function completeUpload(files) {
-	astilectron.sendMessage(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'path': files[0].path, 'name': files[0].name, 'mime': files[0].type})}), function(message) {return});
+	wv(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'path': files[0].path, 'name': files[0].name, 'mime': files[0].type})}));
 	document.getElementById("fileupload").files = nil;
 }
 
@@ -251,7 +251,7 @@ document.getElementById("messageinput").addEventListener("keyup", function(event
 	if (event.keyCode === 13 && !window.shiftHeld) {
 		event.preventDefault();
 		var msgInput = document.getElementById("messageinput");
-		astilectron.sendMessage(JSON.stringify({'type': 'sendMessage', 'content': msgInput.value}), function(message) {return});
+		wv(JSON.stringify({'type': 'sendMessage', 'content': msgInput.value}));
         msgInput.value = "";
 	}
 	if (event.keyCode === 16) {
@@ -263,7 +263,7 @@ document.getElementById("messageinput").addEventListener("keydown", function(eve
 	if (event.keyCode === 16) {
 		window.shiftHeld = true
 	}
-	astilectron.sendMessage("updateTyping", function(message) {return});
+	wv("updateTyping");
 });
 
 const emoji = document.getElementById('emojiselect');

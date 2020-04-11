@@ -1,6 +1,6 @@
 # Discord Bot GUI
 [![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/Electron/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
-A electron based graphical interface for sending and reciving messages with a discord bot.<br />
+A webview based graphical interface for sending and reciving messages with a discord bot.<br />
 
 ## Screenshots
 ![Screenshot 1](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/electron/screenshots/screenshot1.png "Screenshot 1")
@@ -12,7 +12,7 @@ A electron based graphical interface for sending and reciving messages with a di
 Emoji Picker by joeattardi - https://github.com/joeattardi/emoji-button
 
 ### Golang Libraries
-Astilectron  - https://github.com/asticode/go-astilectron<br />
+Webview by zserge - https://github.com/zserge/webview<br />
 DiscordGo by bwmarrin - https://github.com/bwmarrin/discordgo<br />
 Mux by Gorilla - https://github.com/gorilla/mux<br />
 XURLs by mvdan - https://github.com/mvdan/xurls

@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/asticode/go-astilectron"
 	"github.com/gorilla/mux"
 )
 
@@ -33,10 +32,6 @@ var routes = []route{
 
 var wvCallbacks map[string]func()
 
-var evalQueue = make(chan string)
-
-var devToolsActive = false
-
 func init() {
 	json.Unmarshal(MustAsset("ui/assets/emojialiases.json"), &eAliases)
 	wvCallbacks = make(map[string]func())
@@ -44,7 +39,6 @@ func init() {
 	wvCallbacks["loginSetup"] = loginSetup
 	wvCallbacks["home"] = home
 	wvCallbacks["logout"] = logout
-	wvCallbacks["toggleDevTools"] = toggleDevTools
 	wvCallbacks["updateTyping"] = updateTyping
 }
 
@@ -90,37 +84,13 @@ func serveHTTP(ln net.Listener) {
 	}
 }
 
-func eval(x string) {
-	evalQueue <- x
-}
-
-func evaulator() {
-	var done = make(chan bool)
-	for {
-		jscript := <-evalQueue
-		msg := uiMsg{}
-		msg.Type = "eval"
-		msg.Content = jscript
-		m, _ := json.Marshal(msg)
-		wv.SendMessage(string(m), func(m *astilectron.EventMessage) {
-			var s string
-			m.Unmarshal(&s)
-			if s != "" {
-				log.Println("JS ERR: " + s)
-			}
-			done <- true
-		})
-		<-done
-	}
-}
-
 func loginSetup() {
-	eval(fmt.Sprintf(`
+	wv.Eval(fmt.Sprintf(`
 		var script = document.createElement('script');
 		var head = document.head || document.getElementsByTagName('head')[0];
 		script.src="data:application/javascript;base64,%s"
 		head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/login.js"))))
-	eval(fmt.Sprintf(`(function(css){
+	wv.Eval(fmt.Sprintf(`(function(css){
 		var style = document.createElement('style');
 		var head = document.head || document.getElementsByTagName('head')[0];
 		style.setAttribute('type', 'text/css');
@@ -134,7 +104,7 @@ func loginSetup() {
 }
 
 func mainSetup() {
-	eval(fmt.Sprintf(`(function(css){
+	wv.Eval(fmt.Sprintf(`(function(css){
 		var style = document.createElement('style');
 		var head = document.head || document.getElementsByTagName('head')[0];
 		style.setAttribute('type', 'text/css');
@@ -145,7 +115,7 @@ func mainSetup() {
 		}
 		head.appendChild(style);
 	})("%s")`, template.JSEscapeString(string(MustAsset("ui/main.css")))))
-	eval(fmt.Sprintf(`(function(css){
+	wv.Eval(fmt.Sprintf(`(function(css){
 		var style = document.createElement('style');
 		var head = document.head || document.getElementsByTagName('head')[0];
 		style.setAttribute('type', 'text/css');
@@ -156,17 +126,17 @@ func mainSetup() {
 		}
 		head.appendChild(style);
 	})("%s")`, template.JSEscapeString(string(MustAsset("ui/emoji-picker.css")))))
-	eval(fmt.Sprintf(`
+	wv.Eval(fmt.Sprintf(`
 		var script = document.createElement('script');
 		var head = document.head || document.getElementsByTagName('head')[0];
 		script.src="data:application/javascript;base64,%s"
 		head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/main.js"))))
-	eval(fmt.Sprintf(`
+	wv.Eval(fmt.Sprintf(`
 		document.getElementById("cname").innerHTML = %q;
 		document.getElementById("cdiscriminator").innerHTML = '#%s';
 		document.getElementById("cavatar").src = %q;
 	`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
-	eval(fmt.Sprintf(`document.title = "Discord Bot GUI - %s#%s";`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
+	wv.Eval(fmt.Sprintf(`document.title = "Discord Bot GUI - %s#%s";`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
 	loadServers()
 	loadDMMembers()
 }
@@ -174,15 +144,6 @@ func mainSetup() {
 func home() {
 	currentServer = "HOME"
 	currentChannel = ""
-	eval(`loadhome()`)
+	wv.Eval(`loadhome()`)
 	loadDMMembers()
-}
-
-func toggleDevTools() {
-	if devToolsActive {
-		wv.OpenDevTools()
-	} else {
-		wv.CloseDevTools()
-	}
-	devToolsActive = !devToolsActive
 }
