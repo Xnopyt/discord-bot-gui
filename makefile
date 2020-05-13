@@ -20,7 +20,7 @@ all: linux
 
 dist: linux win win32
 
-linux: dep test build
+linux: dep build
 
 build:
 	@$(BINDATACMD) ./ui/...
