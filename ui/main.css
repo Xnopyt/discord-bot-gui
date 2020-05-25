@@ -21,6 +21,7 @@ body {
     margin: 0;
     padding: 0;
     color: rgb(255, 255, 255);
+    -ms-overflow-style: none;
 }
 
 ::-webkit-scrollbar {
@@ -48,7 +49,7 @@ body {
     padding-top: 10px;
     float: left;
     z-index: 2;
-    overflow-x: visible;
+    overflow-x: hidden;
 }
 
 .sidenav .server {
@@ -161,10 +162,11 @@ body {
     font-size: 12px;
     font-weight: 550;
     transform: translate(5px, 15px);
+    display: none;
 }
 
 .server:hover .tooltip {
-    visibility: visible;
+    visibility: hidden;
 }
 
 .actionbar {
@@ -324,7 +326,6 @@ body {
     display: inline-block;
     position: fixed;
     right: 0;
-    overflow-y: scroll;
 }
 
 .actionbar .chancontainer {
@@ -336,7 +337,6 @@ body {
     width: 230px;
     padding-top: 10px;
     padding-left: 10px;
-    overflow-y: scroll;
     overflow-x: hidden;
 }
 

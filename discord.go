@@ -150,7 +150,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	processChannelMessage(m, nil)
 	wv.Dispatch(func() {
-		wv.Eval(`var messages = document.getElementById("messages").parentNode;
+		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 		messages.scrollTop = messages.scrollHeight;`)
 		proccessingMsg = false
 	})
@@ -296,7 +296,7 @@ func setActiveChannel(id string) {
 		processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache)
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`var messages = document.getElementById("messages").parentNode;
+		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 		messages.scrollTop = messages.scrollHeight;
 		document.getElementById("mainbox").style.visibility = "visible";
 		document.getElementById("blocker").style.display = "none"`)
@@ -313,8 +313,8 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 			}
 			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil)
 			wv.Dispatch(func() {
-				wv.Eval(`var messages = document.getElementById("messages").parentNode;
-			messages.scrollTop = messages.scrollHeight;`)
+				wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
+				messages.scrollTop = messages.scrollHeight;`)
 			})
 		}
 	}(m.ID)
@@ -424,7 +424,7 @@ func loadDMChannel(id string) {
 		processChannelMessage(&discordgo.MessageCreate{Message: v}, nil)
 	}
 	wv.Dispatch(func() {
-		wv.Eval(`var messages = document.getElementById("messages").parentNode;
+		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 	messages.scrollTop = messages.scrollHeight;
 	document.getElementById("mainbox").style.visibility = "visible";
 	document.getElementById("blocker").style.display = "none"`)

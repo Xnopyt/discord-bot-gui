@@ -10,6 +10,8 @@ A webview based graphical interface for sending and reciving messages with a dis
 
 ### JavaScript Libraries
 Emoji Picker by joeattardi - https://github.com/joeattardi/emoji-button
+Hightlight JS - https://github.com/highlightjs/highlight.js/
+SimpleBar by Grsmto - https://github.com/Grsmto/simplebar
 
 ### Golang Libraries
 Webview by zserge - https://github.com/zserge/webview<br />
