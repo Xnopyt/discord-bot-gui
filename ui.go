@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html"
 	"html/template"
+	"runtime"
 	"time"
 )
 
@@ -62,6 +63,31 @@ func mainSetup() {
 			}
 			head.appendChild(style);
 		})("%s")`, template.JSEscapeString(string(MustAsset("ui/main.css")))))
+		if runtime.GOOS == "windows" {
+			wv.Eval(fmt.Sprintf(`(function(css){
+				var style = document.createElement('style');
+				var head = document.head || document.getElementsByTagName('head')[0];
+				style.setAttribute('type', 'text/css');
+				if (style.styleSheet) {
+					style.styleSheet.cssText = css;
+				} else {
+					style.appendChild(document.createTextNode(css));
+				}
+				head.appendChild(style);
+			})("%s")`, template.JSEscapeString(`
+			.infobar .chantitle {
+				transform: none;
+			}
+
+			.infobar .fa-hashtag, .infobar .fa-at {
+				transform: translateY(-15px);
+			}
+
+			.chan .fa-hashtag {
+				transform: translateY(-3px);
+			}
+			`)))
+		}
 		wv.Eval(fmt.Sprintf(`(function(css){
 			var style = document.createElement('style');
 			var head = document.head || document.getElementsByTagName('head')[0];

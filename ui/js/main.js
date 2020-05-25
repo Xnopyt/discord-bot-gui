@@ -221,6 +221,7 @@ function resetmembers() {
 function setmembercount(count) {
 	var countelem = document.getElementById("membercount");
 	countelem.innerHTML = "MEMBERS - " + count;
+	new SimpleBar(document.getElementById("members").parentElement)
 }
 
 function addmember(username, src) {
