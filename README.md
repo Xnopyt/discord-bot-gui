@@ -14,7 +14,6 @@ Emoji Picker by joeattardi - https://github.com/joeattardi/emoji-button
 ### Golang Libraries
 Webview by zserge - https://github.com/zserge/webview<br />
 DiscordGo by bwmarrin - https://github.com/bwmarrin/discordgo<br />
-Mux by Gorilla - https://github.com/gorilla/mux<br />
 XURLs by mvdan - https://github.com/mvdan/xurls
 
 ### CSS

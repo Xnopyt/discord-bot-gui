@@ -6,29 +6,12 @@ import (
 	"fmt"
 	"html"
 	"html/template"
-	"log"
-	"net"
-	"net/http"
-	"strings"
 	"time"
-
-	"github.com/gorilla/mux"
 )
-
-type route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
-}
 
 type uiMsg struct {
 	Type    string `json:"type"`
 	Content string `json:"content"`
-}
-
-var routes = []route{
-	route{"Login", "GET", "/", loginPage}, route{"Lbg", "GET", "/loginbg.jpg", lbg}, route{"DefAva", "GET", "/default.png", defaultavatar},
 }
 
 var wvCallbacks map[string]func()
@@ -41,48 +24,6 @@ func init() {
 	wvCallbacks["home"] = home
 	wvCallbacks["logout"] = logout
 	wvCallbacks["updateTyping"] = updateTyping
-}
-
-func newRouter() *mux.Router {
-	router := mux.NewRouter()
-	for _, route := range routes {
-		router.
-			Methods(route.Method).
-			Path(route.Pattern).
-			Name(route.Name).
-			Handler(route.HandlerFunc)
-	}
-	return router
-}
-
-func loginPage(rw http.ResponseWriter, r *http.Request) {
-	_, err := rw.Write(MustAsset("ui/login.html"))
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func lbg(rw http.ResponseWriter, r *http.Request) {
-	_, err := rw.Write(MustAsset("ui/assets/loginbg.jpg"))
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func defaultavatar(rw http.ResponseWriter, r *http.Request) {
-	_, err := rw.Write(MustAsset("ui/assets/default-avatar.png"))
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func serveHTTP(ln net.Listener) {
-	router := newRouter()
-	if err := http.Serve(ln, router); err != nil {
-		if !strings.Contains(err.Error(), "use of closed network connection") {
-			panic(err)
-		}
-	}
 }
 
 func loginSetup() {
@@ -103,6 +44,8 @@ func loginSetup() {
 			}
 			head.appendChild(style);
 		})("%s")`, template.JSEscapeString(string(MustAsset("ui/login.css")))))
+		wv.Eval(fmt.Sprintf(`
+			document.body.background = "data:image/jpg;base64,%s"`, base64.StdEncoding.EncodeToString(MustAsset("ui/assets/loginbg.jpg"))))
 	})
 }
 
