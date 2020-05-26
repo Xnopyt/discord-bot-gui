@@ -254,7 +254,7 @@ func setActiveChannel(id string) {
 	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);
-		document.getElementById("mainbox").style.visibility = "hidden";
+		document.getElementById("mainbox").style.display = "none";
 		document.getElementById("members").innerHTML = "";
 		resetmembers();`, id, html.EscapeString(channel.Name)))
 	})
@@ -298,7 +298,7 @@ func setActiveChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 		messages.scrollTop = messages.scrollHeight;
-		document.getElementById("mainbox").style.visibility = "visible";
+		document.getElementById("mainbox").style.display = "inline-block";
 		document.getElementById("blocker").style.display = "none"`)
 	})
 	currentChannel = id
@@ -400,7 +400,7 @@ func loadDMChannel(id string) {
 	}
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
-		wv.Eval(`document.getElementById("mainbox").style.visibility = "hidden";`)
+		wv.Eval(`document.getElementById("mainbox").style.display = "none";`)
 		wv.Eval(`resetmembers();`)
 		wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, ses.State.User.Username, ses.State.User.AvatarURL("128")))
 		for _, v := range channel.Recipients {
@@ -426,7 +426,7 @@ func loadDMChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 	messages.scrollTop = messages.scrollHeight;
-	document.getElementById("mainbox").style.visibility = "visible";
+	document.getElementById("mainbox").style.display = "inline-block";
 	document.getElementById("blocker").style.display = "none"`)
 	})
 	currentChannel = channel.ID

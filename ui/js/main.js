@@ -206,7 +206,7 @@ function loadhome() {
 	chancon.appendChild(head);
 	document.getElementById("infoicon").style.visibility = "hidden";
 	document.getElementById("channeltitle").style.visibility = "hidden";
-	document.getElementById("mainbox").style.visibility = "hidden";
+	document.getElementById("mainbox").style.display = "none";
 }
 
 function resetmembers() {
