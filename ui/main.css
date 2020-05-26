@@ -63,6 +63,7 @@ body {
     margin-bottom: 10px;
     position: relative;
     transition: linear 0.2s;
+    margin-left: 12px;
 }
 
 .server .selector {
@@ -141,9 +142,13 @@ body {
     padding-top: 20%;
 }
 
-.sidenav hr {
+.sidenav .spacer {
     width: 50%;
-    color: rgb(65, 65, 68);
+    height: 0%;
+    border-bottom: 3px solid rgb(65, 65, 68);
+    border-radius: 5px;
+    margin-bottom: 15px;
+    margin-left: 19px;
 }
 
 .tooltip {
