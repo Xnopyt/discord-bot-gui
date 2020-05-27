@@ -38,7 +38,7 @@ clean:
 	@rm -f ./bindata.go
 	@rm -f discord-bot-gui.syso
 
-run: dep dep-linux build
+run: dep build
 	@./$(BINARY_NAME_LINUX)
 
 win: dep test build-win
