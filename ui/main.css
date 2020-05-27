@@ -69,9 +69,9 @@ body {
 .server .selector {
     height: 18px;
     width: 0px;
-    position: fixed;
+    position: relative;
     margin-top: 15px;
-    left: 0;
+    left: -10px;
 }
 
 .sidenav .server:hover {
@@ -84,8 +84,9 @@ body {
     border-right: 4px solid rgb(255,255,255);
     height: 18px;
     width: 1px;
-    position: fixed;
-    left: 0;
+    position: relative;
+    left: -12px;
+    top: 17px;
     border-radius: 20%;
     margin-top: 15px;
     transition: linear 0.2s;
@@ -99,17 +100,18 @@ body {
 
 .sidenav .server.selected > img {
     border-radius: 35%;
-    transition: linear 0.2s;
+    position: relative;
+    top: -40px;
 }
 
 .sidenav .server.selected > .selector {
     border-right: 4px solid rgb(255,255,255);
     height: 40px;
     width: 1px;
-    position: fixed;
-    left: 0;
+    position: relative;
+    left: -12px;
+    top: 3px;
     border-radius: 20%;
-    margin-top: 6px;
     transition: linear 0.2s;
 }
 
@@ -118,6 +120,8 @@ body {
     padding-top: 33%;
     font-size: 12px;
     font-weight: bolder;
+    position: relative;
+    top: -29px;
 }
 
 .server img {
@@ -126,6 +130,8 @@ body {
     border-radius: 100%;
     pointer-events: none;
     transition: linear 0.2s;
+    position: relative;
+    top: -17px;
 }
 
 .sidenav .server:hover > img {
@@ -140,6 +146,18 @@ body {
     color: rgb(255, 255, 255);
     font-size: 25px;
     padding-top: 20%;
+    position: relative;
+    top: -17px;
+}
+
+.sidenav .server.selected > i {
+    position: relative;
+    top: -40px;
+}
+
+.sidenav .server.selected > p {
+    position: relative;
+    top: -51px;
 }
 
 .sidenav .spacer {

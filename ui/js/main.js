@@ -257,8 +257,9 @@ function completeUpload(files) {
 function showServerTooltip(event) {
 	var tooltip = document.getElementById("tooltip");
 	tooltip.innerHTML = event.target.getElementsByClassName("tooltip-text")[0].innerHTML
-	tooltip.style.top = (event.target.offsetTop + 10) + "px";
-	tooltip.style.left = (event.target.offsetLeft + 60) + "px";
+	var rect = event.target.getBoundingClientRect();
+	tooltip.style.top = (rect.top + 10) + "px";
+	tooltip.style.left = (rect.left + 60) + "px";
 	tooltip.style.display = "block";
 }
 
