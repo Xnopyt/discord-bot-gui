@@ -2,8 +2,8 @@ name: WebView
 on: [push]
 jobs:
 
-  build:
-    name: Build
+  build-linux:
+    name: Build Linux
     runs-on: ubuntu-latest
     steps:
 
@@ -33,6 +33,40 @@ jobs:
         name: discord-bot-gui_linux
         path: bin/discord-bot-gui_linux
     
+    - name: Run Tests
+      run: |
+        export PATH=$PATH:$(go env GOPATH)/bin
+        make dep test
+  
+  build-macos:
+    name: Build MacOS
+    runs-on: macos-latest
+    steps:
+
+    - name: Set up Go 1.14
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Download dependencies
+      run: |
+        make dep dep-darwin
+
+    - name: Build
+      run: |
+        export PATH=$PATH:$(go env GOPATH)/bin
+        make darwin
+
+    - name: Upload build result
+      uses: actions/upload-artifact@v1
+      with:
+        name: discord-bot-gui_darwin.zip
+        path: bin/discord-bot-gui_darwin.zip
+
     - name: Run Tests
       run: |
         export PATH=$PATH:$(go env GOPATH)/bin
