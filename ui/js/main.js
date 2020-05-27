@@ -24,9 +24,11 @@ function loadservers(name, id, img, src) {
     }
 	newserver.appendChild(newicon)
 	var newtooltip = document.createElement("div");
-	newtooltip.className = "tooltip";
+	newtooltip.className = "tooltip-text";
 	newtooltip.innerHTML = name;
-    newserver.appendChild(newtooltip);
+	newserver.appendChild(newtooltip);
+	newserver.addEventListener("mouseenter", showServerTooltip);
+	newserver.addEventListener("mouseleave", hideServerTooltip);
 	newserver.setAttribute("onclick", "wv(JSON.stringify({'type': 'selectTargetServer', 'content': '"+id+"'}));")
     document.getElementById("sidenav").appendChild(newserver);
 }
@@ -251,6 +253,23 @@ function completeUpload(files) {
 	wv(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'path': files[0].path, 'name': files[0].name, 'mime': files[0].type})}));
 	document.getElementById("fileupload").files = nil;
 }
+
+function showServerTooltip(event) {
+	var tooltip = document.getElementById("tooltip");
+	tooltip.innerHTML = event.target.getElementsByClassName("tooltip-text")[0].innerHTML
+	tooltip.style.top = (event.target.offsetTop + 10) + "px";
+	tooltip.style.left = (event.target.offsetLeft + 60) + "px";
+	tooltip.style.display = "block";
+}
+
+function hideServerTooltip(event) {
+	var tooltip = document.getElementById("tooltip");
+	tooltip.style.display = "none";
+}
+
+var home = document.getElementById("home");
+home.addEventListener("mouseenter", showServerTooltip);
+home.addEventListener("mouseleave", hideServerTooltip);
 
 window.shiftHeld = false
 
