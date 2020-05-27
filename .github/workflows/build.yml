@@ -26,6 +26,12 @@ jobs:
       run: |
         export PATH=$PATH:$(go env GOPATH)/bin
         make linux
+
+    - name: Upload build result
+      uses: actions/upload-artifact@v1
+      with:
+        name: discord-bot-gui_linux
+        path: bin/discord-bot-gui_linux
     
     - name: Run Tests
       run: |
