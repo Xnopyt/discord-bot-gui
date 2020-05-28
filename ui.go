@@ -88,17 +88,6 @@ func mainSetup() {
 			}
 			`)))
 		}
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(MustAsset("ui/emoji-picker.css")))))
 		wv.Eval(fmt.Sprintf(`
 			var script = document.createElement('script');
 			var head = document.head || document.getElementsByTagName('head')[0];

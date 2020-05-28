@@ -597,7 +597,7 @@ body {
     border-bottom-right-radius: 0;
 }
 
-.messagebox .emojiselect {
+.messagebox .sendbutton {
     width: 40px;
     height: 35px;
     background-color: rgb(64, 68, 75);
@@ -610,15 +610,16 @@ body {
     outline: none;
 }
 
-.emojiselect .fa-grin {
+.sendbutton .fa-paper-plane {
     color: rgb(171, 171, 171);
     font-size: 20px;
     width: 12px;
     height: 20px;
-    margin-left: 2px;
+    margin-right: 10px;
+    margin-top: 2px;
 }
 
-.messagebox .emojiselect:hover > .fa-grin {
+.messagebox .sendbutton:hover > .fa-paper-plane {
     color: rgb(255, 255, 255)
 }
 
