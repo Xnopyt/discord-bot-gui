@@ -17,7 +17,7 @@ WIN64_CROSSCOMPILE=x86_64-w64-mingw32-gcc
 WIN32_CROSSCOMPILE=i686-w64-mingw32-gcc
 
 
-.PHONY: all dist linux build test clean run win build-win dep
+.PHONY: all dist linux build test clean run win build-win dep x-win x-build-win darwin dep-darwin build-darwin
 
 all: linux
 
@@ -73,3 +73,10 @@ dep-darwin:
 dep:
 	@cd; GO111MODULE=on go get -u github.com/go-bindata/go-bindata/...
 	@cd; GO111MODULE=on go get -u github.com/akavel/rsrc/...
+
+win: dep test build-win
+
+build-win:
+	@$(BINDATACMD) ./ui/...
+	@$(RSRCCMD) -ico=discord-512.ico -arch=amd64 -o=discord-bot-gui.syso
+	@GO111MODULE=on GOOS=windows GOARCH=amd64 $(GOBUILD) -v -ldflags='-H windowsgui' -o $(BINARY_NAME_WIN64) ./...
