@@ -63,7 +63,7 @@ darwin: dep dep-darwin build-darwin
 build-darwin:
 	@$(BINDATACMD) ./ui/...
 	@GO111MODULE=on GOOS=darwin GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_NAME_DARWIN) ./...
-	@cd $(BUILD_DIR); $(APPIFYCMD) -name "Discord Bot GUI" -icon ../discord-512.png ../$(BINARY_NAME_DARWIN)
+	@cd $(BUILD_DIR); $(APPIFYCMD) -name "Discord Bot GUI" -icon ../discord-512.png -author "Xnopyt" ../$(BINARY_NAME_DARWIN)
 	@cd $(BUILD_DIR); zip -r ../$(OUT_NAME_DARWIN) "Discord Bot GUI.app"
 	@rm -rf $(BUILD_DIR)/"Discord Bot GUI.app"
 
