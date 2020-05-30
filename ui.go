@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"html"
 	"html/template"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"runtime"
 	"time"
 )
@@ -50,8 +53,44 @@ func loginSetup() {
 	})
 }
 
+func httpGet(url string) (body []byte) {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal("could not download " + url)
+	}
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("could not download " + url)
+	}
+	return
+}
+
 func mainSetup() {
 	wv.Dispatch(func() {
+		body := httpGet("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/androidstudio.min.css")
+		wv.Eval(fmt.Sprintf(`(function(css){
+			var style = document.createElement('style');
+			var head = document.head || document.getElementsByTagName('head')[0];
+			style.setAttribute('type', 'text/css');
+			if (style.styleSheet) {
+				style.styleSheet.cssText = css;
+			} else {
+				style.appendChild(document.createTextNode(css));
+			}
+			head.appendChild(style);
+		})("%s")`, template.JSEscapeString(string(body))))
+		body = httpGet("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.css")
+		wv.Eval(fmt.Sprintf(`(function(css){
+			var style = document.createElement('style');
+			var head = document.head || document.getElementsByTagName('head')[0];
+			style.setAttribute('type', 'text/css');
+			if (style.styleSheet) {
+				style.styleSheet.cssText = css;
+			} else {
+				style.appendChild(document.createTextNode(css));
+			}
+			head.appendChild(style);
+		})("%s")`, template.JSEscapeString(string(body))))
 		wv.Eval(fmt.Sprintf(`(function(css){
 			var style = document.createElement('style');
 			var head = document.head || document.getElementsByTagName('head')[0];
@@ -93,6 +132,18 @@ func mainSetup() {
 			var head = document.head || document.getElementsByTagName('head')[0];
 			script.src="data:application/javascript;base64,%s"
 			head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/main.js"))))
+		body = httpGet("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js")
+		wv.Eval(fmt.Sprintf(`
+			var script = document.createElement('script');
+			var head = document.head || document.getElementsByTagName('head')[0];
+			script.src="data:application/javascript;base64,%s"
+			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
+		body = httpGet("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.js")
+		wv.Eval(fmt.Sprintf(`
+			var script = document.createElement('script');
+			var head = document.head || document.getElementsByTagName('head')[0];
+			script.src="data:application/javascript;base64,%s"
+			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
 		wv.Eval(fmt.Sprintf(`
 			document.getElementById("cname").innerHTML = %q;
 			document.getElementById("cdiscriminator").innerHTML = '#%s';
