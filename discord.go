@@ -368,7 +368,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 			}
 		}
 		if isImg {
-			break
+			continue
 		}
 		wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL)) })
 	}
