@@ -680,6 +680,20 @@ body {
     text-decoration: underline;
 }
 
+.message .msgbot {
+    display: inline-block;
+    height: 14px;
+    font-size: 10px;
+    font-weight: bolder;
+    transform: translateY(-23px);
+    margin-left: 5px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 1px;
+    background-color: rgb(114,138,218);
+    border-radius: 3px;
+}
+
 .message .msgtime {
     display: inline-block;
     font-weight: 400;

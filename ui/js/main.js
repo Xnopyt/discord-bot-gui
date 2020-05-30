@@ -129,7 +129,7 @@ function selectdmchannel(id, name) {
 	messages.appendChild(spacer);
 }
 
-function fillmessage(id, uname, avatar, timetext, bodytext, selfmention) {
+function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot) {
 	bodytext = decodeURIComponent(bodytext.replace(/\+/g, ' '));;
 	var msgTest = document.getElementById(id);
 	if (msgTest == null) {
@@ -149,6 +149,12 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention) {
 	unameelem.className = "msguser";
 	unameelem.innerHTML = uname;
 	head.appendChild(unameelem);
+	if (isbot) {
+		var bot = document.createElement("div");
+		bot.className = "msgbot"
+		bot.innerHTML = "BOT"
+		head.appendChild(bot)
+	}
 	var time = document.createElement("p");
 	time.className = "msgtime";
 	time.innerHTML = timetext;

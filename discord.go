@@ -355,7 +355,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 		selfmention = true
 	}
 	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention))
+		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention, m.Author.Bot))
 		wv.Eval(embeds)
 	})
 	for _, z := range m.Attachments {
