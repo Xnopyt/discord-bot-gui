@@ -232,7 +232,7 @@ function setmembercount(count) {
 	new SimpleBar(document.getElementById("members").parentElement)
 }
 
-function addmember(username, src) {
+function addmember(username, src, isbot) {
 	var memberbar = document.getElementById("members");
 	var member = document.createElement("div");
 	member.className = "member";
@@ -244,6 +244,13 @@ function addmember(username, src) {
 	memname.className = "membername";
 	memname.innerHTML = username;
 	member.appendChild(memname);
+	if (isbot) {
+		var bot = document.createElement("div");
+		bot.className = "memberbot"
+		bot.innerHTML = "BOT"
+		memname.classList.add("shortbot")
+		member.appendChild(bot)
+	}
 	memberbar.appendChild(member);
 }
 

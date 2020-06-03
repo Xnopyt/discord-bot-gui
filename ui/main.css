@@ -510,6 +510,20 @@ body {
     color: rgb(255, 255, 255);
 }
 
+.memberbar .memberbot {
+    display: inline-block;
+    height: 14px;
+    font-size: 10px;
+    font-weight: bolder;
+    transform: translateY(-12px);
+    margin-left: 4px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 1px;
+    background-color: rgb(114,138,218);
+    border-radius: 3px;
+}
+
 .memberbar .avatar {
     width: 32px;
     height: 32px;
@@ -533,6 +547,11 @@ body {
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.memberbar .membername.shortbot {
+    width: auto;
+    max-width: 140px;
 }
 
 .memberbar .memberdesc::selection, .memberbar .membername::selection, .memberbar .avatar::selection, .memberbar .member::selection, .memberbar::selection {

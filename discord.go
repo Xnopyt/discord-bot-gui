@@ -274,7 +274,7 @@ func setActiveChannel(id string) {
 			} else {
 				uname = v.User.Username
 			}
-			evalQueue += fmt.Sprintf("addmember(%q, %q);\n", uname, v.User.AvatarURL("128"))
+			evalQueue += fmt.Sprintf("addmember(%q, %q, %t);\n", uname, v.User.AvatarURL("128"), v.User.Bot)
 		}
 	}
 	evalQueue += fmt.Sprintf("setmembercount('%d');\n", i)
