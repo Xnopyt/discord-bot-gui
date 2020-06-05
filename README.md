@@ -3,8 +3,8 @@
 A webview based graphical interface for sending and reciving messages with a discord bot.<br />
 
 ## Screenshots
-![Screenshot 1](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/webview/screenshots/screenshot1.png "Screenshot 1")
-![Screenshot 2](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/webview/screenshots/screenshot2.png "Screenshot 2")
+![Screenshot 1](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/master/screenshots/screenshot1.png "Screenshot 1")
+![Screenshot 2](https://raw.githubusercontent.com/Xnopyt/discord-bot-gui/master/screenshots/screenshot2.png "Screenshot 2")
 
 ## Credits
 
