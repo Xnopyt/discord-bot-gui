@@ -298,6 +298,7 @@ func setActiveChannel(id string) {
 		}
 		processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache)
 	}
+	time.Sleep(time.Second)
 	wv.Dispatch(func() {
 		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 		messages.scrollTop = messages.scrollHeight;
@@ -429,6 +430,7 @@ func loadDMChannel(id string) {
 		}
 		processChannelMessage(&discordgo.MessageCreate{Message: v}, nil)
 	}
+	time.Sleep(time.Second)
 	wv.Dispatch(func() {
 		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 	messages.scrollTop = messages.scrollHeight;
