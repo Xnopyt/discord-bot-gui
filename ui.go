@@ -113,7 +113,9 @@ func mainSetup() {
 					style.appendChild(document.createTextNode(css));
 				}
 				head.appendChild(style);
-			})("%s")`, template.JSEscapeString(`
+			})("%s");
+			document.getElementById("blocker").style.backgroundColor = "rgba(0,0,0,0.4)";
+			`, template.JSEscapeString(`
 			.infobar .chantitle {
 				transform: none;
 			}
@@ -124,6 +126,16 @@ func mainSetup() {
 
 			.chan .fa-hashtag {
 				transform: translateY(-3px);
+			}
+
+			.memberbar .memberbot {
+				transform: translateY(-16px);
+				padding-left: 2px;
+			}
+
+			.message .msgbot {
+				transform: translateY(-24px);
+				padding-left: 2px;
 			}
 			`)))
 		}
