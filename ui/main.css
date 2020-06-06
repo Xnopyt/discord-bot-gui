@@ -547,6 +547,7 @@ body {
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    word-break: keep-all;
 }
 
 .memberbar .membername.shortbot {
