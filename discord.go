@@ -409,9 +409,9 @@ func loadDMChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
 		wv.Eval(`resetmembers();`)
-		wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, ses.State.User.Username, ses.State.User.AvatarURL("128")))
+		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t)`, ses.State.User.Username, ses.State.User.AvatarURL("128"), ses.State.User.Bot))
 		for _, v := range channel.Recipients {
-			wv.Eval(fmt.Sprintf(`addmember(%q, %q)`, v.Username, v.AvatarURL("128")))
+			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t)`, v.Username, v.AvatarURL("128"), v.Bot))
 		}
 		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
 	})
