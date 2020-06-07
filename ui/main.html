@@ -110,7 +110,7 @@
                 <div class="inputborder"></div>
                 <button class="fileupload" onclick="triggerUpload()"><i class="fas fa-plus-circle"></i></button>
                 <textarea id="messageinput" class="messageinput" placeholder="Message #General"></textarea>
-                <button class="sendbutton"><i class="fas fa-paper-plane" onclick="wv(JSON.stringify({'type': 'sendMessage', 'content': document.getElementById('messageinput').value}));document.getElementById('messageinput').value = '';"></i></button>
+                <button class="emojiselect" id="emojiselect"><i class="fas fa-grin"></i></button>
             </div>
             <div class="memberbar">
                 <div style="overflow-y: scroll;" id="members"></div>
