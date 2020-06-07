@@ -140,6 +140,14 @@ func mainSetup() {
 				transform: translateY(-24px);
 				padding-left: 2px;
 			}
+
+			.emojiselect .fa-grin {
+				transform: none;
+			}
+
+			.actionbar .dmusername {
+				transform: translateY(-5px);
+			}
 			`)))
 		}
 		body = httpGet("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")

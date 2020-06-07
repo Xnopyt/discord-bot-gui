@@ -8,6 +8,7 @@
     transition: opacity 0.3s;
     overflow: hidden;
     color: rgb(185, 187, 190);
+    -ms-overflow-style: auto;
   }
   
   .emoji-picker.visible {

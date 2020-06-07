@@ -636,6 +636,8 @@ body {
     width: 12px;
     height: 20px;
     margin-left: 2px;
+    cursor: pointer;
+    transform: translateY(2px);
 }
 
 .messagebox .emojiselect:hover > .fa-grin {
