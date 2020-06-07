@@ -596,14 +596,14 @@ body {
 }
 
 .messagebox .messageinput {
-    width: calc(100% - 70px);
+    width: calc(100% - 95px);
     height: 35px;
     border-radius: 4px;
     position: absolute;
     bottom: 20px;
     box-sizing : border-box;
     margin-left: 15px;
-    margin-right: 55px;
+    margin-right: 80px;
     border: none;
     padding: 7px;
     padding-left: 50px;
@@ -615,6 +615,34 @@ body {
     font-size: inherit;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+}
+
+.messagebox .sendbutton {
+    width: 40px;
+    height: 35px;
+    background-color: rgb(64, 68, 75);
+    position: absolute;
+    bottom: 20px;
+    border: none;
+    margin-left: calc(100% - 80px);
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    outline: none;
+    z-index: 1;
+}
+
+.sendbutton .fa-paper-plane {
+    color: rgb(171, 171, 171);
+    font-size: 20px;
+    width: 12px;
+    height: 20px;
+    margin-right: 10px;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+.messagebox .sendbutton:hover > .fa-paper-plane {
+    color: rgb(255, 255, 255)
 }
 
 .messagebox .emojiselect {
