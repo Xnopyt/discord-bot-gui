@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"runtime"
 	"time"
+
+	"github.com/zserge/webview"
 )
 
 type uiMsg struct {
@@ -32,6 +34,7 @@ func init() {
 
 func loginSetup() {
 	wv.Dispatch(func() {
+		wv.SetSize(1280, 720, webview.HintNone)
 		wv.Eval(fmt.Sprintf(`
 			var script = document.createElement('script');
 			var head = document.head || document.getElementsByTagName('head')[0];
@@ -139,17 +142,15 @@ func mainSetup() {
 			}
 			`)))
 		}
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
+		body = httpGet("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")
+		wv.Eval(fmt.Sprintf(`
+			var script = document.createElement('script');
 			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(MustAsset("ui/emoji-picker.css")))))
+			script.src="data:application/javascript;base64,%s"
+			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
+		if runtime.GOOS == "windows" {
+			time.Sleep(time.Second)
+		}
 		wv.Eval(fmt.Sprintf(`
 			var script = document.createElement('script');
 			var head = document.head || document.getElementsByTagName('head')[0];
@@ -167,6 +168,17 @@ func mainSetup() {
 			var head = document.head || document.getElementsByTagName('head')[0];
 			script.src="data:application/javascript;base64,%s"
 			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
+		wv.Eval(fmt.Sprintf(`(function(css){
+			var style = document.createElement('style');
+			var head = document.head || document.getElementsByTagName('head')[0];
+			style.setAttribute('type', 'text/css');
+			if (style.styleSheet) {
+				style.styleSheet.cssText = css;
+			} else {
+				style.appendChild(document.createTextNode(css));
+			}
+			head.appendChild(style);
+		})("%s")`, template.JSEscapeString(string(MustAsset("ui/emoji-picker.css")))))
 		wv.Eval(fmt.Sprintf(`
 			document.getElementById("cname").innerHTML = %q;
 			document.getElementById("cdiscriminator").innerHTML = '#%s';
