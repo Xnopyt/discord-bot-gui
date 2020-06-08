@@ -120,6 +120,11 @@
         </div>
     </div>
     <div id="tooltip" class="tooltip"></div>
+    <div id="alertbox" class="alertbox">
+        <p id="alerttitle" class="alerttitle">Test Title</p>
+        <p id="alertmsg" class="alertmsg">Test alert, this message is a test.</p>
+        <center><button id="alertclose" class="alertclose" onclick="document.getElementById('alertbox').style.display = 'none'">Ok</button></center>
+    </div>
     <script>hljs.initHighlightingOnLoad();</script>
     <input type="file" display="hidden" id="fileupload" onchange="completeUpload(this.files)">
 </body>

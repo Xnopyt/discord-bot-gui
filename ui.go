@@ -148,6 +148,14 @@ func mainSetup() {
 			.actionbar .dmusername {
 				transform: translateY(-5px);
 			}
+
+			.fileupload .fa-plus-circle {
+				transform: none;
+			}
+
+			.attachment p {
+				transform: none;
+			}
 			`)))
 		}
 		body = httpGet("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")

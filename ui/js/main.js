@@ -258,13 +258,35 @@ function openURL(url) {
 	wv(JSON.stringify({'type': 'openURL', 'content': url}));
 }
 
+function createAlert(title, message) {
+	document.getElementById("alerttitle").innerHTML = title;
+	document.getElementById("alertmsg").innerHTML = message;
+	document.getElementById("alertbox").style.display = "block";
+}
+
 function triggerUpload() {
 	document.getElementById("fileupload").click();
 }
 
 function completeUpload(files) {
-	wv(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'path': files[0].path, 'name': files[0].name, 'mime': files[0].type})}));
-	document.getElementById("fileupload").files = nil;
+	if (files[0].size > 8388119) {
+		createAlert("Upload Failed", "The selected file exceeds the maximum upload size (8mb).");
+		document.getElementById("fileupload").files = null;
+		return
+	}
+
+	var reader = new FileReader();
+	var name = files[0].name
+	var mime = files[0].type
+
+	reader.onload = function(event) {
+		var data = window.btoa(event.target.result) 
+		wv(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'data': data, 'name': name, 'mime': mime})}));
+	}
+
+	reader.readAsBinaryString(files[0])
+
+	document.getElementById("fileupload").files = null;
 }
 
 function showServerTooltip(event) {

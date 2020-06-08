@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -27,7 +28,7 @@ var imgMime = []string{
 }
 
 type fileAttachment struct {
-	Path string `json:"path"`
+	Data string `json:"data"`
 	Name string `json:"name"`
 	Mime string `json:"mime"`
 }
@@ -444,27 +445,17 @@ func loadDMChannel(id string) {
 func sendFile(s string) {
 	var file fileAttachment
 	json.Unmarshal([]byte(s), &file)
-	f, err := os.Open(file.Path)
-	if err != nil {
-		wv.Dispatch(func() { wv.Eval(`alert("Unable to open selected file!");`) })
-		return
-	}
-	finfo, _ := f.Stat()
-	size := finfo.Size()
-	if size > maxUpload {
-		wv.Dispatch(func() { wv.Eval(`alert("Max file size exceeded!");`) })
-		return
-	}
+	decoder := base64.NewDecoder(base64.StdEncoding, strings.NewReader(file.Data))
 	var msg discordgo.MessageSend
 	msg.Content = ""
 	msg.Files = append(msg.Files, &discordgo.File{
 		Name:        file.Name,
 		ContentType: file.Mime,
-		Reader:      f,
+		Reader:      decoder,
 	})
-	_, err = ses.ChannelMessageSendComplex(currentChannel, &msg)
+	_, err := ses.ChannelMessageSendComplex(currentChannel, &msg)
 	if err != nil {
-		wv.Dispatch(func() { wv.Eval(`alert("Failed to send file!");`) })
+		wv.Dispatch(func() { wv.Eval(`createAlert("Upload Failed", "` + template.JSEscapeString(err.Error()) + `");`) })
 	}
 }
 
