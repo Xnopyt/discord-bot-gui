@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/zserge/webview"
 )
 
@@ -214,4 +215,19 @@ func home() {
 		wv.Eval(`loadhome()`)
 	})
 	loadDMMembers()
+}
+
+func readClipboard() string {
+	clip, err := clipboard.ReadAll()
+	if err != nil {
+		log.Println("Error Reading Clipboard: " + err.Error())
+	}
+	return clip
+}
+
+func writeClipboard(clip string) {
+	err := clipboard.WriteAll(clip)
+	if err != nil {
+		log.Println("Error Writing Clipboard: " + err.Error())
+	}
 }

@@ -18,6 +18,8 @@ func main() {
 	wv.SetTitle("Discord Bot GUI - Login")
 	wv.SetSize(1, 1, webview.HintNone)
 	wv.Bind("wv", webviewCallback)
+	wv.Bind("readClipboard", readClipboard)
+	wv.Bind("writeClipboard", writeClipboard)
 	wv.Navigate("https://example.com/")
 	wv.Init(`
 	window.onload = function() {

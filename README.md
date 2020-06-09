@@ -14,6 +14,7 @@ Hightlight JS - https://github.com/highlightjs/highlight.js/<br />
 SimpleBar by Grsmto - https://github.com/Grsmto/simplebar
 
 ### Golang Libraries
+Clipboard by atotto - https://github.com/atotto/clipboard<br />
 Webview by zserge - https://github.com/zserge/webview<br />
 DiscordGo by bwmarrin - https://github.com/bwmarrin/discordgo<br />
 XURLs by mvdan - https://github.com/mvdan/xurls

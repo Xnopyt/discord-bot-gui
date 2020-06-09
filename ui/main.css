@@ -1140,6 +1140,38 @@ body {
     background-color: rgb(100, 121, 197);
 }
 
+.contextmenu {
+    display: none;
+    position: fixed;
+    border-radius: 5px;
+    background-color: rgb(32, 34, 37);
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+    z-index: 98;
+    width: 120px;
+    padding: 6px;
+}
+
+.contextmenu .button {
+    height: 25px;
+    width: 105px;
+    border-radius: 5px;
+    color: rgb(170, 173, 179);
+    font-size: 13px;
+    font-weight: bold;
+    padding-left: 15px;
+    padding-top: 7px;
+    cursor: pointer;
+}
+
+.contextmenu .button:hover {
+    background-color: rgb(100, 121, 197);
+    color: rgb(255,255,255);
+}
+
+.contextmenu .button::selection {
+    background: none;
+}
+
 /* ˅˅˅ From https://loading.io/css/ ˅˅˅ */
 .lds-roller {
     display: inline-block;

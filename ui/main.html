@@ -125,6 +125,11 @@
         <p id="alertmsg" class="alertmsg">Test alert, this message is a test.</p>
         <center><button id="alertclose" class="alertclose" onclick="document.getElementById('alertbox').style.display = 'none'">Ok</button></center>
     </div>
+    <div id="contextmenu" class="contextmenu">
+        <div id="cutbutton" class="button">Cut</div>
+        <div id="copybutton" class="button">Copy</div>
+        <div id="pastebutton" class="button">Paste</div>
+    </div>
     <script>hljs.initHighlightingOnLoad();</script>
     <input type="file" display="hidden" id="fileupload" onchange="completeUpload(this.files)">
 </body>
