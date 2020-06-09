@@ -40,6 +40,12 @@ function fail() {
 	loading = false;
 }
 
+function createAlert(title, message) {
+	document.getElementById("alerttitle").innerHTML = title;
+	document.getElementById("alertmsg").innerHTML = message;
+	document.getElementById("alertbox").style.display = "block";
+}
+
 window.ctrlHeld = false;
 
 document.addEventListener("keyup", function(event) {

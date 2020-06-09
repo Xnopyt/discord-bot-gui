@@ -61,6 +61,7 @@ func connect(s string) {
 	if err != nil {
 		wv.Dispatch(func() {
 			wv.Eval("fail()")
+			wv.Eval(`createAlert("` + "Error Creating Session" + `", "` + err.Error() + `");`)
 		})
 		return
 	}
@@ -73,6 +74,9 @@ func connect(s string) {
 	if err != nil {
 		wv.Dispatch(func() {
 			wv.Eval("fail()")
+			if err.Error() != "websocket: close 4004: Authentication failed." {
+				wv.Eval(`createAlert("` + "Error Opening Session" + `", "` + err.Error() + `");`)
+			}
 		})
 		return
 	}

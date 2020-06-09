@@ -258,12 +258,6 @@ function openURL(url) {
 	wv(JSON.stringify({'type': 'openURL', 'content': url}));
 }
 
-function createAlert(title, message) {
-	document.getElementById("alerttitle").innerHTML = title;
-	document.getElementById("alertmsg").innerHTML = message;
-	document.getElementById("alertbox").style.display = "block";
-}
-
 function triggerUpload() {
 	document.getElementById("fileupload").click();
 }

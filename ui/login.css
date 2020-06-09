@@ -140,6 +140,52 @@ body {
     background: none;
 }
 
+.alertbox {
+    display: none;
+    width: auto;
+    height: auto;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    background-color: rgb(32, 34, 37);
+    text-align: center;
+    padding: 10px;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+    z-index: 99;
+}
+
+.alertbox .alerttitle {
+    font-weight: bolder;
+    font-size: 16px;
+    color: rgb(255,255,255);
+    margin-bottom: 15px;
+}
+
+.alertbox .alertmsg {
+    font-weight: normal;
+    font-size: 12px;
+    color: rgb(255,255,255);
+    margin-bottom: 15px;
+}
+
+.alertbox .alertclose {
+    font-size: 12px;
+    margin-bottom: 10px;
+    height: 25px;
+    width: 35px;
+    border-radius: 4px;
+    background-color: rgb(112, 130, 196);
+    text-align: center;
+    border: none;
+    color: rgb(255, 255, 255);
+    outline: none;
+}
+
+.alertbox .alertclose:hover {
+    background-color: rgb(100, 121, 197);
+}
 
 @media screen and (max-width: 500px) {
     .loginContainer {
