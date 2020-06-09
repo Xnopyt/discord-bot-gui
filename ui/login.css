@@ -69,6 +69,7 @@ body {
     padding: 0;
     border: none;
     color: rgb(255, 255, 255);
+    padding-top: 2px;
 }
 
 .loginButton:hover {
@@ -149,3 +150,43 @@ body {
         margin: 20px;
     }
 }
+
+/* ˅˅˅ From https://loading.io/css/ ˅˅˅ */
+.lds-facebook {
+    display: inline-block;
+    position: relative;
+    width: 30px;
+    height: 30px;
+  }
+  .lds-facebook div {
+    display: inline-block;
+    position: absolute;
+    left: 3px;
+    width: 6px;
+    background: #fff;
+    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  }
+  .lds-facebook div:nth-child(1) {
+    left: 3px;
+    animation-delay: -0.24s;
+  }
+  .lds-facebook div:nth-child(2) {
+    left: 12px;
+    animation-delay: -0.12s;
+  }
+  .lds-facebook div:nth-child(3) {
+    left: 21px;
+    animation-delay: 0;
+  }
+  @keyframes lds-facebook {
+    0% {
+      top: 3px;
+      height: 24px;
+    }
+    50%, 100% {
+      top: 9px;
+      height: 12px;
+    }
+  }
+  
+/* ^^^ From https://loading.io/css/ ^^^ */

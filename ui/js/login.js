@@ -1,7 +1,13 @@
 var loginInput = document.getElementById("token");
 var button = document.getElementById("loginButton");
+var loading = false;
 loginInput.addEventListener("keyup", function(event) {
+	if (loading) {
+		return
+	}
 	if (event.keyCode === 13) {
+		button.innerHTML = '<div class="lds-facebook"><div></div><div></div><div></div></div>';
+		loading = true;
 		event.preventDefault();
 		var loginInput = document.getElementById("token");
 		var returnMessage = {};
@@ -11,6 +17,11 @@ loginInput.addEventListener("keyup", function(event) {
 	}
 });
 button.onclick = function() {
+	if (loading) {
+		return
+	}
+	loading = true;
+	button.innerHTML = '<div class="lds-facebook"><div></div><div></div><div></div></div>';
 	event.preventDefault();
 	var loginInput = document.getElementById("token");
 	var returnMessage = {};
@@ -25,6 +36,8 @@ function fail() {
 	lab.style.color = "rgb(189, 53, 43)"
 	tok.style.border = "1px solid rgb(189, 53, 43)"
 	lab.innerHTML = "TOKEN - Login failed."
+	button.innerHTML = "Login";
+	loading = false;
 }
 
 window.ctrlHeld = false;
