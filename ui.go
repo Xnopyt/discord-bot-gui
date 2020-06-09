@@ -41,6 +41,13 @@ func loginSetup() {
 			var head = document.head || document.getElementsByTagName('head')[0];
 			script.src="data:application/javascript;base64,%s"
 			head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/login.js"))))
+		if runtime.GOOS == "darwin" {
+			wv.Eval(fmt.Sprintf(`
+				var script = document.createElement('script');
+				var head = document.head || document.getElementsByTagName('head')[0];
+				script.src="data:application/javascript;base64,%s"
+				head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/darwinClipboard.js"))))
+		}
 		wv.Eval(fmt.Sprintf(`(function(css){
 			var style = document.createElement('style');
 			var head = document.head || document.getElementsByTagName('head')[0];
