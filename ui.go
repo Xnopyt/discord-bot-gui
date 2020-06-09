@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
-	"github.com/zserge/webview"
 )
 
 type uiMsg struct {
@@ -35,7 +34,6 @@ func init() {
 
 func loginSetup() {
 	wv.Dispatch(func() {
-		wv.SetSize(1280, 720, webview.HintNone)
 		wv.Eval(fmt.Sprintf(`
 			var script = document.createElement('script');
 			var head = document.head || document.getElementsByTagName('head')[0];

@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"html/template"
-	"runtime"
-	"time"
 
 	"github.com/pkg/browser"
 	"github.com/zserge/webview"
@@ -16,24 +14,16 @@ func main() {
 	wv = webview.New(true)
 	defer wv.Destroy()
 	wv.SetTitle("Discord Bot GUI - Login")
-	wv.SetSize(1, 1, webview.HintNone)
+	wv.SetSize(1280, 720, webview.HintNone)
 	wv.Bind("wv", webviewCallback)
 	wv.Bind("readClipboard", readClipboard)
 	wv.Bind("writeClipboard", writeClipboard)
-	wv.Navigate("https://example.com/")
 	wv.Init(`
 	window.onload = function() {
 		document.documentElement.innerHTML = "` + template.JSEscapeString(string(MustAsset("ui/login.html"))) + `";
 		wv("loginSetup");
 	}`)
-	if runtime.GOOS == "windows" {
-		go func() {
-			time.Sleep(time.Millisecond * 1000)
-			wv.Dispatch(func() {
-				wv.Eval(`document.documentElement.innerHTML = "` + template.JSEscapeString(string(MustAsset("ui/login.html"))) + `"; wv("loginSetup");`)
-			})
-		}()
-	}
+	wv.Navigate("https://example.com/")
 	wv.Run()
 }
 
