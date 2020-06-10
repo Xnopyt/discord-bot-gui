@@ -70,13 +70,14 @@ body {
     border: none;
     color: rgb(255, 255, 255);
     padding-top: 2px;
+    cursor: pointer;
 }
 
 .loginButton:hover {
     background-color: rgb(100, 121, 197);
 }
 
-.loginHead:hover, .loginSubhead:hover, .loginButton:hover, .loginLabel:hover {
+.loginHead:hover, .loginSubhead:hover, .loginLabel:hover {
     cursor: default;
 }
 
@@ -176,13 +177,16 @@ body {
     font-size: 12px;
     margin-bottom: 10px;
     height: 25px;
-    width: 35px;
+    width: 34px;
     border-radius: 4px;
     background-color: rgb(112, 130, 196);
     text-align: center;
     border: none;
     color: rgb(255, 255, 255);
     outline: none;
+    padding-left: 8px;
+    padding-right: 10px;
+    cursor: pointer;
 }
 
 .alertbox .alertclose:hover {

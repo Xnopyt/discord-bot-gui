@@ -123,8 +123,15 @@
     <div id="alertbox" class="alertbox">
         <p id="alerttitle" class="alerttitle">Test Title</p>
         <p id="alertmsg" class="alertmsg">Test alert, this message is a test.</p>
-        <center><button id="alertclose" class="alertclose" onclick="document.getElementById('alertbox').style.display = 'none'">Ok</button></center>
+        <button id="alertclose" class="alertclose" onclick="document.getElementById('alertbox').style.display = 'none'">Ok</button>
     </div>
+    <div id="deldialog" class="alertbox">
+        <p class="alerttitle">Confirm Message Deletion</p>
+        <p class="alertmsg">Are you sure you want to delete this message?</p>
+        <button id="delconfirm" class="alertclose" style="margin-right: 10px;">Yes</button>
+       <button class="alertclose" onclick="document.getElementById('deldialog').style.display = 'none'; document.getElementById('confirmblock').style.display = 'none';">No</button>
+    </div>
+    <div id="confirmblock" class="confirmblock"></div>
     <div id="contextmenu" class="contextmenu">
         <div id="cutbutton" class="button">Cut</div>
         <div id="copybutton" class="button">Copy</div>

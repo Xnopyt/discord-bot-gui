@@ -118,19 +118,25 @@ document.addEventListener('contextmenu', function(event) {
 	var msg = getClosest(pasteTarget, ".message");
 	if ( (msg != null) && msg.id != "" ) {
 		del.style.display = "block";
-		del.onclick = async function(event) {
-			var err = await deleteMessage(msg.id);
-			if (err != "") {
-				var x = err.split(",");
-				x.shift();
-				x = x.join(",");
-				try {
-					err = JSON.parse(x).message;
-				} catch {
-					err = x;
+		del.onclick = function(event) {
+			document.getElementById("delconfirm").onclick = async function() {
+				document.getElementById('deldialog').style.display = 'none';
+				document.getElementById('confirmblock').style.display = 'none';
+				var err = await deleteMessage(msg.id);
+				if (err != "") {
+					var x = err.split(",");
+					x.shift();
+					x = x.join(",");
+					try {
+						err = JSON.parse(x).message;
+					} catch {
+						err = x;
+					}
+					createAlert("Failed to Delete Message", err);
 				}
-				createAlert("Failed to Delete Message", err);
-			}
+			};
+			document.getElementById("confirmblock").style.display = "block";
+			document.getElementById("deldialog").style.display = "block";
 		}
 	} else {
 		del.style.display = "none";
