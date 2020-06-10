@@ -474,3 +474,11 @@ func updateTyping() {
 		typing = false
 	}()
 }
+
+func deleteMessage(id string) string {
+	err := ses.ChannelMessageDelete(currentChannel, id)
+	if err != nil {
+		return err.Error()
+	}
+	return ""
+}

@@ -18,6 +18,7 @@ func main() {
 	wv.Bind("wv", webviewCallback)
 	wv.Bind("readClipboard", readClipboard)
 	wv.Bind("writeClipboard", writeClipboard)
+	wv.Bind("deleteMessage", deleteMessage)
 	wv.Init(`
 	window.onload = function() {
 		document.documentElement.innerHTML = "` + template.JSEscapeString(string(MustAsset("ui/login.html"))) + `";

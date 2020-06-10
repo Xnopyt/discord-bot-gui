@@ -46,6 +46,17 @@ function createAlert(title, message) {
 	document.getElementById("alertbox").style.display = "block";
 }
 
+var getClosest = function (elem, selector) {
+	if (!Element.prototype.matches) {
+		Element.prototype.matches = Element.prototype.msMatchesSelector ||
+									Element.prototype.webkitMatchesSelector;
+	  }
+	for ( ; elem && elem !== document; elem = elem.parentNode ) {
+		if ( elem.matches( selector ) ) return elem;
+	}
+	return null;
+};
+
 window.ctrlHeld = false;
 
 document.addEventListener("keyup", function(event) {
@@ -101,6 +112,28 @@ document.addEventListener('contextmenu', function(event) {
 		}
 	} else {
 		cut.style.display = "none";
+	}
+
+	var del = document.getElementById("deletebutton");
+	var msg = getClosest(pasteTarget, ".message");
+	if ( (msg != null) && msg.id != "" ) {
+		del.style.display = "block";
+		del.onclick = async function(event) {
+			var err = await deleteMessage(msg.id);
+			if (err != "") {
+				var x = err.split(",");
+				x.shift();
+				x = x.join(",");
+				try {
+					err = JSON.parse(x).message;
+				} catch {
+					err = x;
+				}
+				createAlert("Failed to Delete Message", err);
+			}
+		}
+	} else {
+		del.style.display = "none";
 	}
 
 	var menu = document.getElementById("contextmenu");
