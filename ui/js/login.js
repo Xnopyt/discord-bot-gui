@@ -69,22 +69,22 @@ document.addEventListener('contextmenu', function(event) {
 
 	var copy = document.getElementById("copybutton");
 	var clip = window.getSelection().toString();
-	copy.addEventListener("click", function(event) {
+	copy.onclick = function(event) {
 		if (clip != "") {
 			writeClipboard(clip);
 		}
-	}, {once: true})
+	}
 
 	var paste = document.getElementById("pastebutton");
 	var pasteTarget = event.target
 	if ((pasteTarget.nodeName == "INPUT") && ((pasteTarget.type == "password" || pasteTarget.type == "text")) || (pasteTarget.nodeName == "TEXTAREA")) {
 		paste.style.display = "block";
-		paste.addEventListener("click", async function(event) {
+		paste.onclick = async function(event) {
 			var clip = await readClipboard();
 			var end = pasteTarget.value.slice(pasteTarget.selectionEnd);
 			var start = pasteTarget.value.slice(0, pasteTarget.selectionStart);
 			pasteTarget.value = start + clip + end;
-		}, {once: true})
+		}
 	} else {
 		paste.style.display = "none";
 	}
@@ -92,13 +92,13 @@ document.addEventListener('contextmenu', function(event) {
 	var cut = document.getElementById("cutbutton");
 	if (((pasteTarget.nodeName == "INPUT") && ((pasteTarget.type == "password" || pasteTarget.type == "text")) || (pasteTarget.nodeName == "TEXTAREA")) && (pasteTarget.selectionStart != pasteTarget.selectionEnd)) {
 		cut.style.display = "block";
-		cut.addEventListener("click", function(event) {
+		cut.onclick = function(event) {
 			var end = pasteTarget.value.slice(pasteTarget.selectionEnd);
 			var start = pasteTarget.value.slice(0, pasteTarget.selectionStart);
 			var clip = pasteTarget.value.slice(pasteTarget.selectionStart, pasteTarget.selectionEnd);
 			pasteTarget.value = start + end;
 			writeClipboard(clip);
-		}, {once: true})
+		}
 	} else {
 		cut.style.display = "none";
 	}
