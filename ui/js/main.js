@@ -265,7 +265,7 @@ function triggerUpload() {
 function completeUpload(files) {
 	if (files[0].size > 8388119) {
 		createAlert("Upload Failed", "The selected file exceeds the maximum upload size (8mb).");
-		document.getElementById("fileupload").files = null;
+		document.getElementById("fileupload").value = "";
 		return
 	}
 
@@ -280,7 +280,7 @@ function completeUpload(files) {
 
 	reader.readAsBinaryString(files[0])
 
-	document.getElementById("fileupload").files = null;
+	document.getElementById("fileupload").value = "";
 }
 
 function showServerTooltip(event) {
