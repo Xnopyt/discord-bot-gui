@@ -78,18 +78,27 @@ document.addEventListener('contextmenu', function(event) {
 	}
 	event.preventDefault();
 
+	var showContext = false;
+	var menu = document.getElementById("contextmenu");
+	menu.style.display = "none";
+
 	var copy = document.getElementById("copybutton");
 	var clip = window.getSelection().toString();
-	copy.onclick = function(event) {
-		if (clip != "") {
+	if (clip != "") {
+		copy.style.display = "block";
+		showContext = true;
+		copy.onclick = function(event) {
 			writeClipboard(clip);
 		}
+	} else {
+		copy.style.display = "none";
 	}
 
 	var paste = document.getElementById("pastebutton");
 	var pasteTarget = event.target
 	if ((pasteTarget.nodeName == "INPUT") && ((pasteTarget.type == "password" || pasteTarget.type == "text")) || (pasteTarget.nodeName == "TEXTAREA")) {
 		paste.style.display = "block";
+		showContext = true;
 		paste.onclick = async function(event) {
 			var clip = await readClipboard();
 			var end = pasteTarget.value.slice(pasteTarget.selectionEnd);
@@ -103,6 +112,7 @@ document.addEventListener('contextmenu', function(event) {
 	var cut = document.getElementById("cutbutton");
 	if (((pasteTarget.nodeName == "INPUT") && ((pasteTarget.type == "password" || pasteTarget.type == "text")) || (pasteTarget.nodeName == "TEXTAREA")) && (pasteTarget.selectionStart != pasteTarget.selectionEnd)) {
 		cut.style.display = "block";
+		showContext = true;
 		cut.onclick = function(event) {
 			var end = pasteTarget.value.slice(pasteTarget.selectionEnd);
 			var start = pasteTarget.value.slice(0, pasteTarget.selectionStart);
@@ -118,6 +128,7 @@ document.addEventListener('contextmenu', function(event) {
 	var msg = getClosest(pasteTarget, ".message");
 	if ( (msg != null) && msg.id != "" ) {
 		del.style.display = "block";
+		showContext = true;
 		del.onclick = function(event) {
 			document.getElementById("delconfirm").onclick = async function() {
 				document.getElementById('deldialog').style.display = 'none';
@@ -142,25 +153,26 @@ document.addEventListener('contextmenu', function(event) {
 		del.style.display = "none";
 	}
 
-	var menu = document.getElementById("contextmenu");
-	menu.style.visibility = "hidden";
-	menu.style.display = "block";
+	if (showContext) {
+		menu.style.visibility = "hidden";
+		menu.style.display = "block";
 
-	var rect = document.body.getBoundingClientRect();
+		var rect = document.body.getBoundingClientRect();
 
-	if ((event.clientY + menu.offsetHeight) > rect.bottom ) {
-		menu.style.top = (event.clientY - menu.offsetHeight) + "px";
-	} else {
-		menu.style.top = event.clientY + "px";
+		if ((event.clientY + menu.offsetHeight) > rect.bottom ) {
+			menu.style.top = (event.clientY - menu.offsetHeight) + "px";
+		} else {
+			menu.style.top = event.clientY + "px";
+		}
+
+		if ((event.clientX + menu.offsetWidth) > rect.right) {
+			menu.style.left = (event.clientX - menu.offsetWidth) + "px";
+		} else {
+			menu.style.left = event.clientX + "px";
+		}
+
+		menu.style.visibility = "visible";
 	}
-
-	if ((event.clientX + menu.offsetWidth) > rect.right) {
-		menu.style.left = (event.clientX - menu.offsetWidth) + "px";
-	} else {
-		menu.style.left = event.clientX + "px";
-	}
-
-	menu.style.visibility = "visible";
 })
 
 document.addEventListener("click", function(event) {
