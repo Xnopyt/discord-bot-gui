@@ -226,9 +226,9 @@ func selectTargetServer(id string) {
 
 func parseTime(m *discordgo.MessageCreate) string {
 	var ctime string
-	times, err := m.Timestamp.Parse()
+	times, err := discordgo.SnowflakeTimestamp(m.ID)
 	if err != nil {
-		ctime = "00:00"
+		ctime = "Unable to Parse Timestamp"
 	} else {
 		times = times.Local()
 		hr, mi, _ := times.Clock()
