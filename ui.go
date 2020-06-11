@@ -206,7 +206,7 @@ func mainSetup() {
 			document.getElementById("cdiscriminator").innerHTML = '#%s';
 			document.getElementById("cavatar").src = %q;
 		`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator, ses.State.User.AvatarURL("128")))
-		wv.SetTitle(fmt.Sprintf(`Discord Bot GUI - %s#%s`, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
+		wv.SetTitle(fmt.Sprintf(`Discord Bot GUI - %s#%s`, ses.State.User.Username, ses.State.User.Discriminator))
 	})
 	time.Sleep(time.Second)
 	loadServers()

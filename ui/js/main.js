@@ -129,7 +129,7 @@ function selectdmchannel(id, name) {
 	messages.appendChild(spacer);
 }
 
-function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot) {
+function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot, owner, discriminator, username) {
 	bodytext = decodeURIComponent(bodytext.replace(/\+/g, ' '));;
 	var msgTest = document.getElementById(id);
 	if (msgTest == null) {
@@ -148,6 +148,8 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot) 
 	var unameelem = document.createElement("p");
 	unameelem.className = "msguser";
 	unameelem.innerHTML = uname;
+	unameelem.addEventListener("mouseenter", showUserTooltip);
+	unameelem.addEventListener("mouseleave", hideServerTooltip);
 	head.appendChild(unameelem);
 	if (isbot) {
 		var bot = document.createElement("div");
@@ -166,6 +168,13 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot) 
 		body.classList.add("selfmention")
 	}
 	body.innerHTML = bodytext;
+	msg.ownerid = owner;
+	msg.ownerdiscrim = discriminator;
+	msg.ownername = username;
+	try {
+		author = document.getElementById(owner + "-member");
+		author.info.messages.push(id);
+	} catch {}
 	msg.appendChild(body);
 	var code = msg.getElementsByTagName("code");
 	for (let cblock of code) {
@@ -232,7 +241,7 @@ function setmembercount(count) {
 	new SimpleBar(document.getElementById("members").parentElement)
 }
 
-function addmember(username, src, isbot) {
+function addmember(nickname, src, isbot, id, username, discriminator) {
 	var memberbar = document.getElementById("members");
 	var member = document.createElement("div");
 	member.className = "member";
@@ -242,7 +251,7 @@ function addmember(username, src, isbot) {
 	member.appendChild(ava);
 	var memname = document.createElement("p");
 	memname.className = "membername";
-	memname.innerHTML = username;
+	memname.innerHTML = nickname;
 	member.appendChild(memname);
 	if (isbot) {
 		var bot = document.createElement("div");
@@ -251,6 +260,10 @@ function addmember(username, src, isbot) {
 		memname.classList.add("shortbot")
 		member.appendChild(bot)
 	}
+	member.id = id + "-member";
+	member.info = {"id": id, "username": username, "discriminator" : discriminator, "nickname" : nickname, "messages" : [] };
+	member.addEventListener("mouseenter", showUserTooltip);
+	member.addEventListener("mouseleave", hideServerTooltip);
 	memberbar.appendChild(member);
 }
 
@@ -283,6 +296,62 @@ function completeUpload(files) {
 	document.getElementById("fileupload").value = "";
 }
 
+function showUserTooltip(event) {
+	var tooltip = document.getElementById("tooltip");
+	tooltip.innerHTML = "";
+	tooltip.style.visibility = "hidden";
+	tooltip.style.display = "block";
+	var nick = document.createElement("p");
+	nick.className = "tooltipNick";
+	var user = document.createElement("p");
+	user.className = "tooltipUser";
+	var discriminator = document.createElement("p");
+	discriminator.className = "tooltipDiscrim";
+	tooltip.appendChild(nick);
+	tooltip.appendChild(user);
+	tooltip.appendChild(discriminator);
+	var rect = event.target.getBoundingClientRect();
+	var pageRect = document.body.getBoundingClientRect();
+	var isMsg = false;
+	if (event.target.className == "msguser") {
+		isMsg = true;
+		nick.innerHTML = event.target.innerHTML;
+		user.innerHTML = event.target.parentNode.parentNode.ownername;
+		discriminator.innerHTML = "#" + event.target.parentNode.parentNode.ownerdiscrim;
+		var member = document.getElementById(event.target.parentNode.parentNode.ownerid + "-member");
+	} else {
+		var member = event.target;
+	}
+	if (member != null) {
+		nick.innerHTML = member.info.nickname;
+		user.innerHTML = member.info.username;
+		discriminator.innerHTML = "#" + member.info.discriminator;
+	}
+	if (nick.innerHTML == user.innerHTML) {
+		tooltip.removeChild(nick);
+	}
+	if (isMsg) {
+		tooltip.style.left = (event.clientX - (event.target.offsetWidth / 2)) + "px";
+		if ( (rect.top + event.target.offsetHeight + tooltip.offsetHeight + 5) > pageRect.bottom ) {
+			tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + "px";
+		} else {
+			tooltip.style.top = (rect.top + event.target.offsetHeight + 5) + "px";
+		}
+	} else {
+		tooltip.style.left = (rect.left - tooltip.offsetWidth - 5) + "px";
+		if ( ((rect.top - ((tooltip.offsetHeight / 2) - (member.offsetHeight / 2))) + tooltip.offsetHeight )  > pageRect.bottom ) {
+			var diff = ((rect.top - ((tooltip.offsetHeight / 2) - (member.offsetHeight / 2))) + tooltip.offsetHeight ) - (pageRect.bottom) + 5;
+			tooltip.style.top = ((rect.top - ((tooltip.offsetHeight / 2) - (member.offsetHeight / 2))) - diff ) + "px";
+		} else if ( (rect.top - ((tooltip.offsetHeight / 2) - (member.offsetHeight / 2))) < 0 ) {
+			tooltip.style.top = 5 + "px";
+		} else {
+			tooltip.style.top = (rect.top - ((tooltip.offsetHeight / 2) - (member.offsetHeight / 2))) + "px";
+		}
+	}
+	tooltip.style.textAlign = "left";
+	tooltip.style.visibility = null;
+}
+
 function showServerTooltip(event) {
 	var tooltip = document.getElementById("tooltip");
 	tooltip.innerHTML = event.target.getElementsByClassName("tooltip-text")[0].innerHTML
@@ -292,9 +361,9 @@ function showServerTooltip(event) {
 	tooltip.style.display = "block";
 }
 
-function hideServerTooltip(event) {
+function hideServerTooltip() {
 	var tooltip = document.getElementById("tooltip");
-	tooltip.style.display = "none";
+	tooltip.style = null;
 }
 
 var home = document.getElementById("home");

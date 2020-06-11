@@ -281,7 +281,7 @@ func setActiveChannel(id string) {
 			} else {
 				uname = v.User.Username
 			}
-			evalQueue += fmt.Sprintf("addmember(%q, %q, %t);\n", uname, v.User.AvatarURL("128"), v.User.Bot)
+			evalQueue += fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q);\n", html.EscapeString(uname), v.User.AvatarURL("128"), v.User.Bot, v.User.ID, html.EscapeString(v.User.Username), v.User.Discriminator)
 		}
 	}
 	evalQueue += fmt.Sprintf("setmembercount('%d');\n", i)
@@ -363,7 +363,7 @@ func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member
 		selfmention = true
 	}
 	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t, %t);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention, m.Author.Bot))
+		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t, %t, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention, m.Author.Bot, m.Author.ID, m.Author.Discriminator, html.EscapeString(m.Author.Username)))
 		wv.Eval(embeds)
 	})
 	for _, z := range m.Attachments {
@@ -414,9 +414,9 @@ func loadDMChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
 		wv.Eval(`resetmembers();`)
-		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t)`, ses.State.User.Username, ses.State.User.AvatarURL("128"), ses.State.User.Bot))
+		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q)`, html.EscapeString(ses.State.User.Username), ses.State.User.AvatarURL("128"), ses.State.User.Bot, ses.State.User.ID, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
 		for _, v := range channel.Recipients {
-			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t)`, v.Username, v.AvatarURL("128"), v.Bot))
+			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q)`, html.EscapeString(v.Username), v.AvatarURL("128"), v.Bot, v.ID, html.EscapeString(v.Username), v.Discriminator))
 		}
 		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
 	})

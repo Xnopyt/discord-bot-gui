@@ -188,6 +188,27 @@ body {
     display: none;
 }
 
+.tooltip .tooltipNick {
+    display: block;
+    font-size: 9px;
+    color: rgb(202, 207, 203);
+    margin: 0;
+}
+
+.tooltip .tooltipUser {
+    display: inline;
+    font-size: 12px;
+    color: rgb(255, 255, 255);
+    margin: 0;
+}
+
+.tooltip .tooltipDiscrim {
+    display: inline;
+    font-size: 12px;
+    color: rgb(157, 165, 159);
+    margin: 0;
+}
+
 .actionbar {
     height: 100%;
     width: 240px;
