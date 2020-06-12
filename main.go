@@ -26,6 +26,9 @@ func main() {
 	}`)
 	wv.Navigate("https://example.com/")
 	wv.Run()
+	if ses != nil {
+		ses.Close()
+	}
 }
 
 func webviewCallback(s string) {
