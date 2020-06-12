@@ -139,6 +139,9 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot, 
 	}
 	var msg = document.getElementById(id);
 	msg.className = "message";
+	msg.ownerid = owner;
+	msg.ownerdiscrim = discriminator;
+	msg.ownername = username;
 	var head = document.createElement("div");
 	head.className = "nowrap";
 	var ava = document.createElement("img");
@@ -168,12 +171,12 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot, 
 		body.classList.add("selfmention")
 	}
 	body.innerHTML = bodytext;
-	msg.ownerid = owner;
-	msg.ownerdiscrim = discriminator;
-	msg.ownername = username;
 	try {
 		author = document.getElementById(owner + "-member");
 		author.info.messages.push(id);
+		if (author.info.colour != null) {
+			unameelem.style.color = author.info.colour; 
+		}
 	} catch {}
 	msg.appendChild(body);
 	var code = msg.getElementsByTagName("code");
@@ -241,7 +244,7 @@ function setmembercount(count) {
 	new SimpleBar(document.getElementById("members").parentElement)
 }
 
-function addmember(nickname, src, isbot, id, username, discriminator) {
+function addmember(nickname, src, isbot, id, username, discriminator, colour) {
 	var memberbar = document.getElementById("members");
 	var member = document.createElement("div");
 	member.className = "member";
@@ -252,6 +255,9 @@ function addmember(nickname, src, isbot, id, username, discriminator) {
 	var memname = document.createElement("p");
 	memname.className = "membername";
 	memname.innerHTML = nickname;
+	if (colour) {
+		memname.style.color = colour;	
+	}
 	member.appendChild(memname);
 	if (isbot) {
 		var bot = document.createElement("div");
@@ -261,7 +267,7 @@ function addmember(nickname, src, isbot, id, username, discriminator) {
 		member.appendChild(bot)
 	}
 	member.id = id + "-member";
-	member.info = {"id": id, "username": username, "discriminator" : discriminator, "nickname" : nickname, "messages" : [] };
+	member.info = {"id": id, "username": username, "discriminator" : discriminator, "nickname" : nickname, "colour" : colour, "messages" : [] };
 	member.addEventListener("mouseenter", showUserTooltip);
 	member.addEventListener("mouseleave", hideServerTooltip);
 	memberbar.appendChild(member);

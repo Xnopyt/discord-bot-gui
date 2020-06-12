@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -261,6 +262,10 @@ func setActiveChannel(id string) {
 		return
 	}
 	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
+	roles, _ := ses.GuildRoles(currentServer)
+	sort.SliceStable(roles, func(i, j int) bool {
+		return roles[i].Position > roles[j].Position
+	})
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectchannel(%q, %q);
 		document.getElementById("members").innerHTML = "";
@@ -281,7 +286,25 @@ func setActiveChannel(id string) {
 			} else {
 				uname = v.User.Username
 			}
-			evalQueue += fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q);\n", html.EscapeString(uname), v.User.AvatarURL("128"), v.User.Bot, v.User.ID, html.EscapeString(v.User.Username), v.User.Discriminator)
+			var roleColour int
+			var colour string
+			for _, role := range roles {
+				if roleColour != 0 {
+					break
+				}
+				for _, rid := range v.Roles {
+					if rid == role.ID && role.Color != 0 {
+						roleColour = role.Color
+						break
+					}
+				}
+			}
+			if roleColour == 0 {
+				colour = "null"
+			} else {
+				colour = fmt.Sprintf("\"#%06x\"", roleColour)
+			}
+			evalQueue += fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q, %s);\n", html.EscapeString(uname), v.User.AvatarURL("128"), v.User.Bot, v.User.ID, html.EscapeString(v.User.Username), v.User.Discriminator, colour)
 		}
 	}
 	evalQueue += fmt.Sprintf("setmembercount('%d');\n", i)
@@ -414,9 +437,9 @@ func loadDMChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
 		wv.Eval(`resetmembers();`)
-		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q)`, html.EscapeString(ses.State.User.Username), ses.State.User.AvatarURL("128"), ses.State.User.Bot, ses.State.User.ID, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
+		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q, null)`, html.EscapeString(ses.State.User.Username), ses.State.User.AvatarURL("128"), ses.State.User.Bot, ses.State.User.ID, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
 		for _, v := range channel.Recipients {
-			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q)`, html.EscapeString(v.Username), v.AvatarURL("128"), v.Bot, v.ID, html.EscapeString(v.Username), v.Discriminator))
+			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q, null)`, html.EscapeString(v.Username), v.AvatarURL("128"), v.Bot, v.ID, html.EscapeString(v.Username), v.Discriminator))
 		}
 		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
 	})
