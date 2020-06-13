@@ -17,7 +17,7 @@ WIN64_CROSSCOMPILE=x86_64-w64-mingw32-gcc
 WIN32_CROSSCOMPILE=i686-w64-mingw32-gcc
 
 
-.PHONY: all dist linux build test clean run win build-win dep x-win x-build-win darwin dep-darwin build-darwin
+.PHONY: all dist linux build test clean run win build-win dep x-win x-build-win darwin dep-darwin build-darwin dep-win
 
 all: linux
 
@@ -44,9 +44,9 @@ clean:
 run: dep build
 	@./$(BINARY_NAME_LINUX)
 
-x-win: dep test x-build-win
+x-win: dep dep-win test x-build-win
 
-x-win32: dep test x-build-win32
+x-win32: dep dep-win test x-build-win32
 
 x-build-win:
 	@$(BINDATACMD) ./ui/...
@@ -70,11 +70,13 @@ build-darwin:
 dep-darwin:
 	@cd; GO111MODULE=on go get -u github.com/machinebox/appify/...
 
-dep:
-	@cd; GO111MODULE=on go get -u github.com/go-bindata/go-bindata/...
+dep-win:
 	@cd; GO111MODULE=on go get -u github.com/akavel/rsrc/...
 
-win: dep test build-win
+dep:
+	@cd; GO111MODULE=on go get -u github.com/go-bindata/go-bindata/...
+
+win: dep dep-win test build-win
 
 build-win:
 	@$(BINDATACMD) ./ui/...

@@ -1,6 +1,6 @@
 module github.com/Xnopyt/discord-bot-gui
 
-go 1.13
+go 1.14
 
 require (
 	github.com/atotto/clipboard v0.1.2
@@ -10,5 +10,5 @@ require (
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/zserge/webview v0.0.0-20200516134046-4caf698fad53
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
-	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980 // indirect
+	golang.org/x/sys v0.0.0-20200610111108-226ff32320da // indirect
 )
