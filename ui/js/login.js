@@ -140,9 +140,7 @@ document.addEventListener('contextmenu', function(event) {
 					x = x.join(",");
 					try {
 						err = JSON.parse(x).message;
-					} catch {
-						err = x;
-					}
+					} catch {}
 					createAlert("Failed to Delete Message", err);
 				}
 			};

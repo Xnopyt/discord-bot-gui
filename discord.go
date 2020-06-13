@@ -482,7 +482,17 @@ func sendFile(s string) {
 	})
 	_, err := ses.ChannelMessageSendComplex(currentChannel, &msg)
 	if err != nil {
-		wv.Dispatch(func() { wv.Eval(`createAlert("Upload Failed", "` + template.JSEscapeString(err.Error()) + `");`) })
+		wv.Dispatch(func() {
+			wv.Eval(`
+				var err = "` + template.JSEscapeString(err.Error()) + `";
+				var x = err.split(",");
+				x.shift();
+				x = x.join(",");
+				try {
+					err = JSON.parse(x).message;
+				} catch {}
+				createAlert("Upload Failed", err);`)
+		})
 	}
 }
 
