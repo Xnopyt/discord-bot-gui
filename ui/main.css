@@ -361,11 +361,17 @@ body {
 
 .memberbar {
     width: 240px;
-    height: 100%;
+    height: calc(100% - 48px);
     background-color: rgb(47, 49, 54);
     display: inline-block;
     position: fixed;
     right: 0;
+    overflow-y: scroll;
+    padding-bottom: 10px;
+}
+
+.memberbar .role {
+    margin-bottom: 10px;
 }
 
 .actionbar .chancontainer {
@@ -510,6 +516,11 @@ body {
     margin-left: 12px;
     margin-bottom: 0;
     color: rgb(126, 129, 134);
+    cursor: default;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: keep-all;
 }
 
 .memberbar .member {

@@ -229,23 +229,52 @@ function loadhome() {
 	document.getElementById("mainbox").style.display = "none";
 }
 
+function loadhoistedroles(rolejson) {
+	try {
+		roles = JSON.parse(rolejson);
+	} catch (e) {
+		console.error("Error loading roles " + e.toString());
+		return;
+	}
+	var memberbar = document.getElementById("members");
+	roles.reverse().forEach(function(role) {
+		if (!role.hoist) {return};
+		var r = document.createElement("div");
+		r.className = "role";
+		r.rolename = role.name;
+		r.id = role.id + "-role";
+		r.info = role;
+		memberbar.insertBefore(r, memberbar.childNodes[0]);
+	});
+}
+
 function resetmembers() {
 	var memberbar = document.getElementById("members");
 	memberbar.innerHTML = "";
-	var countelem = document.createElement("p");
-	countelem.className = "memberdesc";
-	countelem.id = "membercount";
-	memberbar.appendChild(countelem);
+	var members = document.createElement("div");
+	members.className = "role";
+	members.rolename = "members";
+	members.id = "null-role"
+	memberbar.appendChild(members);
 }
 
-function setmembercount(count) {
-	var countelem = document.getElementById("membercount");
-	countelem.innerHTML = "MEMBERS - " + count;
-	new SimpleBar(document.getElementById("members").parentElement)
-}
-
-function addmember(nickname, src, isbot, id, username, discriminator, colour) {
+function setmembercount() {
 	var memberbar = document.getElementById("members");
+	Array.from(memberbar.children).forEach(function (node) {
+		var countelem = document.createElement("p");
+		countelem.className = "memberdesc";
+		if (node.children.length == 0) {
+			node.style.display = "none";
+		}
+		countelem.innerHTML = node.rolename.toUpperCase() + "-" + node.children.length;
+		node.insertBefore(countelem, node.childNodes[0]);
+	})
+	new SimpleBar(document.getElementById("members"));
+}
+
+function addmember(nickname, src, isbot, id, username, discriminator, colour, hoistroleid, rolejson) {
+	var memberbar = document.getElementById(hoistroleid + "-role");
+	if (memberbar == null) { memberbar = document.getElementById("null-role"); }
 	var member = document.createElement("div");
 	member.className = "member";
 	var ava = document.createElement("img");
@@ -267,7 +296,12 @@ function addmember(nickname, src, isbot, id, username, discriminator, colour) {
 		member.appendChild(bot)
 	}
 	member.id = id + "-member";
-	member.info = {"id": id, "username": username, "discriminator" : discriminator, "nickname" : nickname, "colour" : colour, "messages" : [] };
+	try {
+		roles = JSON.parse(rolejson);
+	} catch {
+		roles = null;
+	}
+	member.info = {"id": id, "username": username, "discriminator" : discriminator, "nickname" : nickname, "colour" : colour, "roles": roles, "hoist": hoistroleid, "messages" : [] };
 	member.addEventListener("mouseenter", showUserTooltip);
 	member.addEventListener("mouseleave", hideServerTooltip);
 	memberbar.appendChild(member);

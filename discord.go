@@ -271,15 +271,15 @@ func setActiveChannel(id string) {
 		document.getElementById("members").innerHTML = "";
 		resetmembers();`, id, html.EscapeString(channel.Name)))
 	})
-	var i = 0
 	var evalQueue string
+	rolejson, _ := json.Marshal(roles)
+	evalQueue += fmt.Sprintf("loadhoistedroles(%q);\n", string(rolejson))
 	for _, v := range memberCache {
 		perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
 		if err != nil {
 			continue
 		}
 		if perms&0x00000400 != 0 {
-			i++
 			var uname string
 			if v.Nick != "" {
 				uname = v.Nick
@@ -288,13 +288,18 @@ func setActiveChannel(id string) {
 			}
 			var roleColour int
 			var colour string
+			var hoist string
+			var usrroles []*discordgo.Role
 			for _, role := range roles {
-				if roleColour != 0 {
-					break
-				}
 				for _, rid := range v.Roles {
-					if rid == role.ID && role.Color != 0 {
-						roleColour = role.Color
+					if rid == role.ID {
+						if role.Color != 0 && roleColour == 0 {
+							roleColour = role.Color
+						}
+						if hoist == "" && role.Hoist {
+							hoist = role.ID
+						}
+						usrroles = append(usrroles, role)
 						break
 					}
 				}
@@ -304,10 +309,22 @@ func setActiveChannel(id string) {
 			} else {
 				colour = fmt.Sprintf("\"#%06x\"", roleColour)
 			}
-			evalQueue += fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q, %s);\n", html.EscapeString(uname), v.User.AvatarURL("128"), v.User.Bot, v.User.ID, html.EscapeString(v.User.Username), v.User.Discriminator, colour)
+			x, err := json.Marshal(usrroles)
+			var usrrolesjson string
+			if err == nil {
+				usrrolesjson = fmt.Sprintf("%q", x)
+			} else {
+				usrrolesjson = "null"
+			}
+			if hoist == "" {
+				hoist = "null"
+			} else {
+				hoist = fmt.Sprintf("%q", hoist)
+			}
+			evalQueue += fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q, %s, %s, %s);\n", html.EscapeString(uname), v.User.AvatarURL("128"), v.User.Bot, v.User.ID, html.EscapeString(v.User.Username), v.User.Discriminator, colour, hoist, usrrolesjson)
 		}
 	}
-	evalQueue += fmt.Sprintf("setmembercount('%d');\n", i)
+	evalQueue += "setmembercount();\n"
 	wv.Dispatch(func() {
 		wv.Eval(evalQueue)
 	})
@@ -437,11 +454,11 @@ func loadDMChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf(`selectdmchannel(%q, %q);`, id, html.EscapeString(user.Username)))
 		wv.Eval(`resetmembers();`)
-		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q, null)`, html.EscapeString(ses.State.User.Username), ses.State.User.AvatarURL("128"), ses.State.User.Bot, ses.State.User.ID, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
+		wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q, null, null, null)`, html.EscapeString(ses.State.User.Username), ses.State.User.AvatarURL("128"), ses.State.User.Bot, ses.State.User.ID, html.EscapeString(ses.State.User.Username), ses.State.User.Discriminator))
 		for _, v := range channel.Recipients {
-			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q, null)`, html.EscapeString(v.Username), v.AvatarURL("128"), v.Bot, v.ID, html.EscapeString(v.Username), v.Discriminator))
+			wv.Eval(fmt.Sprintf(`addmember(%q, %q, %t, %q, %q, %q, null, null, null)`, html.EscapeString(v.Username), v.AvatarURL("128"), v.Bot, v.ID, html.EscapeString(v.Username), v.Discriminator))
 		}
-		wv.Eval(fmt.Sprintf(`setmembercount("%d");`, len(channel.Recipients)+1))
+		wv.Eval(`setmembercount();`)
 	})
 	msgs, err := ses.ChannelMessages(channel.ID, 18, "", "", "")
 	if err != nil {
