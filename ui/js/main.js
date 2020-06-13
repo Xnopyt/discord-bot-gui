@@ -8,6 +8,15 @@ faXHR.onreadystatechange = function() {
 }
 faXHR.send();
 
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
 function loadservers(name, id, img, src) {
     var newserver = document.createElement("div");
 	newserver.className = "server";
@@ -241,7 +250,7 @@ function loadhoistedroles(rolejson) {
 		if (!role.hoist) {return};
 		var r = document.createElement("div");
 		r.className = "role";
-		r.rolename = role.name;
+		r.rolename = escapeHtml(role.name);
 		r.id = role.id + "-role";
 		r.info = role;
 		memberbar.insertBefore(r, memberbar.childNodes[0]);
