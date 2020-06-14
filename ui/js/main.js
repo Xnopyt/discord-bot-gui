@@ -270,7 +270,21 @@ function resetmembers() {
 function setmembercount() {
 	var memberbar = document.getElementById("members");
 	Array.from(memberbar.children).forEach(function (node) {
-		var countelem = document.createElement("p");
+		var countelem = node.getElementsByClassName("memberdesc")[0];
+		if (countelem != undefined) {
+			node.removeChild(countelem);
+		}
+		var alphasort = Array.from(node.children).sort(function(i, j) {
+			if (i.getElementsByClassName("membername")[0].innerHTML.toLowerCase() < j.getElementsByClassName("membername")[0].innerHTML.toLowerCase()) {
+				return -1;
+			} else {
+				return 1;
+			}
+		})
+		alphasort.forEach(function (member) {
+			node.appendChild(member);
+		})
+		countelem = document.createElement("p");
 		countelem.className = "memberdesc";
 		if (node.children.length == 0) {
 			node.style.display = "none";
