@@ -38,6 +38,13 @@ body {
     background: rgb(54, 57, 63);
 }
 
+img.emoji {
+   height: 1em;
+   width: 1em;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.1em;
+}
+
 .sidenav {
     height: 100%;
     width: 72px;

@@ -32,36 +32,6 @@ func init() {
 	wvCallbacks["updateTyping"] = updateTyping
 }
 
-func loginSetup() {
-	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`
-			var script = document.createElement('script');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			script.src="data:application/javascript;base64,%s"
-			head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/login.js"))))
-		if runtime.GOOS == "darwin" {
-			wv.Eval(fmt.Sprintf(`
-				var script = document.createElement('script');
-				var head = document.head || document.getElementsByTagName('head')[0];
-				script.src="data:application/javascript;base64,%s"
-				head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/darwinClipboard.js"))))
-		}
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(MustAsset("ui/login.css")))))
-		wv.Eval(fmt.Sprintf(`
-			document.body.background = "data:image/jpg;base64,%s"`, base64.StdEncoding.EncodeToString(MustAsset("ui/assets/loginbg.jpg"))))
-	})
-}
-
 func httpGet(url string) (body []byte) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -74,57 +44,55 @@ func httpGet(url string) (body []byte) {
 	return
 }
 
+func injectCSS(css []byte) {
+	wv.Eval(fmt.Sprintf(`(function(css){
+		var style = document.createElement('style');
+		var head = document.head || document.getElementsByTagName('head')[0];
+		style.setAttribute('type', 'text/css');
+		if (style.styleSheet) {
+			style.styleSheet.cssText = css;
+		} else {
+			style.appendChild(document.createTextNode(css));
+		}
+		head.appendChild(style);
+	})("%s")`, template.JSEscapeString(string(css))))
+}
+
+func injectJS(js []byte) {
+	wv.Eval(fmt.Sprintf(`
+			var script = document.createElement('script');
+			var head = document.head || document.getElementsByTagName('head')[0];
+			script.src="data:application/javascript;base64,%s"
+			head.appendChild(script)`, base64.StdEncoding.EncodeToString(js)))
+}
+
+func injectCSSFromURL(url string) {
+	injectCSS(httpGet(url))
+}
+
+func injectJSFromURL(url string) {
+	injectJS(httpGet(url))
+}
+
+func loginSetup() {
+	wv.Dispatch(func() {
+		injectJS(MustAsset("ui/js/login.js"))
+		if runtime.GOOS == "darwin" {
+			injectJS(MustAsset("ui/js/darwinClipboard.js"))
+		}
+		injectCSS(MustAsset("ui/login.css"))
+		wv.Eval(fmt.Sprintf(`
+			document.body.background = "data:image/jpg;base64,%s"`, base64.StdEncoding.EncodeToString(MustAsset("ui/assets/loginbg.jpg"))))
+	})
+}
+
 func mainSetup() {
 	wv.Dispatch(func() {
-		body := httpGet("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/androidstudio.min.css")
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(body))))
-		body = httpGet("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.css")
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(body))))
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(MustAsset("ui/main.css")))))
+		injectCSSFromURL("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/androidstudio.min.css")
+		injectCSSFromURL("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.css")
+		injectCSS(MustAsset("ui/main.css"))
 		if runtime.GOOS == "windows" {
-			wv.Eval(fmt.Sprintf(`(function(css){
-				var style = document.createElement('style');
-				var head = document.head || document.getElementsByTagName('head')[0];
-				style.setAttribute('type', 'text/css');
-				if (style.styleSheet) {
-					style.styleSheet.cssText = css;
-				} else {
-					style.appendChild(document.createTextNode(css));
-				}
-				head.appendChild(style);
-			})("%s");
-			document.getElementById("blocker").style.backgroundColor = "rgba(0,0,0,0.4)";
-			`, template.JSEscapeString(`
+			injectCSS([]byte(template.JSEscapeString(`
 			.infobar .chantitle {
 				transform: none;
 			}
@@ -164,43 +132,15 @@ func mainSetup() {
 			}
 			`)))
 		}
-		body = httpGet("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")
-		wv.Eval(fmt.Sprintf(`
-			var script = document.createElement('script');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			script.src="data:application/javascript;base64,%s"
-			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
+		injectJSFromURL("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")
+		injectJSFromURL("https://twemoji.maxcdn.com/v/latest/twemoji.min.js")
 		if runtime.GOOS == "windows" {
 			time.Sleep(time.Second)
 		}
-		wv.Eval(fmt.Sprintf(`
-			var script = document.createElement('script');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			script.src="data:application/javascript;base64,%s"
-			head.appendChild(script)`, base64.StdEncoding.EncodeToString(MustAsset("ui/js/main.js"))))
-		body = httpGet("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js")
-		wv.Eval(fmt.Sprintf(`
-			var script = document.createElement('script');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			script.src="data:application/javascript;base64,%s"
-			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
-		body = httpGet("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.js")
-		wv.Eval(fmt.Sprintf(`
-			var script = document.createElement('script');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			script.src="data:application/javascript;base64,%s"
-			head.appendChild(script)`, base64.StdEncoding.EncodeToString(body)))
-		wv.Eval(fmt.Sprintf(`(function(css){
-			var style = document.createElement('style');
-			var head = document.head || document.getElementsByTagName('head')[0];
-			style.setAttribute('type', 'text/css');
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})("%s")`, template.JSEscapeString(string(MustAsset("ui/emoji-picker.css")))))
+		injectJS(MustAsset("ui/js/main.js"))
+		injectJSFromURL("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js")
+		injectJSFromURL("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.js")
+		injectCSS(MustAsset("ui/emoji-picker.css"))
 		wv.Eval(fmt.Sprintf(`
 			document.getElementById("cname").innerHTML = %q;
 			document.getElementById("cdiscriminator").innerHTML = '#%s';

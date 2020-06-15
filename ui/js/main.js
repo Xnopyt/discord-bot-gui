@@ -187,6 +187,7 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot, 
 			unameelem.style.color = author.info.colour; 
 		}
 	} catch {}
+	twemoji.parse(body);
 	msg.appendChild(body);
 	var code = msg.getElementsByTagName("code");
 	for (let cblock of code) {
@@ -275,7 +276,7 @@ function setmembercount() {
 			node.removeChild(countelem);
 		}
 		var alphasort = Array.from(node.children).sort(function(i, j) {
-			if (i.getElementsByClassName("membername")[0].innerHTML.toLowerCase() < j.getElementsByClassName("membername")[0].innerHTML.toLowerCase()) {
+			if (i.info.nickname.toLowerCase() < j.info.nickname.toLowerCase()) {
 				return -1;
 			} else {
 				return 1;
@@ -455,7 +456,7 @@ document.getElementById("messageinput").addEventListener("keydown", function(eve
 });
 
 const emoji = document.getElementById('emojiselect');
-const picker = new EmojiButton();
+const picker = new EmojiButton({"style": "twemoji"});
 	 
 picker.on('emoji', emoji => {
 	document.getElementById("messageinput").value += emoji;
