@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html"
+	"html/template"
 	"regexp"
 	"strings"
 
@@ -221,8 +222,8 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 	if z.Provider != nil {
 		c += `var provider = document.createElement("div");
 				provider.className = "provider";
-				provider.innerHTML = "` + html.EscapeString(z.Provider.Name) + `";
-				provider.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Provider.URL) + `'}));");
+				provider.innerHTML = "` + template.JSEscapeString(html.EscapeString(z.Provider.Name)) + `";
+				provider.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + template.JSEscapeString(html.EscapeString(z.Provider.URL)) + `'}));");
 				twemoji.parse(provider);
 				div.appendChild(provider);
 				`
@@ -230,8 +231,8 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 	if z.Author != nil {
 		c += `var author = document.createElement("div");
 				author.className = "author";
-				author.innerHTML = "` + html.EscapeString(z.Author.Name) + `";
-				author.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Author.URL) + `'}));");
+				author.innerHTML = "` + template.JSEscapeString(html.EscapeString(z.Author.Name)) + `";
+				author.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + template.JSEscapeString(html.EscapeString(z.Author.URL)) + `'}));");
 				twemoji.parse(author);
 				div.appendChild(author);
 				`
@@ -239,8 +240,8 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 	if z.Title != "" {
 		c += `var title = document.createElement("div");
 				title.className = "title";
-				title.innerHTML = "` + html.EscapeString(z.Title) + `";
-				title.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.URL) + `'}));");
+				title.innerHTML = "` + template.JSEscapeString(html.EscapeString(z.Title)) + `";
+				title.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + template.JSEscapeString(html.EscapeString(z.URL)) + `'}));");
 				twemoji.parse(title);
 				div.appendChild(title);
 				`
@@ -249,15 +250,15 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 		c += `var imageattach = document.createElement("div");
 				imageattach.className = "imageattachment";
 				var img = document.createElement("img");
-				img.src = "` + html.EscapeString(z.Image.URL) + `";
-				img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Image.URL) + `'}));");
+				img.src = "` + template.JSEscapeString(html.EscapeString(z.Image.URL)) + `";
+				img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + template.JSEscapeString(html.EscapeString(z.Image.URL)) + `'}));");
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
 	}
 	if z.Video != nil {
 		c += `var vid = document.createElement("iframe");
-				vid.src = "` + html.EscapeString(z.Video.URL) + `"
+				vid.src = "` + template.JSEscapeString(html.EscapeString(z.Video.URL)) + `"
 				vid.setAttribute("allowfullscreen", "");
 				div.appendChild(vid);
 				`
@@ -269,8 +270,8 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 				img.style.maxHeight = "80px";
 				img.style.maxWidth = "80px";
 				img.style.display = "inline-block";
-				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
-				img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Thumbnail.URL) + `'}));");
+				img.src = "` + template.JSEscapeString(html.EscapeString(z.Thumbnail.URL)) + `";
+				img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + template.JSEscapeString(html.EscapeString(z.Thumbnail.URL)) + `'}));");
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
@@ -279,8 +280,8 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 		c += `var imageattach = document.createElement("div");
 				imageattach.className = "imageattachment";
 				var img = document.createElement("img");
-				img.src = "` + html.EscapeString(z.Thumbnail.URL) + `";
-				img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + html.EscapeString(z.Thumbnail.URL) + `'}));");
+				img.src = "` + template.JSEscapeString(html.EscapeString(z.Thumbnail.URL)) + `";
+				img.setAttribute("onclick", "wv(JSON.stringify({'type': 'openURL', 'content': '` + template.JSEscapeString(html.EscapeString(z.Thumbnail.URL)) + `'}));");
 				imageattach.appendChild(img);
 				div.appendChild(img);
 				`
@@ -312,7 +313,7 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 		}
 		c += `var descrip = document.createElement("div");
 				descrip.className = "descrip";
-				descrip.innerHTML = "` + strings.ReplaceAll(description, "\n", "<br />") + `";
+				descrip.innerHTML = "` + template.JSEscapeString(strings.ReplaceAll(description, "\n", "<br />")) + `";
 				`
 		if z.Thumbnail != nil {
 			c += `descrip.style.width = "calc(100% - 90px)";
@@ -351,7 +352,7 @@ func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c stri
 		}
 		c += `var footer = document.createElement("div");
 				footer.className = "footer";
-				footer.innerHTML = "` + strings.ReplaceAll(footer, "\n", "<br />") + `";
+				footer.innerHTML = "` + template.JSEscapeString(strings.ReplaceAll(footer, "\n", "<br />")) + `";
 				twemoji.parse(footer);
 				div.appendChild(footer);
 				`
