@@ -92,7 +92,7 @@ func mainSetup() {
 		injectCSSFromURL("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.css")
 		injectCSS(MustAsset("ui/main.css"))
 		if runtime.GOOS == "windows" {
-			injectCSS([]byte(template.JSEscapeString(`
+			injectCSS([]byte(`
 			.infobar .chantitle {
 				transform: none;
 			}
@@ -130,7 +130,7 @@ func mainSetup() {
 			.attachment p {
 				transform: none;
 			}
-			`)))
+			`))
 		}
 		injectJSFromURL("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")
 		injectJSFromURL("https://twemoji.maxcdn.com/v/latest/twemoji.min.js")
