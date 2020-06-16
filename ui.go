@@ -79,6 +79,8 @@ func loginSetup() {
 		injectJS(MustAsset("ui/js/login.js"))
 		if runtime.GOOS == "darwin" {
 			injectJS(MustAsset("ui/js/darwinClipboard.js"))
+		} else {
+			wv.Eval("window.darwin = false;")
 		}
 		injectCSS(MustAsset("ui/login.css"))
 		wv.Eval(fmt.Sprintf(`

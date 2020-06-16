@@ -336,6 +336,10 @@ function openURL(url) {
 }
 
 function triggerUpload() {
+	if (darwin) {
+		wv(JSON.stringify({'type': 'sendFile', 'content': ""}));
+		return
+	}
 	document.getElementById("fileupload").click();
 }
 
@@ -353,6 +357,10 @@ function completeUpload(files) {
 	reader.onload = function(event) {
 		var data = window.btoa(event.target.result) 
 		wv(JSON.stringify({'type': 'sendFile', 'content': JSON.stringify({'data': data, 'name': name, 'mime': mime})}));
+	}
+
+	reader.onerror = function(event) {
+		createAlert("Upload Failed", "Failed to read selected file: " + event.target.error.toString());
 	}
 
 	reader.readAsBinaryString(files[0])

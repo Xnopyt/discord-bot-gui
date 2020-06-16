@@ -1,4 +1,5 @@
 window.darwinMeta = false;
+window.darwin = true;
 
 document.addEventListener("keydown", async function(event) {
     if (event.keyCode == 91) {

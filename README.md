@@ -11,13 +11,16 @@ A webview based graphical interface for sending and reciving messages with a dis
 ### JavaScript Libraries
 Emoji Picker by joeattardi - https://github.com/joeattardi/emoji-button<br />
 Hightlight JS - https://github.com/highlightjs/highlight.js/<br />
-SimpleBar by Grsmto - https://github.com/Grsmto/simplebar
+SimpleBar by Grsmto - https://github.com/Grsmto/simplebar<br />
+Twemoji by Twitter - https://github.com/twitter/twemoji
 
 ### Golang Libraries
+Dialog by sqweek - https://github.com/sqweek/dialog<br />
 Clipboard by atotto - https://github.com/atotto/clipboard<br />
 Webview by zserge - https://github.com/zserge/webview<br />
 DiscordGo by bwmarrin - https://github.com/bwmarrin/discordgo<br />
-XURLs by mvdan - https://github.com/mvdan/xurls
+XURLs by mvdan - https://github.com/mvdan/xurls<br />
+Browser by pkg - https://github.com/pkg/browser
 
 ### CSS
 Loading circle from https://loading.io/css
