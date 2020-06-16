@@ -106,13 +106,18 @@ func mainSetup() {
 			}
 
 			.memberbar .memberbot {
-				transform: translateY(-16px);
-				padding-left: 2px;
+				font-weight: 500;
+				padding-bottom: 1px;
+			}
+			
+			.memberbar .membername {
+				transform: translateY(-6px);
 			}
 
 			.message .msgbot {
 				transform: translateY(-24px);
-				padding-left: 2px;
+				font-weight: 500;
+				padding-bottom: 1px;
 			}
 
 			.emojiselect .fa-grin {
