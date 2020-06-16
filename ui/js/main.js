@@ -186,7 +186,7 @@ function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot, 
 		if (author.info.colour != null) {
 			unameelem.style.color = author.info.colour; 
 		}
-	} catch {}
+	} catch (e) {}
 	twemoji.parse(body);
 	msg.appendChild(body);
 	var code = msg.getElementsByTagName("code");
@@ -322,7 +322,7 @@ function addmember(nickname, src, isbot, id, username, discriminator, colour, ho
 	member.id = id + "-member";
 	try {
 		roles = JSON.parse(rolejson);
-	} catch {
+	} catch (e) {
 		roles = null;
 	}
 	member.info = {"id": id, "username": username, "discriminator" : discriminator, "nickname" : nickname, "colour" : colour, "roles": roles, "hoist": hoistroleid, "messages" : [] };
