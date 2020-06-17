@@ -40,8 +40,6 @@ type emojiAliases struct {
 	} `json:"emojis"`
 }
 
-const maxUpload = 8388119
-
 var eAliases emojiAliases
 
 var typing bool
@@ -260,7 +258,7 @@ func setActiveChannel(id string) {
 		wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })
 		return
 	}
-	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
+	memberCache, _ := ses.GuildMembers(currentServer, "", 1000)
 	roles, _ := ses.GuildRoles(currentServer)
 	sort.SliceStable(roles, func(i, j int) bool {
 		return roles[i].Position > roles[j].Position

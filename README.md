@@ -1,5 +1,5 @@
 # Discord Bot GUI
-[![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/WebView/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) <br />
+[![Github Actions](https://github.com/Xnopyt/discord-bot-gui/workflows/WebView/badge.svg)](https://github.com/Xnopyt/discord-bot-gui/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/Xnopyt/discord-bot-gui)](https://goreportcard.com/report/github.com/Xnopyt/discord-bot-gui) <br />
 A webview based graphical interface for sending and reciving messages with a discord bot.<br />
 
 ## Screenshots

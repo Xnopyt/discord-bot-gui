@@ -10,6 +10,8 @@ import (
 	"github.com/sqweek/dialog"
 )
 
+const maxUpload = 8388119
+
 func sendFile(s string) {
 	s, err := dialog.File().Load()
 	if err != nil {
