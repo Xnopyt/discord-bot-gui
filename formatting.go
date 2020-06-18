@@ -11,7 +11,7 @@ import (
 	"github.com/mvdan/xurls"
 )
 
-func formatMentions(c string, m *discordgo.MessageCreate) (content string) {
+func formatMentions(c string, m *discordgo.Message) (content string) {
 	content = c
 	for _, user := range m.Mentions {
 		if user.ID == ses.State.User.ID {
@@ -33,7 +33,7 @@ func formatMentions(c string, m *discordgo.MessageCreate) (content string) {
 	return
 }
 
-func formatMoreMentions(s *discordgo.Session, c string, m *discordgo.MessageCreate) (content string, err error) {
+func formatMoreMentions(s *discordgo.Session, c string, m *discordgo.Message) (content string, err error) {
 	var patternChannels = regexp.MustCompile("&lt;#\\d*&gt;")
 	content = c
 
@@ -186,7 +186,7 @@ func processNonUnicodeEmoji(c string) (content string) {
 
 var processedCblock = regexp.MustCompile("<pre(.|\\n)+pre>")
 
-func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
+func parseMarkdownAndMentions(m *discordgo.Message) (content string) {
 	content = processCodeblocks(html.EscapeString(m.Content))
 	markdownstrings := processedCblock.Split(content, -1)
 	for _, v := range markdownstrings {
@@ -214,7 +214,7 @@ func parseMarkdownAndMentions(m *discordgo.MessageCreate) (content string) {
 	return
 }
 
-func processEmbed(z *discordgo.MessageEmbed, m *discordgo.MessageCreate) (c string) {
+func processEmbed(z *discordgo.MessageEmbed, m *discordgo.Message) (c string) {
 	c = `var div = document.createElement("div");
 		div.classList.add("embed");
 		div.style.borderLeft = "4px solid #` + fmt.Sprintf("%06x", z.Color) + `";

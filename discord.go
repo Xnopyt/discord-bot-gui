@@ -6,7 +6,6 @@ import (
 	"html"
 	"html/template"
 	"log"
-	"net/url"
 	"os"
 	"sort"
 	"strconv"
@@ -140,52 +139,6 @@ func loadDMMembers() {
 	})
 }
 
-func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
-	for proccessingMsg {
-		time.Sleep(time.Second)
-	}
-	proccessingMsg = true
-	if m.ChannelID != currentChannel {
-		return
-	}
-	if m.Type == 7 {
-		return
-	}
-	processChannelMessage(m, nil)
-	wv.Dispatch(func() {
-		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
-		messages.scrollTop = messages.scrollHeight;`)
-		proccessingMsg = false
-	})
-}
-
-func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
-	for proccessingMsg {
-		time.Sleep(time.Second)
-	}
-	proccessingMsg = true
-	if m.ChannelID != currentChannel {
-		return
-	}
-	if m.Type == 7 {
-		return
-	}
-	processChannelMessage(&discordgo.MessageCreate{Message: m.Message}, nil)
-	proccessingMsg = false
-}
-
-func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
-	if m.ChannelID != currentChannel {
-		return
-	}
-	if m.Type == 7 {
-		return
-	}
-	wv.Dispatch(func() {
-		wv.Eval(`document.getElementById("` + m.ID + `").parentNode.removeChild(document.getElementById("` + m.ID + `"));`)
-	})
-}
-
 func selectTargetServer(id string) {
 	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "block"`) })
 	time.Sleep(time.Second)
@@ -222,7 +175,7 @@ func selectTargetServer(id string) {
 	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })
 }
 
-func parseTime(m *discordgo.MessageCreate) string {
+func parseTime(m *discordgo.Message) string {
 	var ctime string
 	times, err := discordgo.SnowflakeTimestamp(m.ID)
 	if err != nil {
@@ -335,10 +288,22 @@ func setActiveChannel(id string) {
 		msgs[i], msgs[opp] = msgs[opp], msgs[i]
 	}
 	for _, v := range msgs {
-		if v.Type == 7 {
-			continue
+		switch v.Type {
+
+		case discordgo.MessageTypeDefault:
+			processChannelMessage(v, nil)
+			break
+
+		case discordgo.MessageTypeGuildMemberJoin:
+			processMemberJoinMessage(v, nil)
+			break
+
+		case discordgo.MessageTypeChannelPinnedMessage:
+			processPinnedMessage(v, nil)
+
+		default:
+			break
 		}
-		processChannelMessage(&discordgo.MessageCreate{Message: v}, memberCache)
 	}
 	time.Sleep(time.Second)
 	wv.Dispatch(func() {
@@ -348,75 +313,6 @@ func setActiveChannel(id string) {
 		document.getElementById("blocker").style.display = "none"`)
 	})
 	currentChannel = id
-}
-
-func processChannelMessage(m *discordgo.MessageCreate, cache []*discordgo.Member) {
-	defer func(id string) {
-		if r := recover(); r != nil {
-			msg, err := ses.ChannelMessage(currentChannel, id)
-			if err != nil {
-				return
-			}
-			processChannelMessage(&discordgo.MessageCreate{Message: msg}, nil)
-			wv.Dispatch(func() {
-				wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
-				messages.scrollTop = messages.scrollHeight;`)
-			})
-		}
-	}(m.ID)
-	var uname string
-	var member *discordgo.Member
-	var err error
-	if cache != nil {
-		for _, v := range cache {
-			if v.User.ID == m.Author.ID {
-				member = v
-				break
-			}
-		}
-	}
-	if member != nil && currentServer != "HOME" {
-		member, err = ses.GuildMember(currentServer, m.Author.ID)
-	}
-	if err == nil && member != nil && currentServer != "HOME" {
-		if member.Nick != "" {
-			uname = member.Nick
-		} else {
-			uname = m.Author.Username
-		}
-	} else {
-		uname = m.Author.Username
-	}
-	var embeds string
-	for _, z := range m.Embeds {
-		embeds += processEmbed(z, m) + `
-		document.getElementById("` + m.ID + `").appendChild(div);
-		`
-	}
-	body := parseMarkdownAndMentions(m)
-	body = strings.ReplaceAll(body, "\n", "<br />")
-	var selfmention = false
-	if strings.Contains(body, "<div class='selfmention'") {
-		selfmention = true
-	}
-	wv.Dispatch(func() {
-		wv.Eval(fmt.Sprintf(`fillmessage(%q, %q, %q, %q, %q, %t, %t, %q, %q, %q);`, m.ID, html.EscapeString(uname), m.Author.AvatarURL("128"), parseTime(m), url.QueryEscape(body), selfmention, m.Author.Bot, m.Author.ID, m.Author.Discriminator, html.EscapeString(m.Author.Username)))
-		wv.Eval(embeds)
-	})
-	for _, z := range m.Attachments {
-		var isImg = false
-		for _, v := range imgMime {
-			if strings.HasSuffix(z.URL, v) {
-				wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL)) })
-				isImg = true
-				break
-			}
-		}
-		if isImg {
-			continue
-		}
-		wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL)) })
-	}
 }
 
 func sendMessage(msg string) {
@@ -467,10 +363,18 @@ func loadDMChannel(id string) {
 		msgs[i], msgs[opp] = msgs[opp], msgs[i]
 	}
 	for _, v := range msgs {
-		if v.Type == 7 {
-			continue
+		switch v.Type {
+
+		case discordgo.MessageTypeDefault:
+			processChannelMessage(v, nil)
+			break
+
+		case discordgo.MessageTypeChannelPinnedMessage:
+			processPinnedMessage(v, nil)
+
+		default:
+			break
 		}
-		processChannelMessage(&discordgo.MessageCreate{Message: v}, nil)
 	}
 	time.Sleep(time.Second)
 	wv.Dispatch(func() {

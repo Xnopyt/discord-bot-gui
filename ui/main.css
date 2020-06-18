@@ -770,6 +770,13 @@ img.emoji {
     text-decoration: underline;
 }
 
+.sysmsg .msguser {
+    transform: none;
+    font-size: 12px;
+    color: rgb(255, 255, 255);
+    margin: 0;
+}
+
 .message .msgbot {
     display: inline-block;
     height: 14px;
@@ -795,6 +802,11 @@ img.emoji {
     color: rgb(94, 97, 104);
 }
 
+.sysmsg .msgtime {
+    transform: none;
+    font-size: 9px;
+}
+
 .message .msgbody {
     display: inline-block;
     width: calc(100% - 65px);
@@ -806,6 +818,28 @@ img.emoji {
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-all;
+}
+
+.message .msgbody.sysmsg {
+    color: rgb(142, 146, 151);
+    transform: none;
+    margin-bottom: 15px;
+}
+
+.message .sysmsg.fas {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 15px;
+    transform: translateY(25px);
+    color: rgb(185, 187, 190);
+}
+
+.message .sysmsg.fas.fa-arrow-right {
+    color: rgb(67, 181, 129);
+}
+
+.message .sysmsg.fas.fa-thumbtack {
+    transform: translateY(25px) rotate(45deg);
 }
 
 .msgbody .customemoji {

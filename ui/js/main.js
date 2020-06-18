@@ -138,6 +138,59 @@ function selectdmchannel(id, name) {
 	messages.appendChild(spacer);
 }
 
+function createjoinmessage(id, uname, joinmsg, owner, discriminator, username, timetext) {
+	var body = document.createElement("div");
+	body.className = "sysmsg msgbody";
+	var msgparts = joinmsg.split("MEMBER");
+	msgparts.forEach(function(part, index) {
+		body.appendChild(document.createTextNode(part));
+		if (msgparts.length != (index + 1)) {
+			var unameelem = document.createElement("p");
+			unameelem.className = "msguser";
+			unameelem.innerHTML = uname;
+			unameelem.addEventListener("mouseenter", showUserTooltip);
+			unameelem.addEventListener("mouseleave", hideServerTooltip);
+			body.appendChild(unameelem);
+		}
+	})
+	createsystemmessage(id, owner, discriminator, username, timetext, body, "fa-arrow-right")
+}
+
+function createmessagepinmessage(id, uname, owner, discriminator, username, timetext) {
+	var body = document.createElement("div");
+	body.className = "sysmsg msgbody";
+	var unameelem = document.createElement("p");
+	unameelem.className = "msguser";
+	unameelem.innerHTML = uname;
+	unameelem.addEventListener("mouseenter", showUserTooltip);
+	unameelem.addEventListener("mouseleave", hideServerTooltip);
+	body.appendChild(unameelem);
+	body.appendChild(document.createTextNode(" pinned a message to this channel."));
+	createsystemmessage(id, owner, discriminator, username, timetext, body, "fa-thumbtack")
+}
+
+function createsystemmessage(id, owner, discriminator, username, timetext, body, iconclass) {
+	var msgTest = document.getElementById(id);
+	if (msgTest == null) {
+		createmessage(id);
+	} else {
+		msgTest.innerHTML = "";
+	}
+	var msg = document.getElementById(id);
+	msg.className = "message";
+	msg.ownerid = owner;
+	msg.ownerdiscrim = discriminator;
+	msg.ownername = username;
+	var icon = document.createElement("i");
+	icon.className = "sysmsg fas " + iconclass;
+	msg.appendChild(icon);
+	var time = document.createElement("p");
+	time.className = "msgtime";
+	time.innerHTML = timetext;
+	body.appendChild(time);
+	msg.appendChild(body);
+}
+
 function fillmessage(id, uname, avatar, timetext, bodytext, selfmention, isbot, owner, discriminator, username) {
 	bodytext = decodeURIComponent(bodytext.replace(/\+/g, ' '));;
 	var msgTest = document.getElementById(id);
