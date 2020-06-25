@@ -227,7 +227,10 @@ func setActiveChannel(id string) {
 	for _, v := range memberCache {
 		perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
 		if err != nil {
-			continue
+			perms, err = ses.UserChannelPermissions(v.User.ID, id)
+			if err != nil {
+				continue
+			}
 		}
 		if perms&0x00000400 != 0 {
 			var uname string
