@@ -817,7 +817,7 @@ img.emoji {
     white-space: normal;
     overflow-wrap: break-word;
     word-wrap: break-word;
-    word-break: break-all;
+    word-break: normal;
 }
 
 .message .msgbody.sysmsg {
