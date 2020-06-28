@@ -110,43 +110,70 @@ func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
 	})
 }
 
+func reprocessOnFail(id string, parserFunc func(*discordgo.Message, []*discordgo.Member)) {
+	if r := recover(); r != nil {
+		msg, err := ses.ChannelMessage(currentChannel, id)
+		if err != nil {
+			return
+		}
+		processChannelMessage(msg, nil)
+		wv.Dispatch(func() {
+			wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
+			messages.scrollTop = messages.scrollHeight;`)
+		})
+	}
+}
+
+func getMember(m []*discordgo.Member, id string) *discordgo.Member {
+	if currentServer == "HOME" {
+		return nil
+	}
+	if m != nil {
+		for _, v := range m {
+			if v.User.ID == id {
+				return v
+			}
+		}
+	}
+	member, err := ses.GuildMember(currentServer, id)
+	if err != nil {
+		return member
+	}
+	return nil
+}
+
+func getNick(u *discordgo.User, m *discordgo.Member) string {
+	if m == nil {
+		if u == nil {
+			return ""
+		}
+		return u.Username
+	}
+	if m.Nick == "" {
+		return u.Username
+	}
+	return m.Nick
+}
+
+func processAttachment(z *discordgo.MessageAttachment, m *discordgo.Message) {
+	var isImg = false
+	for _, v := range imgMime {
+		if strings.HasSuffix(z.URL, v) {
+			wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL)) })
+			isImg = true
+			break
+		}
+	}
+	if isImg {
+		return
+	}
+	wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL)) })
+}
+
 func processChannelMessage(m *discordgo.Message, cache []*discordgo.Member) {
-	defer func(id string) {
-		if r := recover(); r != nil {
-			msg, err := ses.ChannelMessage(currentChannel, id)
-			if err != nil {
-				return
-			}
-			processChannelMessage(msg, nil)
-			wv.Dispatch(func() {
-				wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
-				messages.scrollTop = messages.scrollHeight;`)
-			})
-		}
-	}(m.ID)
-	var uname string
-	var member *discordgo.Member
-	var err error
-	if cache != nil {
-		for _, v := range cache {
-			if v.User.ID == m.Author.ID {
-				member = v
-				break
-			}
-		}
-	}
-	if member == nil && currentServer != "HOME" {
-		member, err = ses.GuildMember(currentServer, m.Author.ID)
-	}
-	if err == nil && member != nil && currentServer != "HOME" {
-		if member.Nick != "" {
-			uname = member.Nick
-		} else {
-			uname = m.Author.Username
-		}
-	} else {
-		uname = m.Author.Username
-	}
+	defer reprocessOnFail(m.ID, processChannelMessage)
+	member := getMember(cache, m.Author.ID)
+	uname := getNick(m.Author, member)
 	var embeds string
 	for _, z := range m.Embeds {
 		embeds += processEmbed(z, m) + `
@@ -164,58 +191,14 @@ func processChannelMessage(m *discordgo.Message, cache []*discordgo.Member) {
 		wv.Eval(embeds)
 	})
 	for _, z := range m.Attachments {
-		var isImg = false
-		for _, v := range imgMime {
-			if strings.HasSuffix(z.URL, v) {
-				wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendimgattachment(%q, %q);`, m.ID, z.URL)) })
-				isImg = true
-				break
-			}
-		}
-		if isImg {
-			continue
-		}
-		wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`appendattachment(%q, %q, %q);`, m.ID, z.Filename, z.URL)) })
+		processAttachment(z, m)
 	}
 }
 
 func processMemberJoinMessage(m *discordgo.Message, cache []*discordgo.Member) {
-	defer func(id string) {
-		if r := recover(); r != nil {
-			msg, err := ses.ChannelMessage(currentChannel, id)
-			if err != nil {
-				return
-			}
-			processMemberJoinMessage(msg, nil)
-			wv.Dispatch(func() {
-				wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
-				messages.scrollTop = messages.scrollHeight;`)
-			})
-		}
-	}(m.ID)
-	var uname string
-	var member *discordgo.Member
-	var err error
-	if cache != nil {
-		for _, v := range cache {
-			if v.User.ID == m.Author.ID {
-				member = v
-				break
-			}
-		}
-	}
-	if member == nil && currentServer != "HOME" {
-		member, err = ses.GuildMember(currentServer, m.Author.ID)
-	}
-	if err == nil && member != nil && currentServer != "HOME" {
-		if member.Nick != "" {
-			uname = member.Nick
-		} else {
-			uname = m.Author.Username
-		}
-	} else {
-		uname = m.Author.Username
-	}
+	defer reprocessOnFail(m.ID, processMemberJoinMessage)
+	member := getMember(cache, m.Author.ID)
+	uname := getNick(m.Author, member)
 	var joinMessage = guildJoinMessages[rand.Intn(len(guildJoinMessages))]
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf("createjoinmessage(%q, %q, %q, %q, %q, %q, %q);", m.ID, html.EscapeString(uname), joinMessage, m.Author.ID, m.Author.Discriminator, html.EscapeString(m.Author.Username), parseTime(m)))
@@ -223,42 +206,9 @@ func processMemberJoinMessage(m *discordgo.Message, cache []*discordgo.Member) {
 }
 
 func processPinnedMessage(m *discordgo.Message, cache []*discordgo.Member) {
-	defer func(id string) {
-		if r := recover(); r != nil {
-			msg, err := ses.ChannelMessage(currentChannel, id)
-			if err != nil {
-				return
-			}
-			processPinnedMessage(msg, nil)
-			wv.Dispatch(func() {
-				wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
-				messages.scrollTop = messages.scrollHeight;`)
-			})
-		}
-	}(m.ID)
-	var uname string
-	var member *discordgo.Member
-	var err error
-	if cache != nil {
-		for _, v := range cache {
-			if v.User.ID == m.Author.ID {
-				member = v
-				break
-			}
-		}
-	}
-	if member == nil && currentServer != "HOME" {
-		member, err = ses.GuildMember(currentServer, m.Author.ID)
-	}
-	if err == nil && member != nil && currentServer != "HOME" {
-		if member.Nick != "" {
-			uname = member.Nick
-		} else {
-			uname = m.Author.Username
-		}
-	} else {
-		uname = m.Author.Username
-	}
+	reprocessOnFail(m.ID, processPinnedMessage)
+	member := getMember(cache, m.Author.ID)
+	uname := getNick(m.Author, member)
 	wv.Dispatch(func() {
 		wv.Eval(fmt.Sprintf("createmessagepinmessage(%q, %q, %q, %q, %q, %q);", m.ID, html.EscapeString(uname), m.Author.ID, m.Author.Discriminator, html.EscapeString(m.Author.Username), parseTime(m)))
 	})

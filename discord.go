@@ -198,6 +198,61 @@ func parseTime(m *discordgo.Message) string {
 	return ctime
 }
 
+func loadMember(m *discordgo.Member, roles []*discordgo.Role, id string) string {
+	perms, err := ses.State.UserChannelPermissions(m.User.ID, id)
+	if err != nil {
+		perms, err = ses.UserChannelPermissions(m.User.ID, id)
+		if err != nil {
+			return ""
+		}
+	}
+	if perms&0x00000400 == 0 {
+		return ""
+	}
+	var uname string
+	if m.Nick != "" {
+		uname = m.Nick
+	} else {
+		uname = m.User.Username
+	}
+	var roleColour int
+	var colour string
+	var hoist string
+	var usrroles []*discordgo.Role
+	for _, role := range roles {
+		for _, rid := range m.Roles {
+			if rid == role.ID {
+				if role.Color != 0 && roleColour == 0 {
+					roleColour = role.Color
+				}
+				if hoist == "" && role.Hoist {
+					hoist = role.ID
+				}
+				usrroles = append(usrroles, role)
+				break
+			}
+		}
+	}
+	if roleColour == 0 {
+		colour = "null"
+	} else {
+		colour = fmt.Sprintf("\"#%06x\"", roleColour)
+	}
+	x, err := json.Marshal(usrroles)
+	var usrrolesjson string
+	if err == nil {
+		usrrolesjson = fmt.Sprintf("%q", x)
+	} else {
+		usrrolesjson = "null"
+	}
+	if hoist == "" {
+		hoist = "null"
+	} else {
+		hoist = fmt.Sprintf("%q", hoist)
+	}
+	return fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q, %s, %s, %s);\n", html.EscapeString(uname), m.User.AvatarURL("128"), m.User.Bot, m.User.ID, html.EscapeString(m.User.Username), m.User.Discriminator, colour, hoist, usrrolesjson)
+}
+
 func setActiveChannel(id string) {
 	wv.Dispatch(func() {
 		wv.Eval(`document.getElementById("blocker").style.display = "block";
@@ -225,57 +280,7 @@ func setActiveChannel(id string) {
 	rolejson, _ := json.Marshal(roles)
 	evalQueue += fmt.Sprintf("loadhoistedroles(%q);\n", string(rolejson))
 	for _, v := range memberCache {
-		perms, err := ses.State.UserChannelPermissions(v.User.ID, id)
-		if err != nil {
-			perms, err = ses.UserChannelPermissions(v.User.ID, id)
-			if err != nil {
-				continue
-			}
-		}
-		if perms&0x00000400 != 0 {
-			var uname string
-			if v.Nick != "" {
-				uname = v.Nick
-			} else {
-				uname = v.User.Username
-			}
-			var roleColour int
-			var colour string
-			var hoist string
-			var usrroles []*discordgo.Role
-			for _, role := range roles {
-				for _, rid := range v.Roles {
-					if rid == role.ID {
-						if role.Color != 0 && roleColour == 0 {
-							roleColour = role.Color
-						}
-						if hoist == "" && role.Hoist {
-							hoist = role.ID
-						}
-						usrroles = append(usrroles, role)
-						break
-					}
-				}
-			}
-			if roleColour == 0 {
-				colour = "null"
-			} else {
-				colour = fmt.Sprintf("\"#%06x\"", roleColour)
-			}
-			x, err := json.Marshal(usrroles)
-			var usrrolesjson string
-			if err == nil {
-				usrrolesjson = fmt.Sprintf("%q", x)
-			} else {
-				usrrolesjson = "null"
-			}
-			if hoist == "" {
-				hoist = "null"
-			} else {
-				hoist = fmt.Sprintf("%q", hoist)
-			}
-			evalQueue += fmt.Sprintf("addmember(%q, %q, %t, %q, %q, %q, %s, %s, %s);\n", html.EscapeString(uname), v.User.AvatarURL("128"), v.User.Bot, v.User.ID, html.EscapeString(v.User.Username), v.User.Discriminator, colour, hoist, usrrolesjson)
-		}
+		evalQueue += loadMember(v, roles, id)
 	}
 	evalQueue += "setmembercount();\n"
 	wv.Dispatch(func() {
