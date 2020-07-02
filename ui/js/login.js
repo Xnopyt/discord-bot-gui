@@ -176,3 +176,19 @@ document.addEventListener('contextmenu', function(event) {
 document.addEventListener("click", function(event) {
 	document.getElementById("contextmenu").style.display = "none";
 })
+
+window.fakeLocalStorage = {};
+
+window.fakeLocalStorage.items = {};
+
+window.fakeLocalStorage.setItem = function(key, value) {
+	window.fakeLocalStorage.items[key] = value;
+}
+
+window.fakeLocalStorage.getItem = function(key) {
+	var x = window.fakeLocalStorage.items[key];
+	if (x === undefined) {
+		return null;
+	}
+	return x;
+}

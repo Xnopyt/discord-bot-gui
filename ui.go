@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/atotto/clipboard"
@@ -139,7 +140,8 @@ func mainSetup() {
 			}
 			`))
 		}
-		injectJSFromURL("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js")
+		emojiButtonJS := string(httpGet("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js"))
+		injectJS([]byte(strings.Replace(emojiButtonJS, "localStorage", "fakeLocalStorage", -1)))
 		injectJSFromURL("https://twemoji.maxcdn.com/v/latest/twemoji.min.js")
 		if runtime.GOOS == "windows" {
 			time.Sleep(time.Second)

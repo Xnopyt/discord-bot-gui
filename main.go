@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"html/template"
 
 	"github.com/pkg/browser"
 	"github.com/zserge/webview"
@@ -19,12 +18,7 @@ func main() {
 	wv.Bind("readClipboard", readClipboard)
 	wv.Bind("writeClipboard", writeClipboard)
 	wv.Bind("deleteMessage", deleteMessage)
-	wv.Init(`
-	window.onload = function() {
-		document.documentElement.innerHTML = "` + template.JSEscapeString(string(MustAsset("ui/login.html"))) + `";
-		wv("loginSetup");
-	}`)
-	wv.Navigate("https://example.com/")
+	wv.Navigate("data:text/html," + string(MustAsset("ui/login.html")))
 	wv.Run()
 	if ses != nil {
 		ses.Close()
