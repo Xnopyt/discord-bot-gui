@@ -60,6 +60,7 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 		time.Sleep(time.Second)
 	}
 	proccessingMsg = true
+	defer func() { proccessingMsg = false }()
 	if m.ChannelID != currentChannel {
 		return
 	}
@@ -82,7 +83,6 @@ func recvMsg(s *discordgo.Session, m *discordgo.MessageCreate) {
 	wv.Dispatch(func() {
 		wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 			messages.scrollTop = messages.scrollHeight;`)
-		proccessingMsg = false
 	})
 }
 
@@ -91,6 +91,7 @@ func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		time.Sleep(time.Second)
 	}
 	proccessingMsg = true
+	defer func() { proccessingMsg = false }()
 	if m.ChannelID != currentChannel {
 		return
 	}
@@ -98,7 +99,6 @@ func updateMsg(s *discordgo.Session, m *discordgo.MessageUpdate) {
 		return
 	}
 	processChannelMessage(m.Message, nil)
-	proccessingMsg = false
 }
 
 func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
