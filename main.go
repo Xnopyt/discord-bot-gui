@@ -39,8 +39,8 @@ func webviewCallback(s string) {
 		case "connect":
 			go connect(msg.Content)
 
-		case "selectTargetServer":
-			go selectTargetServer(msg.Content)
+		case "selectServer":
+			go selectServer(msg.Content)
 
 		case "setActiveChannel":
 			go setActiveChannel(msg.Content)

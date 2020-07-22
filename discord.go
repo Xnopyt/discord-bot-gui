@@ -39,6 +39,11 @@ type emojiAliases struct {
 	} `json:"emojis"`
 }
 
+type chanCat struct {
+	Category *discordgo.Channel   `json:"category"`
+	Channels []*discordgo.Channel `json:"channels"`
+}
+
 var eAliases emojiAliases
 
 var typing bool
@@ -139,7 +144,88 @@ func loadDMMembers() {
 	})
 }
 
-func selectTargetServer(id string) {
+func loadChannels(id string) *discordgo.Channel {
+	chans, _ := ses.GuildChannels(id)
+	var catChans []*discordgo.Channel
+	var categories []chanCat
+	var nocat []*discordgo.Channel
+	for _, v := range chans {
+		switch v.Type {
+
+		case discordgo.ChannelTypeGuildText:
+			perms, err := ses.State.UserChannelPermissions(ses.State.User.ID, v.ID)
+			if err != nil {
+				perms, err = ses.UserChannelPermissions(ses.State.User.ID, v.ID)
+				if err != nil {
+					continue
+				}
+			}
+			if perms&0x00000400 != 0 {
+				if v.ParentID == "" {
+					nocat = append(nocat, v)
+				} else {
+					catChans = append(catChans, v)
+				}
+			}
+
+		case discordgo.ChannelTypeGuildCategory:
+			categories = append(categories, chanCat{Category: v})
+		}
+	}
+
+	for _, v := range catChans {
+		for i, w := range categories {
+			if v.ParentID == w.Category.ID {
+				categories[i].Channels = append(categories[i].Channels, v)
+				break
+			}
+		}
+	}
+	var x []chanCat
+	for _, v := range categories {
+		if len(v.Channels) == 0 {
+			continue
+		}
+		sort.SliceStable(v.Channels, func(i, j int) bool {
+			return v.Channels[i].Position < v.Channels[j].Position
+		})
+		x = append(x, v)
+	}
+	categories = x
+	sort.SliceStable(categories, func(i, j int) bool {
+		return categories[i].Category.Position < categories[j].Category.Position
+	})
+	sort.SliceStable(nocat, func(i, j int) bool {
+		return nocat[i].Position < nocat[j].Position
+	})
+
+	var cat string
+	y, err := json.Marshal(categories)
+	if err != nil {
+		cat = "null"
+	} else {
+		cat = string(y)
+	}
+
+	var noCat string
+	y, err = json.Marshal(nocat)
+	if err != nil {
+		noCat = "null"
+	} else {
+		noCat = string(y)
+	}
+
+	wv.Dispatch(func() {
+		wv.Eval(fmt.Sprintf("addchannels(%q, %q);", noCat, cat))
+	})
+
+	if len(nocat) > 0 {
+		return nocat[0]
+	}
+	return categories[0].Channels[0]
+}
+
+func selectServer(id string) {
 	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "block"`) })
 	time.Sleep(time.Second)
 	guild, err := ses.Guild(id)
@@ -148,28 +234,7 @@ func selectTargetServer(id string) {
 		return
 	}
 	wv.Dispatch(func() { wv.Eval(fmt.Sprintf(`selectserver(%q, %q);`, id, html.EscapeString(guild.Name))) })
-	chans, _ := ses.GuildChannels(id)
-	var nchan *discordgo.Channel
-	i := false
-	var evalQueue string
-	for _, v := range chans {
-		if v.Type == 0 {
-			if !i {
-				nchan = v
-				i = true
-			}
-			perms, err := ses.State.UserChannelPermissions(ses.State.User.ID, v.ID)
-			if err != nil {
-				continue
-			}
-			if perms&0x00000400 != 0 {
-				evalQueue += fmt.Sprintf("addchannel(%q, %q);\n", v.ID, html.EscapeString(v.Name))
-			}
-		}
-	}
-	wv.Dispatch(func() {
-		wv.Eval(evalQueue)
-	})
+	nchan := loadChannels(id)
 	currentServer = id
 	setActiveChannel(nchan.ID)
 	wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })

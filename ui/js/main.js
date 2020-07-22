@@ -38,7 +38,7 @@ function loadservers(name, id, img, src) {
 	newserver.appendChild(newtooltip);
 	newserver.addEventListener("mouseenter", showServerTooltip);
 	newserver.addEventListener("mouseleave", hideServerTooltip);
-	newserver.setAttribute("onclick", "wv(JSON.stringify({'type': 'selectTargetServer', 'content': '"+id+"'}));")
+	newserver.setAttribute("onclick", "wv(JSON.stringify({'type': 'selectServer', 'content': '"+id+"'}));")
     document.getElementById("sidenav").appendChild(newserver);
 }
 
@@ -76,26 +76,63 @@ function selectserver(id, name) {
 	document.getElementById("servername").innerHTML = name;
 	var chancon = document.getElementById("chancontainer");
 	chancon.innerHTML = "";
-	var head = document.createElement("p");
-	head.className = "chanhead";
-	head.innerHTML = "TEXT CHANNELS";
-	chancon.appendChild(head);
 }
 
-function addchannel(id, name) {
-    var chancon = document.getElementById("chancontainer");
-	var div = document.createElement("div");
-	div.className = "chan";
-	var icon = document.createElement("i");
-	icon.className = "fas fa-hashtag";
-	div.appendChild(icon);
-	var para = document.createElement("p");
-	para.className = "channame";
-	para.innerHTML = name;
-	div.appendChild(para);
-	div.id = id;
-	div.setAttribute("onclick", "wv(JSON.stringify({'type': 'setActiveChannel', 'content': '"+id+"'}));");
-	chancon.appendChild(div);
+function addchannels(nocat, cat) {
+	var chancon = document.getElementById("chancontainer");
+	var tempchancon = document.createElement("div");
+	tempchancon.id = "chancontainer";
+	tempchancon.style = "overflow-y: scroll;";
+	try {
+		var noncategorized = JSON.parse(nocat);
+	} catch(e) {}
+	try {
+		var categorized = JSON.parse(cat);
+	} catch(e) {}
+	if (noncategorized != null) {
+		noncategorized.forEach(function(chan) {
+			var div = document.createElement("div");
+			div.className = "chan";
+			var icon = document.createElement("i");
+			icon.className = "fas fa-hashtag";
+			div.appendChild(icon);
+			var para = document.createElement("p");
+			para.className = "channame";
+			para.innerHTML = escapeHtml(chan.name);
+			div.appendChild(para);
+			div.id = chan.id;
+			div.setAttribute("onclick", "wv(JSON.stringify({'type': 'setActiveChannel', 'content': '"+chan.id+"'}));");
+			tempchancon.appendChild(div);
+		})
+	}
+	if (categorized != null) {
+		categorized.forEach(function(category) {
+			var cathead = document.createElement("p");
+			cathead.className = "chanhead";
+			cathead.innerHTML = escapeHtml(category.category.name.toUpperCase());
+			cathead.id = category.category.id;
+			tempchancon.appendChild(cathead);
+			var catcon = document.createElement("div");
+			catcon.id = category.category.id + "-contain";
+			tempchancon.appendChild(catcon);
+			category.channels.forEach(function(chan) {
+				var div = document.createElement("div");
+				div.className = "chan";
+				var icon = document.createElement("i");
+				icon.className = "fas fa-hashtag";
+				div.appendChild(icon);
+				var para = document.createElement("p");
+				para.className = "channame";
+				para.innerHTML = escapeHtml(chan.name);
+				div.appendChild(para);
+				div.id = chan.id;
+				div.setAttribute("onclick", "wv(JSON.stringify({'type': 'setActiveChannel', 'content': '"+chan.id+"'}));");
+				catcon.appendChild(div);
+			})
+		})
+	}
+	chancon.parentNode.replaceChild(tempchancon, chancon);
+
 }
 
 function selectchannel(id, name) {
