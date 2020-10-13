@@ -136,6 +136,14 @@ func loadDMMembers() {
 					evalQueue += fmt.Sprintf("loaddmusers(%q,%q,%q);\n", html.EscapeString(x.User.Username), x.User.ID, x.User.AvatarURL("128"))
 				}
 			}
+		} else if err.Error() == `HTTP 403 Forbidden, {"message": "Missing Access", "code": 50001}` {
+			wv.Dispatch(func() {
+				wv.Eval(`createAlert("Failed to Get Guild Members", "Failed to get a list of guild members, please make sure you have Privileged Intents enabled in your bot's settings.")`)
+			})
+		} else {
+			wv.Dispatch(func() {
+				wv.Eval(`createAlert("Failed to Get Guild Members", "` + err.Error() + `")`)
+			})
 		}
 	}
 	wv.Dispatch(func() {
@@ -331,7 +339,16 @@ func setActiveChannel(id string) {
 		wv.Dispatch(func() { wv.Eval(`document.getElementById("blocker").style.display = "none"`) })
 		return
 	}
-	memberCache, _ := ses.GuildMembers(currentServer, "", 1000)
+	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
+	if err.Error() == `HTTP 403 Forbidden, {"message": "Missing Access", "code": 50001}` {
+		wv.Dispatch(func() {
+			wv.Eval(`createAlert("Failed to Get Guild Members", "Failed to get a list of guild members, please make sure you have Privileged Intents enabled in your bot's settings.")`)
+		})
+	} else if err != nil {
+		wv.Dispatch(func() {
+			wv.Eval(`createAlert("Failed to Get Guild Members", "` + err.Error() + `")`)
+		})
+	}
 	roles, _ := ses.GuildRoles(currentServer)
 	sort.SliceStable(roles, func(i, j int) bool {
 		return roles[i].Position > roles[j].Position
