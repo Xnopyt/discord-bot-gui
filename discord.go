@@ -340,14 +340,16 @@ func setActiveChannel(id string) {
 		return
 	}
 	memberCache, err := ses.GuildMembers(currentServer, "", 1000)
-	if err.Error() == `HTTP 403 Forbidden, {"message": "Missing Access", "code": 50001}` {
-		wv.Dispatch(func() {
-			wv.Eval(`createAlert("Failed to Get Guild Members", "Failed to get a list of guild members, please make sure you have Privileged Intents enabled in your bot's settings.")`)
-		})
-	} else if err != nil {
-		wv.Dispatch(func() {
-			wv.Eval(`createAlert("Failed to Get Guild Members", "` + err.Error() + `")`)
-		})
+	if err != nil {
+		if err.Error() == `HTTP 403 Forbidden, {"message": "Missing Access", "code": 50001}` {
+			wv.Dispatch(func() {
+				wv.Eval(`createAlert("Failed to Get Guild Members", "Failed to get a list of guild members, please make sure you have Privileged Intents enabled in your bot's settings.")`)
+			})
+		} else {
+			wv.Dispatch(func() {
+				wv.Eval(`createAlert("Failed to Get Guild Members", "` + err.Error() + `")`)
+			})
+		}
 	}
 	roles, _ := ses.GuildRoles(currentServer)
 	sort.SliceStable(roles, func(i, j int) bool {
