@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/pkg/browser"
-	"github.com/zserge/webview"
+	"github.com/webview/webview"
 )
 
 var wv webview.WebView
