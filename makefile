@@ -101,5 +101,5 @@ build-win:
 	@$(BINDATACMD) ./ui/...
 	@echo 'Generating windows icon information...'
 	@$(RSRCCMD) -ico=discord-512.ico -arch=amd64 -o=discord-bot-gui.syso
-	@echo 'Cross Compiling Windows 64 bit binary...'
+	@echo 'Building Windows 64 bit binary...'
 	@GO111MODULE=on GOOS=windows GOARCH=amd64 $(GOBUILD) -v -ldflags='-H windowsgui' -o $(BINARY_NAME_WIN64) ./...
