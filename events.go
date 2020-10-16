@@ -116,7 +116,7 @@ func reprocessOnFail(id string, parserFunc func(*discordgo.Message, []*discordgo
 		if err != nil {
 			return
 		}
-		processChannelMessage(msg, nil)
+		parserFunc(msg, nil)
 		wv.Dispatch(func() {
 			wv.Eval(`var messages = document.getElementsByClassName("messages")[0].querySelector(".simplebar-content-wrapper");
 			messages.scrollTop = messages.scrollHeight;`)
@@ -206,7 +206,7 @@ func processMemberJoinMessage(m *discordgo.Message, cache []*discordgo.Member) {
 }
 
 func processPinnedMessage(m *discordgo.Message, cache []*discordgo.Member) {
-	reprocessOnFail(m.ID, processPinnedMessage)
+	defer reprocessOnFail(m.ID, processPinnedMessage)
 	member := getMember(cache, m.Author.ID)
 	uname := getNick(m.Author, member)
 	wv.Dispatch(func() {
