@@ -61,8 +61,8 @@ jobs:
     - name: Upload build result
       uses: actions/upload-artifact@v1
       with:
-        name: discord-bot-gui_darwin.zip
-        path: bin/discord-bot-gui_darwin.zip
+        name: discord-bot-gui_darwin
+        path: 'bin/discord-bot-gui_darwin-app'
 
     - name: Run Tests
       run: |

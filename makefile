@@ -12,7 +12,6 @@ BINARY_NAME_LINUX=$(BUILD_DIR)/discord-bot-gui_linux
 BINARY_NAME_WIN32=$(BUILD_DIR)/discord-bot-gui_win32.exe
 BINARY_NAME_WIN64=$(BUILD_DIR)/discord-bot-gui_win64.exe
 BINARY_NAME_DARWIN=$(BUILD_DIR)/discord-bot-gui_darwin
-OUT_NAME_DARWIN=$(BINARY_NAME_DARWIN).zip
 WIN64_CROSSCOMPILE=x86_64-w64-mingw32-gcc
 WIN32_CROSSCOMPILE=i686-w64-mingw32-gcc
 
@@ -78,9 +77,8 @@ build-darwin:
 	@echo 'Building MacOS 64 bit binary...'
 	@GO111MODULE=on GOOS=darwin GOARCH=amd64 $(GOBUILD) -v -o $(BINARY_NAME_DARWIN) ./...
 	@echo 'Packing MacOS application...'
-	@cd $(BUILD_DIR); $(APPIFYCMD) -name "Discord Bot GUI" -icon ../discord-512.png -author "Xnopyt" ../$(BINARY_NAME_DARWIN)
-	@cd $(BUILD_DIR); zip -r ../$(OUT_NAME_DARWIN) "Discord Bot GUI.app"
-	@rm -rf $(BUILD_DIR)/"Discord Bot GUI.app"
+	@mkdir -p $(BINARY_NAME_DARWIN)-app
+	@cd $(BINARY_NAME_DARWIN)-app; $(APPIFYCMD) -name "Discord Bot GUI" -icon ../../discord-512.png -author "Xnopyt" ../../$(BINARY_NAME_DARWIN)
 
 dep-darwin:
 	@echo 'Downloading MacOS build dependencies...'
