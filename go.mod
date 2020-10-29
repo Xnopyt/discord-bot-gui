@@ -11,6 +11,6 @@ require (
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/sqweek/dialog v0.0.0-20200911184034-8a3d98e8211d
 	github.com/webview/webview v0.0.0-20200724072439-e0c01595b361
-	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee // indirect
-	golang.org/x/sys v0.0.0-20201013132646-2da7054afaeb // indirect
+	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
+	golang.org/x/sys v0.0.0-20201029080932-201ba4db2418 // indirect
 )
