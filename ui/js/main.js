@@ -535,19 +535,19 @@ home.addEventListener("mouseleave", hideServerTooltip);
 window.shiftHeld = false
 
 document.getElementById("messageinput").addEventListener("keyup", function(event) {
-	if (event.keyCode === 13 && !window.shiftHeld) {
+	if (event.code === "Enter" && !window.shiftHeld) {
 		event.preventDefault();
 		var msgInput = document.getElementById("messageinput");
 		wv(JSON.stringify({'type': 'sendMessage', 'content': msgInput.value}));
         msgInput.value = "";
 	}
-	if (event.keyCode === 16) {
+	if (event.code === "ShiftLeft") {
 		window.shiftHeld = false
 	}
 });
 
 document.getElementById("messageinput").addEventListener("keydown", function(event) {
-	if (event.keyCode === 16) {
+	if (event.code === "ShiftLeft") {
 		window.shiftHeld = true
 	}
 	wv("updateTyping");

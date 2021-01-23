@@ -5,7 +5,7 @@ loginInput.addEventListener("keyup", function(event) {
 	if (loading) {
 		return
 	}
-	if (event.keyCode === 13) {
+	if (event.code === "Enter") {
 		button.innerHTML = '<div class="lds-facebook"><div></div><div></div><div></div></div>';
 		loading = true;
 		event.preventDefault();
@@ -60,13 +60,13 @@ var getClosest = function (elem, selector) {
 window.ctrlHeld = false;
 
 document.addEventListener("keyup", function(event) {
-	if (event.keyCode === 17) {
+	if (event.code === "ControlLeft") {
 		window.ctrlHeld = false;
 	}
 });
 
 document.addEventListener("keydown", function(event) {
-	if (event.keyCode === 17) {
+	if (event.code === "ControlLeft") {
 		window.ctrlHeld = true;
 	}
 });
