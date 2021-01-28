@@ -42,7 +42,7 @@ clean:
 	@echo 'Removing build files...'
 	@$(GOCLEAN)
 	@rm -rf $(BUILD_DIR)
-	@rm -f ./bindata.go
+	@git checkout HEAD -- bindata.go || rm -f bindata.go
 	@rm -f discord-bot-gui.syso
 
 run: dep build
