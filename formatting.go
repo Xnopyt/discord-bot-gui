@@ -154,7 +154,7 @@ func processCodeblocks(c string) (content string) {
 	return
 }
 
-var customemoji = regexp.MustCompile("&lt;:.*&gt;")
+var customemoji = regexp.MustCompile("&lt;a?:.*&gt;")
 var aliasedemoji = regexp.MustCompile(":(\\w)+:")
 
 func processNonUnicodeEmoji(c string) (content string) {
