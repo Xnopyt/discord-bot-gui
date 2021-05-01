@@ -322,13 +322,13 @@ img.emoji {
     margin-left: 20px;
     margin-top: 12.5px;
     margin-right: 4px;
+    transform: translateY(-15px);
 }
 
 .infobar .chantitle {
     display: inline-block;
     font-weight: 500;
     font-size: 15px;
-    transform: translateY(-2px);
     width: calc(100% - 400px);
     white-space: nowrap;
     overflow: hidden;
@@ -456,7 +456,7 @@ img.emoji {
     font-size: 15px;
     margin: 0;
     width: 150px;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
     color: rgb(126, 129, 134);
     font-weight: 500;
     pointer-events: none;
@@ -472,6 +472,7 @@ img.emoji {
 .chan .fa-hashtag {
     color: rgb(114, 118, 125);
     display: inline-block;
+    transform: translateY(-3px);
 }
 
 .chan .channame {
@@ -555,12 +556,13 @@ img.emoji {
     display: inline-block;
     height: 14px;
     font-size: 10px;
-    font-weight: bolder;
+    font-weight: 500;
     transform: translateY(-12px);
     margin-left: 4px;
     padding-left: 3px;
     padding-right: 3px;
     padding-top: 1px;
+    padding-bottom: 1px;
     background-color: rgb(114,138,218);
     border-radius: 3px;
 }
@@ -580,7 +582,7 @@ img.emoji {
     display: inline-block;
     font-size: 15px;
     margin: 0;
-    transform: translateY(-10px);
+    transform: translateY(-6px);
     color: rgb(126, 129, 134);
     font-weight: 500;
     pointer-events: none;
@@ -630,7 +632,6 @@ img.emoji {
     width: 20px;
     height: 20px;
     margin-left: 2px;
-    transform: translateY(2px);
     cursor: pointer;
 }
 
@@ -708,7 +709,6 @@ img.emoji {
     height: 20px;
     margin-left: 2px;
     cursor: pointer;
-    transform: translateY(2px);
 }
 
 .messagebox .emojiselect:hover > .fa-grin {
@@ -806,12 +806,13 @@ img.emoji {
     display: inline-block;
     height: 14px;
     font-size: 10px;
-    font-weight: bolder;
-    transform: translateY(-23px);
+    font-weight: 500;
+    transform: translateY(-24px);
     margin-left: 5px;
     padding-left: 3px;
     padding-right: 3px;
     padding-top: 1px;
+    padding-bottom: 1px;
     background-color: rgb(114,138,218);
     border-radius: 3px;
 }
@@ -1004,7 +1005,6 @@ img.emoji {
     margin-bottom: 5px;
     width: calc(100% - 60px);
     cursor: pointer;
-    transform: translateY(-6px);
 }
 
 .message .embed {

@@ -94,52 +94,6 @@ func mainSetup() {
 		injectCSSFromURL("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/androidstudio.min.css")
 		injectCSSFromURL("https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.2.0/simplebar.min.css")
 		injectCSS(MustAsset("ui/main.css"))
-		if runtime.GOOS == "windows" {
-			injectCSS([]byte(`
-			.infobar .chantitle {
-				transform: none;
-			}
-
-			.infobar .fa-hashtag, .infobar .fa-at {
-				transform: translateY(-15px);
-			}
-
-			.chan .fa-hashtag {
-				transform: translateY(-3px);
-			}
-
-			.memberbar .memberbot {
-				font-weight: 500;
-				padding-bottom: 1px;
-			}
-			
-			.memberbar .membername {
-				transform: translateY(-6px);
-			}
-
-			.message .msgbot {
-				transform: translateY(-24px);
-				font-weight: 500;
-				padding-bottom: 1px;
-			}
-
-			.emojiselect .fa-grin {
-				transform: none;
-			}
-
-			.actionbar .dmusername {
-				transform: translateY(-5px);
-			}
-
-			.fileupload .fa-plus-circle {
-				transform: none;
-			}
-
-			.attachment p {
-				transform: none;
-			}
-			`))
-		}
 		emojiButtonJS := string(httpGet("https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@2.8.2/dist/index.min.js"))
 		injectJS([]byte(strings.Replace(emojiButtonJS, "localStorage", "fakeLocalStorage", -1)))
 		injectJSFromURL("https://twemoji.maxcdn.com/v/latest/twemoji.min.js")
