@@ -72,6 +72,7 @@ func connect(s string) {
 	ses.AddHandler(recvMsg)
 	ses.AddHandler(updateMsg)
 	ses.AddHandler(delMsg)
+	ses.AddHandler(typingStart)
 	err = ses.Open()
 	if err != nil {
 		wv.Dispatch(func() {

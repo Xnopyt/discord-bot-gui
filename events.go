@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
+	"html/template"
 	"math/rand"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -50,6 +53,16 @@ var guildJoinMessages = [...]string{
 	"Hello. Is it MEMBER you're looking for?",
 	"MEMBER has joined. Stay a while and listen!",
 	"Roses are red, violets are blue, MEMBER joined this server with you"}
+
+var typingUsers struct {
+	sync.Mutex
+	cleanup bool
+	users   []struct {
+		Nick    string
+		id      string
+		timeout time.Time
+	}
+}
 
 func init() {
 	rand.Seed(time.Now().Unix())
@@ -108,6 +121,75 @@ func delMsg(s *discordgo.Session, m *discordgo.MessageDelete) {
 	wv.Dispatch(func() {
 		wv.Eval(`document.getElementById("` + m.ID + `").parentNode.removeChild(document.getElementById("` + m.ID + `"));`)
 	})
+}
+
+func typingStart(s *discordgo.Session, t *discordgo.TypingStart) {
+	if t.ChannelID != currentChannel || t.UserID == s.State.User.ID {
+		return
+	}
+	user, err := ses.User(t.UserID)
+	if err != nil {
+		return
+	}
+	member, err := ses.GuildMember(t.GuildID, t.UserID)
+	if err != nil {
+		member = nil
+	}
+	nick := getNick(user, member)
+	typingUsers.Lock()
+	defer typingUsers.Unlock()
+	if !typingUsers.cleanup {
+		go typingCleanup()
+		typingUsers.cleanup = true
+	}
+	for i := range typingUsers.users {
+		if typingUsers.users[i].id == t.UserID {
+			typingUsers.users[i].timeout = time.Now().Add(time.Second * 7)
+			return
+		}
+	}
+	typingUsers.users = append(typingUsers.users, struct {
+		Nick    string
+		id      string
+		timeout time.Time
+	}{template.HTMLEscapeString(nick), t.UserID, time.Now().Add(time.Second * 7)})
+	typers, err := json.Marshal(typingUsers.users)
+	if err != nil {
+		return
+	}
+	wv.Dispatch(func() { wv.Eval(`updateTypers('` + string(typers) + `');`) })
+}
+
+func typingCleanup() {
+	for {
+		time.Sleep(time.Second * 7)
+		var t []struct {
+			Nick    string
+			id      string
+			timeout time.Time
+		}
+		typingUsers.Lock()
+		for _, v := range typingUsers.users {
+			if v.timeout.Unix() < time.Now().Unix() {
+				continue
+			}
+			t = append(t, v)
+		}
+		if len(t) != len(typingUsers.users) {
+			typers, err := json.Marshal(t)
+			if err != nil {
+				return
+			}
+			wv.Dispatch(func() { wv.Eval(`updateTypers('` + string(typers) + `');`) })
+		}
+		typingUsers.users = t
+		if len(typingUsers.users) == 0 {
+			typingUsers.cleanup = false
+			typingUsers.Unlock()
+			return
+		}
+		typingUsers.Unlock()
+	}
 }
 
 func reprocessOnFail(id string, parserFunc func(*discordgo.Message, []*discordgo.Member)) {

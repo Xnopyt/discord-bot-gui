@@ -112,6 +112,7 @@
                 <textarea id="messageinput" class="messageinput" placeholder="Message #General"></textarea>
                 <button class="sendbutton"><i class="fas fa-paper-plane" onclick="wv(JSON.stringify({'type': 'sendMessage', 'content': document.getElementById('messageinput').value}));document.getElementById('messageinput').value = '';"></i></button>
                 <button class="emojiselect" id="emojiselect"><i class="fas fa-grin"></i></button>
+                <div id="typing"><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div><p id="typingtext" class="typingtext">Xnopyt-Chan is typing...</p></div>
             </div>
             <div class="memberbar">
                 <div id="members"></div>

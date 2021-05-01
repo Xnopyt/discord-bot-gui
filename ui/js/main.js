@@ -8,6 +8,35 @@ faXHR.onreadystatechange = function() {
 }
 faXHR.send();
 
+function updateTypers(typingUsers) {
+	var typingUsers = JSON.parse(typingUsers)
+	if (typingUsers == null) {
+		typingUsers = [];
+	}
+	var typingText = document.getElementById("typingtext");
+	var typingElem = document.getElementById("typing");
+	switch(typingUsers.length) {
+		case 0:
+			typingText.innerHTML = "";
+			typingElem.style = null;
+			return
+		case 1:
+			typingText.innerHTML = typingUsers[0].Nick + " is typing...";
+			break
+		case 2:
+			typingText.innerHTML = typingUsers[0].Nick + " and "+ typingUsers[1].Nick +  " are typing...";
+			break
+		default:
+			if (typingUsers.length < 5) {
+				extra = typingUsers.length - 2 + " other users";
+			} else {
+				extra = "serveral other users";
+			}
+			typingText.innerHTML = typingUsers[0].Nick + ", "+ typingUsers[1].Nick + " and " + extra + " are typing...";
+	}
+	typingElem.style.visibility = "visible";
+}
+
 function escapeHtml(unsafe) {
     return unsafe
          .replace(/&/g, "&amp;")
