@@ -59,6 +59,16 @@ var currentChannel = ""
 func connect(s string) {
 	token = s
 	var err error
+	env, ok := os.LookupEnv("DGB_DEBUG_SHARDS")
+	if ok {
+		shards, err := strconv.Atoi(env)
+		if err != nil {
+			connectShards(-1)
+		} else {
+			connectShards(shards)
+		}
+		return
+	}
 	ses, err = discordgo.New("Bot " + token)
 	if err != nil {
 		wv.Dispatch(func() {
@@ -91,7 +101,11 @@ func connect(s string) {
 }
 
 func logout() {
-	ses.Close()
+	if shardMan != nil {
+		shardMan.stop()
+	} else {
+		ses.Close()
+	}
 	wv.Terminate()
 	os.Exit(0)
 }
