@@ -218,7 +218,7 @@ func getMember(m []*discordgo.Member, id string) *discordgo.Member {
 		}
 	}
 	member, err := ses.GuildMember(currentServer, id)
-	if err != nil {
+	if err == nil {
 		return member
 	}
 	return nil
