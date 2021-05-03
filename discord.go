@@ -53,12 +53,15 @@ var proccessingMsg = false
 
 var ses *discordgo.Session
 
+var handlers = [...]interface{}{recvMsg, updateMsg, delMsg, typingStart}
+
 var currentServer = "HOME"
 var currentChannel = ""
 
 func connect(s string) {
 	token = s
 	var err error
+	ready := make(chan bool)
 	env, ok := os.LookupEnv("DBG_DEBUG_SHARDS")
 	if ok {
 		shards, err := strconv.Atoi(env)
@@ -67,7 +70,7 @@ func connect(s string) {
 		} else {
 			connectShards(shards)
 		}
-		return
+		goto connected
 	}
 	ses, err = discordgo.New("Bot " + token)
 	if err != nil {
@@ -77,12 +80,10 @@ func connect(s string) {
 		})
 		return
 	}
-	ready := make(chan bool)
 	ses.AddHandler(func(s *discordgo.Session, e *discordgo.Ready) { ready <- true })
-	ses.AddHandler(recvMsg)
-	ses.AddHandler(updateMsg)
-	ses.AddHandler(delMsg)
-	ses.AddHandler(typingStart)
+	for _, v := range handlers {
+		ses.AddHandler(v)
+	}
 	err = ses.Open()
 	if err != nil {
 		wv.Dispatch(func() {
@@ -94,6 +95,7 @@ func connect(s string) {
 		return
 	}
 	<-ready
+connected:
 	wv.Dispatch(func() {
 		wv.Eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
 	})

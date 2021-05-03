@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"html/template"
 	"log"
 	"strconv"
 	"sync"
@@ -144,10 +143,9 @@ func connectShards(shards int) {
 		log.Println("Shard ID " + strconv.Itoa(s.ShardID) + ": Ready")
 		shardStartWg.Done()
 	})
-	shardMan.addHandler(recvMsg)
-	shardMan.addHandler(updateMsg)
-	shardMan.addHandler(delMsg)
-	shardMan.addHandler(typingStart)
+	for _, v := range handlers {
+		shardMan.addHandler(v)
+	}
 	if !(shards < 1) {
 		shardMan.shardCount = shards
 	}
@@ -162,9 +160,5 @@ func connectShards(shards int) {
 		return
 	}
 	shardStartWg.Wait()
-	wv.Dispatch(func() {
-		wv.Eval(`document.documentElement.innerHTML="` + template.JSEscapeString(string(MustAsset("ui/main.html"))) + `"`)
-	})
 	ses = shardMan.shards[0]
-	mainSetup()
 }
