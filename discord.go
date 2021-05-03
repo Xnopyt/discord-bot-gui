@@ -59,7 +59,7 @@ var currentChannel = ""
 func connect(s string) {
 	token = s
 	var err error
-	env, ok := os.LookupEnv("DGB_DEBUG_SHARDS")
+	env, ok := os.LookupEnv("DBG_DEBUG_SHARDS")
 	if ok {
 		shards, err := strconv.Atoi(env)
 		if err != nil {
