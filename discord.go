@@ -32,19 +32,10 @@ type fileAttachment struct {
 	Mime string `json:"mime"`
 }
 
-type emojiAliases struct {
-	Emojis []struct {
-		Aliases []string `json:"aliases"`
-		Unicode string   `json:"unicode"`
-	} `json:"emojis"`
-}
-
 type chanCat struct {
 	Category *discordgo.Channel   `json:"category"`
 	Channels []*discordgo.Channel `json:"channels"`
 }
-
-var eAliases emojiAliases
 
 var typing bool
 

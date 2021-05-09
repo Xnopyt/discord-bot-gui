@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"html"
 	"html/template"
@@ -24,7 +23,6 @@ type uiMsg struct {
 var wvCallbacks map[string]func()
 
 func init() {
-	json.Unmarshal(MustAsset("ui/assets/emojialiases.json"), &eAliases)
 	wvCallbacks = make(map[string]func())
 
 	wvCallbacks["loginSetup"] = loginSetup

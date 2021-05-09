@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"html/template"
@@ -10,6 +11,26 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/mvdan/xurls"
 )
+
+var emojiAliases = make(map[string]string)
+
+func init() {
+	var eAliases struct {
+		Emojis []struct {
+			Aliases []string `json:"aliases"`
+			Unicode string   `json:"unicode"`
+		} `json:"emojis"`
+	}
+	err := json.Unmarshal(MustAsset("ui/assets/emojialiases.json"), &eAliases)
+	if err != nil {
+		panic(err)
+	}
+	for _, emoji := range eAliases.Emojis {
+		for _, alias := range emoji.Aliases {
+			emojiAliases[alias] = emoji.Unicode
+		}
+	}
+}
 
 func formatMentions(c string, m *discordgo.Message) (content string) {
 	content = c
@@ -167,18 +188,9 @@ func processNonUnicodeEmoji(c string) (content string) {
 	rep = aliasedemoji.FindAllString(content, -1)
 	for _, v := range rep {
 		alias := v[1 : len(v)-1]
-		z := false
-		for _, x := range eAliases.Emojis {
-			for _, y := range x.Aliases {
-				if y == alias {
-					content = strings.Replace(content, v, x.Unicode, 1)
-					z = true
-					break
-				}
-			}
-			if z {
-				break
-			}
+		unicode, ok := emojiAliases[alias]
+		if ok {
+			content = strings.Replace(content, v, unicode, 1)
 		}
 	}
 	return
