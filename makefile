@@ -3,7 +3,7 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOVET=$(GOCMD) vet
 GOFMT=$(GOCMD) fmt
-GOGET=$(GOCMD) get
+GOINSTALL=$(GOCMD) install
 BINDATACMD = go-bindata
 RSRCCMD = rsrc
 BUILD_DIR=bin
@@ -82,15 +82,15 @@ build-darwin:
 
 dep-darwin:
 	@echo 'Downloading MacOS build dependencies...'
-	@cd; GO111MODULE=on go get -u github.com/machinebox/appify/...
+	@cd; GO111MODULE=on $(GOINSTALL) github.com/machinebox/appify@latest
 
 dep-win:
 	@echo 'Downloading Windows build dependencies...'
-	@cd; GO111MODULE=on go get -u github.com/akavel/rsrc/...
+	@cd; GO111MODULE=on $(GOINSTALL) github.com/akavel/rsrc@latest
 
 dep:
 	@echo 'Downloading build dependencies...'
-	@cd; GO111MODULE=on go get -u github.com/go-bindata/go-bindata/...
+	@cd; GO111MODULE=on $(GOINSTALL) github.com/go-bindata/go-bindata/go-bindata@latest
 
 win: dep dep-win test build-win
 
